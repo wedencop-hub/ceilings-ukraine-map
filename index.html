@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Карта натяжних стель України</title>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    .header {
+      padding: 16px;
+      background: #ffffff;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .subtitle {
+      padding: 0 16px 12px;
+      background: #ffffff;
+      color: #666;
+    }
+
+    .content {
+      padding: 16px;
+    }
+
+    .button {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 12px;
+      background: #229ed9;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    🗺 Карта натяжних стель України
+  </div>
+
+  <div class="subtitle">
+    Корисні місця для монтажників
+  </div>
+
+  <div class="content">
+
+    <button class="button">🏭 Виробники</button>
+
+    <button class="button">🏪 Магазини та постачальники</button>
+
+    <button class="button">🔧 Інструмент та обладнання</button>
+
+    <button class="button">🔥 Газові заправки</button>
+
+    <button class="button">🚚 Точки видачі та логістика</button>
+
+    <button class="button">🛠 Послуги для монтажників</button>
+
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+
+    tg.ready();
+    tg.expand();
+  </script>
+
+</body>
+</html>
