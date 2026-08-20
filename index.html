@@ -2,7 +2,9 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
   <title>Карта натяжних стель України</title>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -12,76 +14,268 @@
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      color: #222;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
     }
 
     .header {
-      padding: 16px;
-      background: #ffffff;
-      font-size: 20px;
-      font-weight: bold;
+      padding: 12px 16px;
+      background: #fff;
+      z-index: 10;
+      box-shadow: 0 1px 5px rgba(0,0,0,.15);
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 700;
     }
 
     .subtitle {
-      padding: 0 16px 12px;
-      background: #ffffff;
-      color: #666;
+      margin-top: 4px;
+      font-size: 13px;
+      color: #777;
     }
 
-    .content {
+    #map {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+    }
+
+    .card {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      background: white;
+      border-radius: 16px;
       padding: 16px;
+      box-shadow: 0 4px 25px rgba(0,0,0,.25);
+      z-index: 20;
+      display: none;
+    }
+
+    .card-title {
+      font-size: 19px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .card-info {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #444;
+    }
+
+    .buttons {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
     }
 
     .button {
-      width: 100%;
-      padding: 14px;
-      margin-bottom: 10px;
-      border: none;
-      border-radius: 12px;
+      border: 0;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
       background: #229ed9;
       color: white;
-      font-size: 16px;
-      font-weight: bold;
+    }
+
+    .close {
+      background: #eee;
+      color: #222;
     }
   </style>
 </head>
 
 <body>
 
+<div id="app">
+
   <div class="header">
-    🗺 Карта натяжних стель України
+    <div class="title">🗺 Карта натяжних стель України</div>
+    <div class="subtitle">Корисні місця для монтажників</div>
   </div>
 
-  <div class="subtitle">
-    Корисні місця для монтажників
+  <div id="map"></div>
+
+  <div class="card" id="card">
+
+    <div class="card-title" id="cardTitle"></div>
+
+    <div class="card-info" id="cardInfo"></div>
+
+    <div class="buttons">
+
+      <button class="button" id="routeButton">
+        🧭 ПРОКЛАСТИ МАРШРУТ
+      </button>
+
+      <button class="button" id="telegramButton">
+        ✈️ TELEGRAM
+      </button>
+
+      <button class="button" id="shareButton">
+        ↗️ ПОДІЛИТИСЯ ТОЧКОЮ
+      </button>
+
+      <button class="button close" onclick="closeCard()">
+        Закрити
+      </button>
+
+    </div>
+
   </div>
 
-  <div class="content">
+</div>
 
-    <button class="button">🏭 Виробники</button>
+<script>
 
-    <button class="button">🏪 Магазини та постачальники</button>
+  const tg = window.Telegram.WebApp;
 
-    <button class="button">🔧 Інструмент та обладнання</button>
+  tg.ready();
+  tg.expand();
 
-    <button class="button">🔥 Газові заправки</button>
+  let map;
 
-    <button class="button">🚚 Точки видачі та логістика</button>
+  const places = [
 
-    <button class="button">🛠 Послуги для монтажників</button>
+    {
+      name: "Potolki Everest / EverestComplekt",
+      category: "🏪 Постачальник",
+      address: "вул. Академіка Булаховського, 2/1, Київ",
+      phone: "+380 67 393 99 37",
+      telegram: "https://t.me/igor_everest",
+      lat: 50.4714,
+      lng: 30.35052
+    },
 
-  </div>
+    {
+      name: "GoodHub",
+      category: "🎓 Навчання / профільні системи",
+      address: "Вишневе, Київська область",
+      phone: "",
+      telegram: "",
+      lat: 50.387,
+      lng: 30.370
+    }
 
-  <script>
-    const tg = window.Telegram.WebApp;
+  ];
 
-    tg.ready();
-    tg.expand();
-  </script>
+  function initMap() {
+
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: {
+        lat: 48.5,
+        lng: 31.2
+      },
+      zoom: 6,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false
+    });
+
+    places.forEach(place => {
+
+      const marker = new google.maps.Marker({
+        position: {
+          lat: place.lat,
+          lng: place.lng
+        },
+        map: map,
+        title: place.name
+      });
+
+      marker.addListener("click", () => {
+        openCard(place);
+      });
+
+    });
+
+  }
+
+  function openCard(place) {
+
+    document.getElementById("cardTitle").textContent =
+      place.name;
+
+    document.getElementById("cardInfo").innerHTML =
+      `<b>${place.category}</b><br>
+       📍 ${place.address}<br>
+       ${place.phone ? "📞 " + place.phone : ""}`;
+
+    document.getElementById("card").style.display = "block";
+
+    document.getElementById("routeButton").onclick = () => {
+
+      const url =
+        "https://www.google.com/maps/dir/?api=1&destination=" +
+        place.lat + "," + place.lng;
+
+      tg.openLink(url);
+
+    };
+
+    document.getElementById("telegramButton").onclick = () => {
+
+      if (place.telegram) {
+        tg.openTelegramLink(place.telegram);
+      } else {
+        tg.showAlert("Telegram для цієї точки поки не додано.");
+      }
+
+    };
+
+    document.getElementById("shareButton").onclick = () => {
+
+      const text =
+        "📍 " + place.name + "\n" +
+        place.address + "\n\n" +
+        "🗺 Карта натяжних стель України";
+
+      const shareUrl =
+        "https://t.me/share/url?url=" +
+        encodeURIComponent(
+          "https://wedencop-hub.github.io/ceilings-ukraine-map/"
+        ) +
+        "&text=" +
+        encodeURIComponent(text);
+
+      tg.openTelegramLink(shareUrl);
+
+    };
+
+  }
+
+  function closeCard() {
+    document.getElementById("card").style.display = "none";
+  }
+
+</script>
+
+<!--
+  ВАЖНО:
+  ЗАМЕНИТЕ YOUR_GOOGLE_MAPS_API_KEY НА СВОЙ КЛЮЧ
+-->
+<script async
+  src="https://maps.googleapis.com/maps/api/js?key=https://developers.google.com/maps/documentation/javascript/get-api-key?utm_source=chatgpt.com#get-a-maps-demo-key&callback=initMap">
+</script>
 
 </body>
 </html>
