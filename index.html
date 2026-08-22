@@ -1,189 +1,308 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <title>Карта натяжних стель України</title>
+<title>Карта натяжних стель України</title>
 
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-    }
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+}
 
-    #app {
-      width: 100%;
-      height: 100%;
-      position: relative;
-    }
+#app {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
 
-    /* Верхняя панель */
+/* Верх */
 
-    .top {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
-      background: rgba(255,255,255,.96);
-      padding: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.15);
-    }
+.top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: rgba(255,255,255,.97);
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
 
-    .title {
-      font-size: 18px;
-      font-weight: 700;
-      margin: 2px 4px 8px;
-    }
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 2px 4px 8px;
+}
 
-    .search {
-      width: 100%;
-      height: 42px;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      padding: 0 14px;
-      font-size: 16px;
-      outline: none;
-    }
+.search {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 0 14px;
+  font-size: 16px;
+  outline: none;
+}
 
-    /* Категории */
+.categories {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 9px 0 2px;
+  scrollbar-width: none;
+}
 
-    .categories {
-      display: flex;
-      gap: 7px;
-      overflow-x: auto;
-      padding: 9px 0 2px;
-      scrollbar-width: none;
-    }
+.categories::-webkit-scrollbar {
+  display: none;
+}
 
-    .categories::-webkit-scrollbar {
-      display: none;
-    }
+.category {
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 20px;
+  padding: 9px 13px;
+  background: #eeeeee;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
 
-    .category {
-      flex: 0 0 auto;
-      border: 0;
-      border-radius: 20px;
-      padding: 9px 13px;
-      background: #eeeeee;
-      font-size: 13px;
-      font-weight: 600;
-      white-space: nowrap;
-    }
+.category.active {
+  background: #229ed9;
+  color: white;
+}
 
-    .category.active {
-      background: #229ed9;
-      color: white;
-    }
+/* Карта */
 
-    /* Карта */
+#map {
+  position: absolute;
+  top: 128px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
 
-    #map {
-      position: absolute;
-      top: 128px;
-      bottom: 0;
-      left: 0;
-      right: 0;
-    }
+/* Кнопки карты */
 
-    /* Моя позиция */
+.map-actions {
+  position: absolute;
+  right: 14px;
+  bottom: 76px;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
-    .location-button {
-      position: absolute;
-      right: 14px;
-      bottom: 18px;
-      z-index: 5;
-      width: 48px;
-      height: 48px;
-      border: 0;
-      border-radius: 50%;
-      background: white;
-      box-shadow: 0 3px 12px rgba(0,0,0,.25);
-      font-size: 22px;
-    }
+.map-action {
+  border: 0;
+  border-radius: 14px;
+  background: white;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 3px 12px rgba(0,0,0,.22);
+}
 
-    /* Карточка */
+.location-button {
+  position: absolute;
+  right: 14px;
+  bottom: 18px;
+  z-index: 15;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 3px 12px rgba(0,0,0,.25);
+  font-size: 22px;
+}
 
-    .card {
-      position: absolute;
-      left: 10px;
-      right: 10px;
-      bottom: 10px;
-      z-index: 20;
-      background: white;
-      border-radius: 18px;
-      padding: 16px;
-      box-shadow: 0 4px 25px rgba(0,0,0,.3);
-      display: none;
-      max-height: 65%;
-      overflow-y: auto;
-    }
+/* Карточка */
 
-    .card-title {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
+.card {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 30;
+  background: white;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 4px 25px rgba(0,0,0,.3);
+  display: none;
+  max-height: 70%;
+  overflow-y: auto;
+}
 
-    .card-info {
-      font-size: 14px;
-      line-height: 1.55;
-      color: #444;
-    }
+.card-logo {
+  width: 70px;
+  height: 70px;
+  border-radius: 14px;
+  object-fit: contain;
+  background: #f3f3f3;
+  margin-bottom: 10px;
+}
 
-    .buttons {
-      display: grid;
-      gap: 8px;
-      margin-top: 14px;
-    }
+.card-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
 
-    .button {
-      width: 100%;
-      border: 0;
-      border-radius: 11px;
-      padding: 13px;
-      font-size: 15px;
-      font-weight: 700;
-      background: #229ed9;
-      color: white;
-    }
+.card-info {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #444;
+}
 
-    .button.close {
-      background: #eeeeee;
-      color: #222;
-    }
+.buttons {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
 
-    /* Сообщение */
+.button {
+  width: 100%;
+  border: 0;
+  border-radius: 11px;
+  padding: 13px;
+  font-size: 15px;
+  font-weight: 700;
+  background: #229ed9;
+  color: white;
+}
 
-    .empty {
-      display: none;
-      position: absolute;
-      top: 145px;
-      left: 20px;
-      right: 20px;
-      z-index: 8;
-      background: white;
-      border-radius: 14px;
-      padding: 18px;
-      text-align: center;
-      box-shadow: 0 3px 15px rgba(0,0,0,.15);
-    }
+.button.close {
+  background: #eeeeee;
+  color: #222;
+}
 
-  </style>
+/* Форма */
+
+.modal {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0,0,0,.45);
+  display: none;
+  align-items: flex-end;
+}
+
+.modal-content {
+  width: 100%;
+  max-height: 92%;
+  overflow-y: auto;
+  background: white;
+  border-radius: 22px 22px 0 0;
+  padding: 18px;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.form-group {
+  margin-bottom: 11px;
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 11px;
+  padding: 12px;
+  font-size: 15px;
+  outline: none;
+}
+
+.form-textarea {
+  min-height: 75px;
+  resize: none;
+}
+
+.logo-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 14px;
+  object-fit: contain;
+  background: #f1f1f1;
+  display: none;
+  margin-top: 8px;
+}
+
+.pick-location {
+  width: 100%;
+  border: 0;
+  border-radius: 11px;
+  padding: 13px;
+  background: #eeeeee;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.selected-location {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+/* Режим выбора точки */
+
+.pick-mode {
+  position: absolute;
+  top: 140px;
+  left: 15px;
+  right: 15px;
+  z-index: 40;
+  background: white;
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+  box-shadow: 0 3px 15px rgba(0,0,0,.25);
+  display: none;
+}
+
+.empty {
+  display: none;
+  position: absolute;
+  top: 145px;
+  left: 20px;
+  right: 20px;
+  z-index: 8;
+  background: white;
+  border-radius: 14px;
+  padding: 18px;
+  text-align: center;
+  box-shadow: 0 3px 15px rgba(0,0,0,.15);
+}
+</style>
 </head>
 
 <body>
@@ -225,10 +344,6 @@
         🔥 Газ
       </button>
 
-      <button class="category" data-category="logistics">
-        🚚 Логістика
-      </button>
-
       <button class="category" data-category="services">
         🛠 Послуги
       </button>
@@ -241,12 +356,33 @@
   <div id="map"></div>
 
 
+  <div class="map-actions">
+
+    <button
+      class="map-action"
+      onclick="openAddPoint()">
+      ➕ Додати точку
+    </button>
+
+  </div>
+
+
   <button
     class="location-button"
-    onclick="findMe()"
-    title="Моє місцезнаходження">
+    onclick="findMe()">
     ◎
   </button>
+
+
+  <div id="pickMode" class="pick-mode">
+    📍 Натисни на потрібне місце на карті
+    <br><br>
+    <button
+      class="button close"
+      onclick="cancelPick()">
+      Скасувати
+    </button>
+  </div>
 
 
   <div id="empty" class="empty">
@@ -254,13 +390,24 @@
   </div>
 
 
+  <!-- Карточка -->
+
   <div id="card" class="card">
+
+    <img
+      id="cardLogo"
+      class="card-logo"
+      style="display:none">
 
     <div id="cardTitle" class="card-title"></div>
 
     <div id="cardInfo" class="card-info"></div>
 
     <div class="buttons">
+
+      <button id="phoneButton" class="button">
+        📞 ПОЗВОНИТЬ
+      </button>
 
       <button id="routeButton" class="button">
         🧭 ПРОКЛАСТИ МАРШРУТ
@@ -270,13 +417,188 @@
         ✈️ TELEGRAM
       </button>
 
+      <button id="websiteButton" class="button">
+        🌐 САЙТ
+      </button>
+
       <button id="shareButton" class="button">
         ↗️ ПОДІЛИТИСЯ ТОЧКОЮ
       </button>
 
-      <button class="button close" onclick="closeCard()">
+      <button
+        class="button close"
+        onclick="closeCard()">
         Закрити
       </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- Добавление -->
+
+  <div id="addModal" class="modal">
+
+    <div class="modal-content">
+
+      <div class="modal-title">
+        ➕ Додати точку на карту
+      </div>
+
+
+      <div class="form-group">
+
+        <label class="form-label">
+          Тип точки
+        </label>
+
+        <select id="newCategory" class="form-select">
+
+          <option value="manufacturer">
+            🏭 Виробник
+          </option>
+
+          <option value="shop">
+            🏪 Магазин / постачальник
+          </option>
+
+          <option value="tools">
+            🔧 Інструмент
+          </option>
+
+          <option value="gas">
+            🔥 Газ
+          </option>
+
+          <option value="services">
+            🛠 Послуги
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label class="form-label">
+          Назва
+        </label>
+
+        <input
+          id="newName"
+          class="form-input"
+          placeholder="Наприклад: Alkor Draka">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label class="form-label">
+          Адреса
+        </label>
+
+        <input
+          id="newAddress"
+          class="form-input"
+          placeholder="Місто, вулиця, номер">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label class="form-label">
+          Телефон
+        </label>
+
+        <input
+          id="newPhone"
+          class="form-input"
+          type="tel"
+          placeholder="+380...">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label class="form-label">
+          Telegram
+        </label>
+
+        <input
+          id="newTelegram"
+          class="form-input"
+          placeholder="@username або посилання">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label class="form-label">
+          Сайт
+        </label>
+
+        <input
+          id="newWebsite"
+          class="form-input"
+          placeholder="https://...">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label class="form-label">
+          Логотип / фото
+        </label>
+
+        <input
+          id="newLogo"
+          class="form-input"
+          type="file"
+          accept="image/*"
+          onchange="previewLogo(event)">
+
+        <img
+          id="logoPreview"
+          class="logo-preview">
+
+      </div>
+
+
+      <button
+        class="pick-location"
+        onclick="startPickLocation()">
+        📍 Выбрать место на карте
+      </button>
+
+      <div
+        id="selectedLocation"
+        class="selected-location">
+        Координаты пока не выбраны
+      </div>
+
+
+      <div class="buttons">
+
+        <button
+          class="button"
+          onclick="savePoint()">
+          ✅ Добавить точку
+        </button>
+
+        <button
+          class="button close"
+          onclick="closeAddPoint()">
+          Отмена
+        </button>
+
+      </div>
 
     </div>
 
@@ -287,106 +609,163 @@
 
 <script>
 
-  const tg = window.Telegram.WebApp;
+const tg = window.Telegram.WebApp;
 
-  tg.ready();
-  tg.expand();
+tg.ready();
+tg.expand();
 
+let map;
+let userMarker = null;
+let pickMarker = null;
 
-  let map;
-  let userMarker = null;
+let activeCategory = "all";
+let markers = [];
 
-  let activeCategory = "all";
-  let markers = [];
-
-
-  /*
-    НАШІ ТОЧКИ
-
-    Далі цей список перенесемо
-    в окрему базу.
-  */
-
-  const places = [
-
-    {
-      name: "Potolki Everest / EverestComplekt",
-
-      category: "shop",
-      categoryName: "🏪 Постачальник",
-
-      address: "вул. Академіка Булаховського, 2/1, Київ",
-
-      phone: "+380 67 393 99 37",
-
-      telegram: "https://t.me/igor_everest",
-
-      lat: 50.4714,
-      lng: 30.35052
-    },
+let selectedLat = null;
+let selectedLng = null;
 
 
-    {
-      name: "GoodHub",
+/* Существующие точки */
 
-      category: "services",
-      categoryName: "🛠 Послуги для монтажників",
+let places = [
 
-      address: "Вишневе, Київська область",
+  {
+    name: "Potolki Everest / EverestComplekt",
+    category: "shop",
+    categoryName: "🏪 Постачальник",
+    address: "вул. Академіка Булаховського, 2/1, Київ",
+    phone: "+380 67 393 99 37",
+    telegram: "https://t.me/igor_everest",
+    website: "",
+    logo: "",
+    lat: 50.4714,
+    lng: 30.35052
+  },
 
-      phone: "",
-
-      telegram: "",
-
-      lat: 50.387,
-      lng: 30.370
-    }
-
-  ];
-
-
-  function initMap() {
-
-    map = new google.maps.Map(
-      document.getElementById("map"),
-      {
-        center: {
-          lat: 48.5,
-          lng: 31.2
-        },
-
-        zoom: 6,
-
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: false,
-
-        gestureHandling: "greedy"
-      }
-    );
-
-
-    createMarkers();
-
-    setupSearch();
-
-    setupCategories();
-
+  {
+    name: "GoodHub",
+    category: "services",
+    categoryName: "🛠 Послуги для монтажників",
+    address: "Вишневе, Київська область",
+    phone: "",
+    telegram: "",
+    website: "",
+    logo: "",
+    lat: 50.387,
+    lng: 30.370
   }
 
-
-  function createMarkers() {
-
-    markers.forEach(item => {
-      item.marker.setMap(null);
-    });
-
-    markers = [];
+];
 
 
-    places.forEach(place => {
+/* Загружаем добавленные точки */
 
-      const marker = new google.maps.Marker({
+try {
+
+  const saved =
+    JSON.parse(
+      localStorage.getItem("ceilingPlaces") || "[]"
+    );
+
+  places = places.concat(saved);
+
+} catch(e) {}
+
+
+/* Карта */
+
+function initMap() {
+
+  map = new google.maps.Map(
+    document.getElementById("map"),
+    {
+      center: {
+        lat: 48.5,
+        lng: 31.2
+      },
+
+      zoom: 6,
+
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+
+      gestureHandling: "greedy"
+    }
+  );
+
+
+  map.addListener(
+    "click",
+    function(event) {
+
+      if (
+        document
+          .getElementById("pickMode")
+          .style.display === "block"
+      ) {
+
+        selectedLat =
+          event.latLng.lat();
+
+        selectedLng =
+          event.latLng.lng();
+
+
+        if (pickMarker) {
+          pickMarker.setMap(null);
+        }
+
+
+        pickMarker =
+          new google.maps.Marker({
+            position: event.latLng,
+            map: map,
+            title: "Нова точка"
+          });
+
+
+        document
+          .getElementById("selectedLocation")
+          .textContent =
+            "📍 " +
+            selectedLat.toFixed(6) +
+            ", " +
+            selectedLng.toFixed(6);
+
+
+        document
+          .getElementById("pickMode")
+          .style.display = "none";
+
+      }
+
+    }
+  );
+
+
+  createMarkers();
+  setupSearch();
+  setupCategories();
+
+}
+
+
+/* Маркеры */
+
+function createMarkers() {
+
+  markers.forEach(item => {
+    item.marker.setMap(null);
+  });
+
+  markers = [];
+
+
+  places.forEach(place => {
+
+    const marker =
+      new google.maps.Marker({
 
         position: {
           lat: place.lat,
@@ -400,32 +779,39 @@
       });
 
 
-      marker.addListener(
-        "click",
-        () => openCard(place)
-      );
+    marker.addListener(
+      "click",
+      () => openCard(place)
+    );
 
 
-      markers.push({
-        place: place,
-        marker: marker
-      });
-
+    markers.push({
+      place: place,
+      marker: marker
     });
 
-  }
+  });
+
+}
 
 
-  function setupCategories() {
+/* Категории */
 
-    document.querySelectorAll(".category")
-      .forEach(button => {
+function setupCategories() {
 
-        button.addEventListener("click", () => {
+  document
+    .querySelectorAll(".category")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
 
           document
             .querySelectorAll(".category")
-            .forEach(b => b.classList.remove("active"));
+            .forEach(
+              b => b.classList.remove("active")
+            );
 
           button.classList.add("active");
 
@@ -434,269 +820,564 @@
 
           filterPlaces();
 
-        });
-
-      });
-
-  }
-
-
-  function setupSearch() {
-
-    document
-      .getElementById("search")
-      .addEventListener(
-        "input",
-        filterPlaces
+        }
       );
-
-  }
-
-
-  function filterPlaces() {
-
-    const query =
-      document
-        .getElementById("search")
-        .value
-        .toLowerCase()
-        .trim();
-
-
-    let visible = 0;
-
-
-    markers.forEach(item => {
-
-      const place = item.place;
-
-
-      const categoryOK =
-        activeCategory === "all" ||
-        place.category === activeCategory;
-
-
-      const searchText =
-        (
-          place.name +
-          " " +
-          place.address +
-          " " +
-          place.categoryName
-        ).toLowerCase();
-
-
-      const searchOK =
-        !query ||
-        searchText.includes(query);
-
-
-      if (categoryOK && searchOK) {
-
-        item.marker.setMap(map);
-
-        visible++;
-
-      } else {
-
-        item.marker.setMap(null);
-
-      }
 
     });
 
+}
 
+
+/* Поиск */
+
+function setupSearch() {
+
+  document
+    .getElementById("search")
+    .addEventListener(
+      "input",
+      filterPlaces
+    );
+
+}
+
+
+function filterPlaces() {
+
+  const query =
     document
-      .getElementById("empty")
-      .style.display =
-        visible === 0 ? "block" : "none";
-
-  }
-
-
-  function openCard(place) {
-
-    document
-      .getElementById("cardTitle")
-      .textContent =
-        place.name;
+      .getElementById("search")
+      .value
+      .toLowerCase()
+      .trim();
 
 
-    document
-      .getElementById("cardInfo")
-      .innerHTML =
-
-      `<b>${place.categoryName}</b><br>
-       📍 ${place.address}<br>
-       ${place.phone ? "📞 " + place.phone : ""}`;
+  let visible = 0;
 
 
-    document
-      .getElementById("card")
-      .style.display =
-        "block";
+  markers.forEach(item => {
+
+    const place = item.place;
 
 
-    document
-      .getElementById("routeButton")
-      .onclick = () => {
-
-        const url =
-          "https://www.google.com/maps/dir/?api=1" +
-          "&destination=" +
-          place.lat +
-          "," +
-          place.lng;
-
-        tg.openLink(url);
-
-      };
+    const categoryOK =
+      activeCategory === "all" ||
+      place.category === activeCategory;
 
 
-    document
-      .getElementById("telegramButton")
-      .onclick = () => {
-
-        if (place.telegram) {
-
-          tg.openTelegramLink(
-            place.telegram
-          );
-
-        } else {
-
-          tg.showAlert(
-            "Telegram для цієї точки поки не додано."
-          );
-
-        }
-
-      };
+    const searchText =
+      (
+        place.name +
+        " " +
+        place.address +
+        " " +
+        place.categoryName
+      ).toLowerCase();
 
 
-    document
-      .getElementById("shareButton")
-      .onclick = () => {
-
-        const text =
-          "📍 " +
-          place.name +
-          "\n" +
-          place.address +
-          "\n\n" +
-          "🗺 Карта натяжних стель України";
+    const searchOK =
+      !query ||
+      searchText.includes(query);
 
 
-        const shareUrl =
-          "https://t.me/share/url?url=" +
+    if (categoryOK && searchOK) {
 
-          encodeURIComponent(
-            "https://wedencop-hub.github.io/ceilings-ukraine-map/"
-          ) +
+      item.marker.setMap(map);
+      visible++;
 
-          "&text=" +
+    } else {
 
-          encodeURIComponent(text);
+      item.marker.setMap(null);
 
-
-        tg.openTelegramLink(
-          shareUrl
-        );
-
-      };
-
-  }
-
-
-  function closeCard() {
-
-    document
-      .getElementById("card")
-      .style.display =
-        "none";
-
-  }
-
-
-  function findMe() {
-
-    if (!navigator.geolocation) {
-
-      tg.showAlert(
-        "Ваш браузер не підтримує геолокацію."
-      );
-
-      return;
     }
 
-
-    navigator.geolocation.getCurrentPosition(
-
-      position => {
-
-        const lat =
-          position.coords.latitude;
-
-        const lng =
-          position.coords.longitude;
+  });
 
 
-        const location = {
-          lat: lat,
-          lng: lng
-        };
+  document
+    .getElementById("empty")
+    .style.display =
+      visible === 0
+        ? "block"
+        : "none";
+
+}
 
 
-        map.setCenter(location);
+/* Карточка */
 
-        map.setZoom(13);
+function openCard(place) {
+
+  document
+    .getElementById("cardTitle")
+    .textContent =
+      place.name;
 
 
-        if (userMarker) {
-          userMarker.setMap(null);
-        }
+  document
+    .getElementById("cardInfo")
+    .innerHTML =
+
+      `<b>${place.categoryName}</b><br>
+       📍 ${place.address}`;
 
 
-        userMarker =
-          new google.maps.Marker({
+  const logo =
+    document.getElementById("cardLogo");
 
-            position: location,
 
-            map: map,
+  if (place.logo) {
 
-            title: "Моє місцезнаходження",
+    logo.src = place.logo;
+    logo.style.display = "block";
 
-            icon: {
-              path:
-                google.maps.SymbolPath.CIRCLE,
+  } else {
 
-              scale: 9,
+    logo.style.display = "none";
 
-              fillColor: "#229ed9",
+  }
 
-              fillOpacity: 1,
 
-              strokeColor: "#ffffff",
+  const phoneButton =
+    document.getElementById("phoneButton");
 
-              strokeWeight: 3
 
-            }
+  if (place.phone) {
 
-          });
+    phoneButton.style.display = "block";
 
-      },
+    phoneButton.onclick = () => {
 
-      () => {
+      window.location.href =
+        "tel:" + place.phone;
 
-        tg.showAlert(
-          "Не вдалося отримати ваше місцезнаходження."
-        );
+    };
+
+  } else {
+
+    phoneButton.style.display = "none";
+
+  }
+
+
+  document
+    .getElementById("routeButton")
+    .onclick = () => {
+
+      const url =
+        "https://www.google.com/maps/dir/?api=1" +
+        "&destination=" +
+        place.lat +
+        "," +
+        place.lng;
+
+      tg.openLink(url);
+
+    };
+
+
+  const telegramButton =
+    document.getElementById("telegramButton");
+
+
+  if (place.telegram) {
+
+    telegramButton.style.display = "block";
+
+    telegramButton.onclick = () => {
+
+      let link =
+        place.telegram;
+
+      if (
+        !link.startsWith("http")
+      ) {
+
+        link =
+          "https://t.me/" +
+          link.replace("@", "");
 
       }
 
-    );
+      tg.openLink(link);
+
+    };
+
+  } else {
+
+    telegramButton.style.display = "none";
 
   }
+
+
+  const websiteButton =
+    document.getElementById("websiteButton");
+
+
+  if (place.website) {
+
+    websiteButton.style.display = "block";
+
+    websiteButton.onclick = () => {
+
+      tg.openLink(
+        place.website
+      );
+
+    };
+
+  } else {
+
+    websiteButton.style.display = "none";
+
+  }
+
+
+  document
+    .getElementById("shareButton")
+    .onclick = () => {
+
+      const text =
+        "📍 " +
+        place.name +
+        "\n" +
+        place.address +
+        "\n\n" +
+        "🗺 Карта натяжних стель України";
+
+
+      const shareUrl =
+        "https://t.me/share/url?url=" +
+        encodeURIComponent(
+          "https://wedencop-hub.github.io/ceilings-ukraine-map/"
+        ) +
+        "&text=" +
+        encodeURIComponent(text);
+
+
+      tg.openTelegramLink(
+        shareUrl
+      );
+
+    };
+
+
+  document
+    .getElementById("card")
+    .style.display =
+      "block";
+
+}
+
+
+function closeCard() {
+
+  document
+    .getElementById("card")
+    .style.display =
+      "none";
+
+}
+
+
+/* Добавление точки */
+
+function openAddPoint() {
+
+  document
+    .getElementById("addModal")
+    .style.display =
+      "flex";
+
+}
+
+
+function closeAddPoint() {
+
+  document
+    .getElementById("addModal")
+    .style.display =
+      "none";
+
+  cancelPick();
+
+}
+
+
+function startPickLocation() {
+
+  document
+    .getElementById("addModal")
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById("pickMode")
+    .style.display =
+      "block";
+
+}
+
+
+function cancelPick() {
+
+  document
+    .getElementById("pickMode")
+    .style.display =
+      "none";
+
+}
+
+
+function previewLogo(event) {
+
+  const file =
+    event.target.files[0];
+
+  if (!file) return;
+
+
+  const reader =
+    new FileReader();
+
+
+  reader.onload =
+    function(e) {
+
+      const preview =
+        document.getElementById(
+          "logoPreview"
+        );
+
+      preview.src =
+        e.target.result;
+
+      preview.style.display =
+        "block";
+
+    };
+
+
+  reader.readAsDataURL(file);
+
+}
+
+
+/* Сохранение */
+
+function savePoint() {
+
+  const name =
+    document
+      .getElementById("newName")
+      .value
+      .trim();
+
+
+  if (!name) {
+
+    tg.showAlert(
+      "Вкажіть назву точки."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    selectedLat === null ||
+    selectedLng === null
+  ) {
+
+    tg.showAlert(
+      "Спочатку виберіть місце на карті."
+    );
+
+    return;
+
+  }
+
+
+  const category =
+    document
+      .getElementById("newCategory")
+      .value;
+
+
+  const categoryNames = {
+
+    manufacturer:
+      "🏭 Виробник",
+
+    shop:
+      "🏪 Магазин / постачальник",
+
+    tools:
+      "🔧 Інструмент",
+
+    gas:
+      "🔥 Газ",
+
+    services:
+      "🛠 Послуги"
+
+  };
+
+
+  const logo =
+    document
+      .getElementById("logoPreview")
+      .src || "";
+
+
+  const newPlace = {
+
+    name: name,
+
+    category: category,
+
+    categoryName:
+      categoryNames[category],
+
+    address:
+      document
+        .getElementById("newAddress")
+        .value
+        .trim(),
+
+    phone:
+      document
+        .getElementById("newPhone")
+        .value
+        .trim(),
+
+    telegram:
+      document
+        .getElementById("newTelegram")
+        .value
+        .trim(),
+
+    website:
+      document
+        .getElementById("newWebsite")
+        .value
+        .trim(),
+
+    logo: logo,
+
+    lat: selectedLat,
+    lng: selectedLng
+
+  };
+
+
+  places.push(newPlace);
+
+
+  /*
+    Пока сохраняем локально.
+    На следующем этапе подключим
+    общую базу, чтобы точка была
+    видна ВСЕМ пользователям.
+  */
+
+  const customPlaces =
+    places.slice(2);
+
+  localStorage.setItem(
+    "ceilingPlaces",
+    JSON.stringify(customPlaces)
+  );
+
+
+  createMarkers();
+
+
+  closeAddPoint();
+
+
+  map.setCenter({
+    lat: selectedLat,
+    lng: selectedLng
+  });
+
+  map.setZoom(14);
+
+
+  tg.showAlert(
+    "Точку додано на карту."
+  );
+
+}
+
+
+/* Моё местоположение */
+
+function findMe() {
+
+  if (!navigator.geolocation) {
+
+    tg.showAlert(
+      "Ваш браузер не підтримує геолокацію."
+    );
+
+    return;
+
+  }
+
+
+  navigator.geolocation.getCurrentPosition(
+
+    position => {
+
+      const location = {
+
+        lat:
+          position.coords.latitude,
+
+        lng:
+          position.coords.longitude
+
+      };
+
+
+      map.setCenter(location);
+      map.setZoom(13);
+
+
+      if (userMarker) {
+        userMarker.setMap(null);
+      }
+
+
+      userMarker =
+        new google.maps.Marker({
+
+          position: location,
+
+          map: map,
+
+          title:
+            "Моє місцезнаходження"
+
+        });
+
+    },
+
+
+    () => {
+
+      tg.showAlert(
+        "Не вдалося отримати ваше місцезнаходження."
+      );
+
+    }
+
+  );
+
+}
 
 </script>
 
