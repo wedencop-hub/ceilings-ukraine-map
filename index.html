@@ -505,6 +505,13 @@ html, body {
           class="form-input"
           placeholder="Місто, вулиця, номер">
 
+        <button
+          type="button"
+          class="pick-location"
+          onclick="findAddress()">
+          🔎 Знайти адресу на карті
+        </button>
+
       </div>
 
 
@@ -615,6 +622,7 @@ tg.ready();
 tg.expand();
 
 let map;
+let geocoder;
 let userMarker = null;
 let pickMarker = null;
 
@@ -676,6 +684,8 @@ try {
 
 function initMap() {
 
+  geocoder = new google.maps.Geocoder();
+
   map = new google.maps.Map(
     document.getElementById("map"),
     {
@@ -705,34 +715,10 @@ function initMap() {
           .style.display === "block"
       ) {
 
-        selectedLat =
-          event.latLng.lat();
-
-        selectedLng =
-          event.latLng.lng();
-
-
-        if (pickMarker) {
-          pickMarker.setMap(null);
-        }
-
-
-        pickMarker =
-          new google.maps.Marker({
-            position: event.latLng,
-            map: map,
-            title: "Нова точка"
-          });
-
-
-        document
-          .getElementById("selectedLocation")
-          .textContent =
-            "📍 " +
-            selectedLat.toFixed(6) +
-            ", " +
-            selectedLng.toFixed(6);
-
+        setSelectedLocation(
+          event.latLng.lat(),
+          event.latLng.lng()
+        );
 
         document
           .getElementById("pickMode")
@@ -1111,12 +1097,118 @@ function startPickLocation() {
     .style.display =
       "none";
 
-
   document
     .getElementById("pickMode")
     .style.display =
       "block";
 
+}
+
+
+function setSelectedLocation(lat, lng) {
+
+  selectedLat = lat;
+  selectedLng = lng;
+
+  if (pickMarker) {
+    pickMarker.setMap(null);
+  }
+
+  pickMarker =
+    new google.maps.Marker({
+      position: {
+        lat: lat,
+        lng: lng
+      },
+      map: map,
+      title: "Нова точка",
+      draggable: true
+    });
+
+  pickMarker.addListener(
+    "dragend",
+    function(event) {
+      setSelectedLocation(
+        event.latLng.lat(),
+        event.latLng.lng()
+      );
+    }
+  );
+
+  document
+    .getElementById("selectedLocation")
+    .textContent =
+      "📍 " +
+      lat.toFixed(6) +
+      ", " +
+      lng.toFixed(6);
+
+  map.setCenter({
+    lat: lat,
+    lng: lng
+  });
+
+  if (map.getZoom() < 14) {
+    map.setZoom(14);
+  }
+}
+
+
+function findAddress() {
+
+  const address =
+    document
+      .getElementById("newAddress")
+      .value
+      .trim();
+
+  if (!address) {
+    tg.showAlert("Введіть адресу.");
+    return;
+  }
+
+  if (!geocoder) {
+    tg.showAlert("Пошук адреси ще завантажується. Спробуйте ще раз.");
+    return;
+  }
+
+  geocoder.geocode(
+    {
+      address: address,
+      region: "UA"
+    },
+    function(results, status) {
+
+      if (
+        status !== "OK" ||
+        !results ||
+        !results.length
+      ) {
+        tg.showAlert(
+          "Не вдалося знайти цю адресу. Перевірте написання."
+        );
+        return;
+      }
+
+      const location =
+        results[0].geometry.location;
+
+      setSelectedLocation(
+        location.lat(),
+        location.lng()
+      );
+
+      const formattedAddress =
+        results[0].formatted_address;
+
+      if (formattedAddress) {
+        document
+          .getElementById("newAddress")
+          .value =
+            formattedAddress;
+      }
+    }
+  );
 }
 
 
