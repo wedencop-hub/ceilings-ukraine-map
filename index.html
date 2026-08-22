@@ -330,335 +330,376 @@ html, body {
 
 <div id="app">
 
-  <div class="top">
+<div class="top">
 
-    <div class="title">
-      🗺 Карта натяжних стель України
-    </div>
+<div class="title">
+🗺 Карта натяжних стель України
+</div>
 
-    <input
-      id="search"
-      class="search"
-      type="search"
-      placeholder="🔍 Пошук міста, компанії..."
-    >
+<input
+id="search"
+class="search"
+type="search"
+placeholder="🔍 Пошук міста, компанії..."
+>
 
-    <div class="categories">
+<div class="categories">
 
-      <button class="category active" data-category="all">
-        Всі
-      </button>
+<button class="category active" data-category="all">
+Всі
+</button>
 
-      <button class="category" data-category="manufacturer">
-        🏭 Виробники
-      </button>
+<button class="category" data-category="manufacturer">
+🏭 Виробники
+</button>
 
-      <button class="category" data-category="shop">
-        🏪 Магазини
-      </button>
+<button class="category" data-category="shop">
+🏪 Магазини
+</button>
 
-      <button class="category" data-category="tools">
-        🔧 Інструмент
-      </button>
+<button class="category" data-category="tools">
+🔧 Інструмент
+</button>
 
-      <button class="category" data-category="gas">
-        🔥 Газ
-      </button>
+<button class="category" data-category="gas">
+🔥 Газ
+</button>
 
-      <button class="category" data-category="services">
-        🛠 Послуги
-      </button>
+<button class="category" data-category="services">
+🛠 Послуги
+</button>
 
-    </div>
+</div>
+</div>
 
-  </div>
 
+<div id="map"></div>
 
-  <div id="map"></div>
 
+<div class="map-actions">
 
-  <div class="map-actions">
+<button
+class="map-action"
+onclick="openAddPoint()">
+➕ Додати точку
+</button>
 
-    <button
-      class="map-action"
-      onclick="openAddPoint()">
-      ➕ Додати точку
-    </button>
+<button
+id="adminMapButton"
+class="map-action"
+style="display:none;"
+onclick="openAdmin()">
+👑 Адмін
+</button>
 
-  </div>
+</div>
 
 
-  <button
-    class="location-button"
-    onclick="findMe()">
-    ◎
-  </button>
+<button
+class="location-button"
+onclick="findMe()">
+◎
+</button>
 
 
-  <div id="pickMode" class="pick-mode">
+<div id="pickMode" class="pick-mode">
 
-    📍 Натисни на потрібне місце на карті
+📍 Натисни на потрібне місце на карті
 
-    <br><br>
+<br><br>
 
-    <button
-      class="button close"
-      onclick="cancelPick()">
-      Скасувати
-    </button>
+<button
+class="button close"
+onclick="cancelPick()">
+Скасувати
+</button>
 
-  </div>
+</div>
 
 
-  <div id="empty" class="empty">
-    Нічого не знайдено
-  </div>
+<div id="empty" class="empty">
+Нічого не знайдено
+</div>
 
 
-  <!-- КАРТОЧКА -->
+<div id="card" class="card">
 
-  <div id="card" class="card">
+<img
+id="cardLogo"
+class="card-logo"
+style="display:none">
 
-    <img
-      id="cardLogo"
-      class="card-logo"
-      style="display:none">
+<div id="cardTitle" class="card-title"></div>
 
-    <div id="cardTitle" class="card-title"></div>
+<div id="cardInfo" class="card-info"></div>
 
-    <div id="cardInfo" class="card-info"></div>
+<div class="buttons">
 
-    <div class="buttons">
+<button id="phoneButton" class="button">
+📞 ПОЗВОНИТЬ
+</button>
 
-      <button id="phoneButton" class="button">
-        📞 ПОЗВОНИТЬ
-      </button>
+<button id="routeButton" class="button">
+🧭 ПРОКЛАСТИ МАРШРУТ
+</button>
 
-      <button id="routeButton" class="button">
-        🧭 ПРОКЛАСТИ МАРШРУТ
-      </button>
+<button id="telegramButton" class="button">
+✈️ TELEGRAM
+</button>
 
-      <button id="telegramButton" class="button">
-        ✈️ TELEGRAM
-      </button>
+<button id="websiteButton" class="button">
+🌐 САЙТ
+</button>
 
-      <button id="websiteButton" class="button">
-        🌐 САЙТ
-      </button>
+<button id="shareButton" class="button">
+↗️ ПОДІЛИТИСЯ ТОЧКОЮ
+</button>
 
-      <button id="shareButton" class="button">
-        ↗️ ПОДІЛИТИСЯ ТОЧКОЮ
-      </button>
+<button
+id="editButton"
+class="button"
+style="display:none;background:#666;">
+✏️ РЕДАГУВАТИ
+</button>
 
-      <button
-        class="button close"
-        onclick="closeCard()">
-        Закрити
-      </button>
+<button
+id="deleteButton"
+class="button"
+style="display:none;background:#d93025;">
+🗑 ВИДАЛИТИ ТОЧКУ
+</button>
 
-    </div>
+<button
+class="button close"
+onclick="closeCard()">
+Закрити
+</button>
 
-  </div>
+</div>
+</div>
 
 
-  <!-- ДОБАВЛЕНИЕ ТОЧКИ -->
+<div id="addModal" class="modal">
 
-  <div id="addModal" class="modal">
+<div class="modal-content">
 
-    <div class="modal-content">
+<div class="modal-title">
+➕ Додати точку на карту
+</div>
 
-      <div class="modal-title">
-        ➕ Додати точку на карту
-      </div>
 
+<div class="form-group">
 
-      <div class="form-group">
+<label class="form-label">
+Тип точки
+</label>
 
-        <label class="form-label">
-          Тип точки
-        </label>
+<select id="newCategory" class="form-select">
 
-        <select id="newCategory" class="form-select">
+<option value="manufacturer">
+🏭 Виробник
+</option>
 
-          <option value="manufacturer">
-            🏭 Виробник
-          </option>
+<option value="shop">
+🏪 Магазин / постачальник
+</option>
 
-          <option value="shop">
-            🏪 Магазин / постачальник
-          </option>
+<option value="tools">
+🔧 Інструмент
+</option>
 
-          <option value="tools">
-            🔧 Інструмент
-          </option>
+<option value="gas">
+🔥 Газ
+</option>
 
-          <option value="gas">
-            🔥 Газ
-          </option>
+<option value="services">
+🛠 Послуги
+</option>
 
-          <option value="services">
-            🛠 Послуги
-          </option>
+</select>
+</div>
 
-        </select>
 
-      </div>
+<div class="form-group">
 
+<label class="form-label">
+Назва
+</label>
 
-      <div class="form-group">
+<input
+id="newName"
+class="form-input"
+placeholder="Наприклад: Alkor Draka">
 
-        <label class="form-label">
-          Назва
-        </label>
+</div>
 
-        <input
-          id="newName"
-          class="form-input"
-          placeholder="Наприклад: Alkor Draka">
 
-      </div>
+<div class="form-group">
 
+<label class="form-label">
+Адреса
+</label>
 
-      <div class="form-group">
+<input
+id="newAddress"
+class="form-input"
+placeholder="Місто, вулиця, номер">
 
-        <label class="form-label">
-          Адреса
-        </label>
+<button
+type="button"
+class="pick-location"
+onclick="findAddress()">
+🔎 Знайти адресу на карті
+</button>
 
-        <input
-          id="newAddress"
-          class="form-input"
-          placeholder="Місто, вулиця, номер">
+<div
+id="addressResults"
+style="display:none;margin-top:8px;">
+</div>
 
-        <button
-          type="button"
-          class="pick-location"
-          onclick="findAddress()">
+</div>
 
-          🔎 Знайти адресу на карті
 
-        </button>
+<div class="form-group">
 
-        <div
-          id="addressResults"
-          style="display:none;margin-top:8px;">
-        </div>
+<label class="form-label">
+Телефон
+</label>
 
-      </div>
+<input
+id="newPhone"
+class="form-input"
+type="tel"
+placeholder="+380...">
 
+</div>
 
-      <div class="form-group">
 
-        <label class="form-label">
-          Телефон
-        </label>
+<div class="form-group">
 
-        <input
-          id="newPhone"
-          class="form-input"
-          type="tel"
-          placeholder="+380...">
+<label class="form-label">
+Telegram
+</label>
 
-      </div>
+<input
+id="newTelegram"
+class="form-input"
+placeholder="@username або посилання">
 
+</div>
 
-      <div class="form-group">
 
-        <label class="form-label">
-          Telegram
-        </label>
+<div class="form-group">
 
-        <input
-          id="newTelegram"
-          class="form-input"
-          placeholder="@username або посилання">
+<label class="form-label">
+Сайт
+</label>
 
-      </div>
+<input
+id="newWebsite"
+class="form-input"
+placeholder="https://...">
 
+</div>
 
-      <div class="form-group">
 
-        <label class="form-label">
-          Сайт
-        </label>
+<div class="form-group">
 
-        <input
-          id="newWebsite"
-          class="form-input"
-          placeholder="https://...">
+<label class="form-label">
+Логотип / фото
+</label>
 
-      </div>
+<input
+id="newLogo"
+class="form-input"
+type="file"
+accept="image/*"
+onchange="previewLogo(event)">
 
+<img
+id="logoPreview"
+class="logo-preview">
 
-      <div class="form-group">
+</div>
 
-        <label class="form-label">
-          Логотип / фото
-        </label>
 
-        <input
-          id="newLogo"
-          class="form-input"
-          type="file"
-          accept="image/*"
-          onchange="previewLogo(event)">
+<button
+class="pick-location"
+onclick="startPickLocation()">
+📍 Вибрати місце на карті
+</button>
 
-        <img
-          id="logoPreview"
-          class="logo-preview">
 
-      </div>
+<div
+id="selectedLocation"
+class="selected-location">
+Координати поки не вибрані
+</div>
 
 
-      <button
-        class="pick-location"
-        onclick="startPickLocation()">
+<div class="buttons">
 
-        📍 Вибрати місце на карті
+<button
+class="button"
+onclick="savePoint()">
+✅ Додати точку
+</button>
 
-      </button>
+<button
+class="button close"
+onclick="closeAddPoint()">
+Відміна
+</button>
 
+</div>
 
-      <div
-        id="selectedLocation"
-        class="selected-location">
+</div>
+</div>
 
-        Координати поки не вибрані
 
-      </div>
+<div id="adminModal" class="modal">
 
+<div class="modal-content">
 
-      <div class="buttons">
+<div class="modal-title">
+👑 Адміністрування
+</div>
 
-        <button
-          class="button"
-          onclick="savePoint()">
+<div id="adminStatus" class="selected-location">
+Режим адміністратора
+</div>
 
-          ✅ Додати точку
+<div class="buttons">
 
-        </button>
+<button
+class="button"
+onclick="openPending()">
+⏳ Заявки на модерацію
+</button>
 
+<button
+class="button close"
+onclick="closeAdmin()">
+Закрити
+</button>
 
-        <button
-          class="button close"
-          onclick="closeAddPoint()">
+</div>
 
-          Відміна
+<div
+id="pendingList"
+style="margin-top:14px;">
+</div>
 
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
+</div>
+</div>
 
 </div>
 
 
 <script>
 
-const tg = window.Telegram.WebApp;
+const tg =
+window.Telegram.WebApp;
 
 tg.ready();
 tg.expand();
@@ -678,1293 +719,1833 @@ let selectedLat = null;
 
 let selectedLng = null;
 
+let currentPlace = null;
+
+let editingPlaceId = null;
+
+
+/*
+ВАЖНО:
+
+После подключения Telegram-бота сюда будет
+поставлен твой реальный Telegram ID.
+
+Пока оставляем заглушку.
+*/
+
+const ADMIN_IDS = [
+"YOUR_TELEGRAM_ID"
+];
+
+
+let pendingPlaces = [];
+
+
+try {
+
+pendingPlaces =
+JSON.parse(
+localStorage.getItem(
+"ceilingPendingPlaces"
+) || "[]"
+);
+
+} catch(e) {
+
+pendingPlaces = [];
+
+}
+
 
 /* СУЩЕСТВУЮЩИЕ ТОЧКИ */
 
 let places = [
 
-  {
-    name: "Potolki Everest / EverestComplekt",
-    category: "shop",
-    categoryName: "🏪 Постачальник",
-    address: "вул. Академіка Булаховського, 2/1, Київ",
-    phone: "+380 67 393 99 37",
-    telegram: "https://t.me/igor_everest",
-    website: "",
-    logo: "",
-    lat: 50.4714,
-    lng: 30.35052
-  },
+{
+name:
+"Potolki Everest / EverestComplekt",
+
+category:
+"shop",
+
+categoryName:
+"🏪 Постачальник",
+
+address:
+"вул. Академіка Булаховського, 2/1, Київ",
+
+phone:
+"+380 67 393 99 37",
+
+telegram:
+"https://t.me/igor_everest",
+
+website:
+"",
+
+logo:
+"",
+
+lat:
+50.4714,
+
+lng:
+30.35052
+
+},
 
 
-  {
-    name: "GoodHub",
-    category: "services",
-    categoryName: "🛠 Послуги для монтажників",
-    address: "Вишневе, Київська область",
-    phone: "",
-    telegram: "",
-    website: "",
-    logo: "",
-    lat: 50.387,
-    lng: 30.370
-  }
+{
+name:
+"GoodHub",
+
+category:
+"services",
+
+categoryName:
+"🛠 Послуги для монтажників",
+
+address:
+"Вишневе, Київська область",
+
+phone:
+"",
+
+telegram:
+"",
+
+website:
+"",
+
+logo:
+"",
+
+lat:
+50.387,
+
+lng:
+30.370
+
+}
 
 ];
 
 
-/* СОХРАНЁННЫЕ ЛОКАЛЬНЫЕ ТОЧКИ */
-
 try {
 
-  const saved =
-    JSON.parse(
-      localStorage.getItem("ceilingPlaces") || "[]"
-    );
+const saved =
+JSON.parse(
+localStorage.getItem(
+"ceilingPlaces"
+) || "[]"
+);
 
-  places =
-    places.concat(saved);
+places =
+places.concat(saved);
 
 } catch(e) {}
 
 
-/* ИНИЦИАЛИЗАЦИЯ КАРТЫ */
+/* ИНИЦИАЛИЗАЦИЯ */
 
 function initMap() {
 
-  map =
-    new google.maps.Map(
-      document.getElementById("map"),
-      {
+map =
+new google.maps.Map(
+document.getElementById("map"),
+{
 
-        center: {
-          lat: 48.5,
-          lng: 31.2
-        },
+center:{
+lat:48.5,
+lng:31.2
+},
 
-        zoom: 6,
+zoom:6,
 
-        mapTypeControl: false,
+mapTypeControl:false,
 
-        streetViewControl: false,
+streetViewControl:false,
 
-        fullscreenControl: false,
+fullscreenControl:false,
 
-        gestureHandling: "greedy"
+gestureHandling:"greedy"
 
-      }
-    );
-
-
-  map.addListener(
-    "click",
-    function(event) {
-
-      if (
-        document
-          .getElementById("pickMode")
-          .style.display === "block"
-      ) {
-
-        setManualLocation(
-          event.latLng
-        );
-
-      }
-
-    }
-  );
+});
 
 
-  createMarkers();
+map.addListener(
+"click",
+function(event){
 
-  setupSearch();
+if(
+document
+.getElementById("pickMode")
+.style.display === "block"
+){
 
-  setupCategories();
+setManualLocation(
+event.latLng
+);
+
+}
+
+});
+
+
+createMarkers();
+
+setupSearch();
+
+setupCategories();
+
+updateAdminButton();
 
 }
 
 
-/* РУЧНАЯ УСТАНОВКА ТОЧКИ */
+/* РУЧНАЯ УСТАНОВКА */
 
 function setManualLocation(
-  latLng
-) {
+latLng
+){
 
-  selectedLat =
-    latLng.lat();
+selectedLat =
+latLng.lat();
 
-  selectedLng =
-    latLng.lng();
-
-
-  if (pickMarker) {
-
-    pickMarker.setMap(null);
-
-  }
+selectedLng =
+latLng.lng();
 
 
-  pickMarker =
-    new google.maps.Marker({
+if(pickMarker){
 
-      position: latLng,
+pickMarker.setMap(null);
 
-      map: map,
-
-      title: "Нова точка",
-
-      draggable: true
-
-    });
+}
 
 
-  pickMarker.addListener(
-    "dragend",
-    function() {
+pickMarker =
+new google.maps.Marker({
 
-      const p =
-        pickMarker.getPosition();
+position:latLng,
 
+map:map,
 
-      selectedLat =
-        p.lat();
+title:"Нова точка",
 
-      selectedLng =
-        p.lng();
+draggable:true
 
-
-      document
-        .getElementById(
-          "selectedLocation"
-        )
-        .textContent =
-
-          "📍 " +
-          selectedLat.toFixed(6) +
-          ", " +
-          selectedLng.toFixed(6);
-
-    }
-  );
+});
 
 
-  document
-    .getElementById(
-      "selectedLocation"
-    )
-    .textContent =
+pickMarker.addListener(
+"dragend",
+function(){
 
-      "📍 " +
-      selectedLat.toFixed(6) +
-      ", " +
-      selectedLng.toFixed(6);
+const p =
+pickMarker.getPosition();
 
+selectedLat =
+p.lat();
 
-  document
-    .getElementById(
-      "pickMode"
-    )
-    .style.display = "none";
+selectedLng =
+p.lng();
 
 
-  map.setCenter(latLng);
+document
+.getElementById(
+"selectedLocation"
+)
+.textContent =
+"📍 " +
+selectedLat.toFixed(6) +
+", " +
+selectedLng.toFixed(6);
 
-  map.setZoom(17);
+}
+);
+
+
+document
+.getElementById(
+"selectedLocation"
+)
+.textContent =
+"📍 " +
+selectedLat.toFixed(6) +
+", " +
+selectedLng.toFixed(6);
+
+
+document
+.getElementById(
+"pickMode"
+)
+.style.display =
+"none";
+
+
+map.setCenter(
+latLng
+);
+
+map.setZoom(
+17
+);
 
 }
 
 
 /* МАРКЕРЫ */
 
-function createMarkers() {
+function createMarkers(){
 
-  markers.forEach(
-    item => {
+markers.forEach(
+item=>{
+item.marker.setMap(null);
+}
+);
 
-      item.marker.setMap(null);
-
-    }
-  );
-
-
-  markers = [];
+markers=[];
 
 
-  places.forEach(
-    place => {
+places.forEach(
+place=>{
 
-      const marker =
-        new google.maps.Marker({
+const marker =
+new google.maps.Marker({
 
-          position: {
+position:{
+lat:place.lat,
+lng:place.lng
+},
 
-            lat: place.lat,
+map:map,
 
-            lng: place.lng
+title:place.name
 
-          },
-
-          map: map,
-
-          title: place.name
-
-        });
+});
 
 
-      marker.addListener(
-        "click",
-        () => openCard(place)
-      );
+marker.addListener(
+"click",
+()=>{
+openCard(place)
+}
+);
 
 
-      markers.push({
+markers.push({
+place:place,
+marker:marker
+});
 
-        place: place,
-
-        marker: marker
-
-      });
-
-    }
-  );
+}
+);
 
 }
 
 
 /* КАТЕГОРИИ */
 
-function setupCategories() {
+function setupCategories(){
 
-  document
-    .querySelectorAll(".category")
-    .forEach(
-      button => {
+document
+.querySelectorAll(".category")
+.forEach(
+button=>{
 
-        button.addEventListener(
-          "click",
-          () => {
+button.addEventListener(
+"click",
+()=>{
 
-            document
-              .querySelectorAll(
-                ".category"
-              )
-              .forEach(
-                b =>
-                  b.classList.remove(
-                    "active"
-                  )
-              );
-
-
-            button.classList.add(
-              "active"
-            );
+document
+.querySelectorAll(
+".category"
+)
+.forEach(
+b=>
+b.classList.remove(
+"active"
+)
+);
 
 
-            activeCategory =
-              button.dataset.category;
+button.classList.add(
+"active"
+);
 
 
-            filterPlaces();
+activeCategory =
+button.dataset.category;
 
-          }
-        );
 
-      }
-    );
+filterPlaces();
+
+}
+);
+
+}
+);
 
 }
 
 
-/* ПОИСК ПО КАРТЕ */
+/* ПОИСК ТОЧЕК */
 
-function setupSearch() {
+function setupSearch(){
 
-  document
-    .getElementById("search")
-    .addEventListener(
-      "input",
-      filterPlaces
-    );
-
-}
-
-
-function filterPlaces() {
-
-  const query =
-    document
-      .getElementById("search")
-      .value
-      .toLowerCase()
-      .trim();
-
-
-  let visible = 0;
-
-
-  markers.forEach(
-    item => {
-
-      const place =
-        item.place;
-
-
-      const categoryOK =
-        activeCategory === "all" ||
-        place.category ===
-          activeCategory;
-
-
-      const searchText =
-        (
-          place.name +
-          " " +
-          place.address +
-          " " +
-          place.categoryName
-        ).toLowerCase();
-
-
-      const searchOK =
-        !query ||
-        searchText.includes(
-          query
-        );
-
-
-      if (
-        categoryOK &&
-        searchOK
-      ) {
-
-        item.marker.setMap(map);
-
-        visible++;
-
-      } else {
-
-        item.marker.setMap(null);
-
-      }
-
-    }
-  );
-
-
-  document
-    .getElementById("empty")
-    .style.display =
-      visible === 0
-        ? "block"
-        : "none";
+document
+.getElementById("search")
+.addEventListener(
+"input",
+filterPlaces
+);
 
 }
 
 
-/* КАРТОЧКА ТОЧКИ */
+function filterPlaces(){
 
-function openCard(place) {
+const query =
+document
+.getElementById("search")
+.value
+.toLowerCase()
+.trim();
 
-  document
-    .getElementById(
-      "cardTitle"
-    )
-    .textContent =
-      place.name;
 
+let visible=0;
 
-  document
-    .getElementById(
-      "cardInfo"
-    )
-    .innerHTML =
 
-      `<b>${place.categoryName}</b><br>
-       📍 ${place.address}`;
+markers.forEach(
+item=>{
 
+const place =
+item.place;
 
-  const logo =
-    document.getElementById(
-      "cardLogo"
-    );
 
+const categoryOK =
+activeCategory==="all" ||
+place.category===activeCategory;
 
-  if (place.logo) {
 
-    logo.src =
-      place.logo;
+const searchText =
+(
+place.name +
+" " +
+place.address +
+" " +
+place.categoryName
+).toLowerCase();
 
-    logo.style.display =
-      "block";
 
-  } else {
+const searchOK =
+!query ||
+searchText.includes(query);
 
-    logo.style.display =
-      "none";
 
-  }
+if(
+categoryOK &&
+searchOK
+){
 
+item.marker.setMap(map);
 
-  const phoneButton =
-    document.getElementById(
-      "phoneButton"
-    );
+visible++;
 
+}else{
 
-  if (place.phone) {
+item.marker.setMap(null);
 
-    phoneButton.style.display =
-      "block";
+}
 
+}
+);
 
-    phoneButton.onclick =
-      () => {
 
-        window.location.href =
-          "tel:" +
-          place.phone;
-
-      };
-
-  } else {
-
-    phoneButton.style.display =
-      "none";
-
-  }
-
-
-  document
-    .getElementById(
-      "routeButton"
-    )
-    .onclick =
-      () => {
-
-        const url =
-          "https://www.google.com/maps/dir/?api=1" +
-          "&destination=" +
-          place.lat +
-          "," +
-          place.lng;
-
-
-        tg.openLink(url);
-
-      };
-
-
-  const telegramButton =
-    document.getElementById(
-      "telegramButton"
-    );
-
-
-  if (place.telegram) {
-
-    telegramButton.style.display =
-      "block";
-
-
-    telegramButton.onclick =
-      () => {
-
-        let link =
-          place.telegram;
-
-
-        if (
-          !link.startsWith(
-            "http"
-          )
-        ) {
-
-          link =
-            "https://t.me/" +
-            link.replace(
-              "@",
-              ""
-            );
-
-        }
-
-
-        tg.openLink(link);
-
-      };
-
-  } else {
-
-    telegramButton.style.display =
-      "none";
-
-  }
-
-
-  const websiteButton =
-    document.getElementById(
-      "websiteButton"
-    );
-
-
-  if (place.website) {
-
-    websiteButton.style.display =
-      "block";
-
-
-    websiteButton.onclick =
-      () => {
-
-        tg.openLink(
-          place.website
-        );
-
-      };
-
-  } else {
-
-    websiteButton.style.display =
-      "none";
-
-  }
-
-
-  document
-    .getElementById(
-      "shareButton"
-    )
-    .onclick =
-      () => {
-
-        const text =
-          "📍 " +
-          place.name +
-          "\n" +
-          place.address +
-          "\n\n" +
-          "🗺 Карта натяжних стель України";
-
-
-        const shareUrl =
-          "https://t.me/share/url?url=" +
-          encodeURIComponent(
-            "https://wedencop-hub.github.io/ceilings-ukraine-map/"
-          ) +
-          "&text=" +
-          encodeURIComponent(
-            text
-          );
-
-
-        tg.openTelegramLink(
-          shareUrl
-        );
-
-      };
-
-
-  document
-    .getElementById("card")
-    .style.display =
-      "block";
+document
+.getElementById("empty")
+.style.display =
+visible===0
+?"block"
+:"none";
 
 }
 
 
-function closeCard() {
+/* КАРТОЧКА */
 
-  document
-    .getElementById("card")
-    .style.display =
-      "none";
+function openCard(place){
 
-}
+currentPlace =
+place;
 
 
-/* ОКНО ДОБАВЛЕНИЯ */
-
-function openAddPoint() {
-
-  document
-    .getElementById(
-      "addModal"
-    )
-    .style.display =
-      "flex";
-
-}
+document
+.getElementById(
+"cardTitle"
+)
+.textContent =
+place.name;
 
 
-function closeAddPoint() {
+document
+.getElementById(
+"cardInfo"
+)
+.innerHTML =
 
-  document
-    .getElementById(
-      "addModal"
-    )
-    .style.display =
-      "none";
-
-
-  cancelPick();
-
-}
+`<b>${place.categoryName}</b><br>
+📍 ${place.address}`;
 
 
-function startPickLocation() {
-
-  document
-    .getElementById(
-      "addModal"
-    )
-    .style.display =
-      "none";
+const logo =
+document.getElementById(
+"cardLogo"
+);
 
 
-  document
-    .getElementById(
-      "pickMode"
-    )
-    .style.display =
-      "block";
+if(place.logo){
+
+logo.src =
+place.logo;
+
+logo.style.display =
+"block";
+
+}else{
+
+logo.style.display =
+"none";
 
 }
 
 
-function cancelPick() {
+const phoneButton =
+document.getElementById(
+"phoneButton"
+);
 
-  document
-    .getElementById(
-      "pickMode"
-    )
-    .style.display =
-      "none";
+
+if(place.phone){
+
+phoneButton.style.display =
+"block";
+
+phoneButton.onclick =
+()=>{
+window.location.href =
+"tel:"+place.phone;
+};
+
+}else{
+
+phoneButton.style.display =
+"none";
+
+}
+
+
+document
+.getElementById(
+"routeButton"
+)
+.onclick =
+()=>{
+
+const url =
+"https://www.google.com/maps/dir/?api=1" +
+"&destination=" +
+place.lat +
+"," +
+place.lng;
+
+
+tg.openLink(url);
+
+};
+
+
+const telegramButton =
+document.getElementById(
+"telegramButton"
+);
+
+
+if(place.telegram){
+
+telegramButton.style.display =
+"block";
+
+telegramButton.onclick =
+()=>{
+
+let link =
+place.telegram;
+
+
+if(
+!link.startsWith("http")
+){
+
+link =
+"https://t.me/" +
+link.replace("@","");
+
+}
+
+
+tg.openLink(link);
+
+};
+
+}else{
+
+telegramButton.style.display =
+"none";
+
+}
+
+
+const websiteButton =
+document.getElementById(
+"websiteButton"
+);
+
+
+if(place.website){
+
+websiteButton.style.display =
+"block";
+
+websiteButton.onclick =
+()=>{
+tg.openLink(
+place.website
+);
+};
+
+}else{
+
+websiteButton.style.display =
+"none";
+
+}
+
+
+document
+.getElementById(
+"shareButton"
+)
+.onclick =
+()=>{
+
+const text =
+"📍 " +
+place.name +
+"\n" +
+place.address +
+"\n\n" +
+"🗺 Карта натяжних стель України";
+
+
+const shareUrl =
+"https://t.me/share/url?url=" +
+encodeURIComponent(
+"https://wedencop-hub.github.io/ceilings-ukraine-map/"
+) +
+"&text=" +
+encodeURIComponent(text);
+
+
+tg.openTelegramLink(
+shareUrl
+);
+
+};
+
+
+const editButton =
+document.getElementById(
+"editButton"
+);
+
+
+const deleteButton =
+document.getElementById(
+"deleteButton"
+);
+
+
+editButton.style.display =
+isAdmin()
+?"block"
+:"none";
+
+
+deleteButton.style.display =
+isAdmin()
+?"block"
+:"none";
+
+
+if(isAdmin()){
+
+editButton.onclick =
+()=>{
+editPlace(place);
+};
+
+
+deleteButton.onclick =
+()=>{
+deletePlace(place);
+};
+
+}
+
+
+document
+.getElementById("card")
+.style.display =
+"block";
+
+}
+
+
+function closeCard(){
+
+document
+.getElementById("card")
+.style.display =
+"none";
+
+}
+
+
+/* ДОБАВЛЕНИЕ */
+
+function openAddPoint(){
+
+editingPlaceId =
+null;
+
+document
+.getElementById(
+"addModal"
+)
+.style.display =
+"flex";
+
+}
+
+
+function closeAddPoint(){
+
+document
+.getElementById(
+"addModal"
+)
+.style.display =
+"none";
+
+
+cancelPick();
+
+}
+
+
+function startPickLocation(){
+
+document
+.getElementById(
+"addModal"
+)
+.style.display =
+"none";
+
+
+document
+.getElementById(
+"pickMode"
+)
+.style.display =
+"block";
+
+}
+
+
+function cancelPick(){
+
+document
+.getElementById(
+"pickMode"
+)
+.style.display =
+"none";
 
 }
 
 
 /* ЛОГОТИП */
 
-function previewLogo(event) {
+function previewLogo(event){
 
-  const file =
-    event.target.files[0];
-
-
-  if (!file) return;
+const file =
+event.target.files[0];
 
 
-  const reader =
-    new FileReader();
+if(!file)return;
 
 
-  reader.onload =
-    function(e) {
-
-      const preview =
-        document.getElementById(
-          "logoPreview"
-        );
+const reader =
+new FileReader();
 
 
-      preview.src =
-        e.target.result;
+reader.onload =
+function(e){
+
+const preview =
+document.getElementById(
+"logoPreview"
+);
 
 
-      preview.style.display =
-        "block";
-
-    };
+preview.src =
+e.target.result;
 
 
-  reader.readAsDataURL(file);
+preview.style.display =
+"block";
+
+};
+
+
+reader.readAsDataURL(
+file
+);
 
 }
 
 
 /* ПОИСК АДРЕСА */
 
-async function findAddress() {
+async function findAddress(){
 
-  const addressInput =
-    document.getElementById(
-      "newAddress"
-    );
+const addressInput =
+document.getElementById(
+"newAddress"
+);
 
 
-  const resultsBox =
-    document.getElementById(
-      "addressResults"
-    );
+const resultsBox =
+document.getElementById(
+"addressResults"
+);
 
 
-  const address =
-    addressInput.value.trim();
+const address =
+addressInput.value.trim();
 
 
-  if (!address) {
+if(!address){
 
-    tg.showAlert(
-      "Введіть адресу."
-    );
+tg.showAlert(
+"Введіть адресу."
+);
 
-    return;
-
-  }
-
-
-  resultsBox.style.display =
-    "block";
-
-
-  resultsBox.innerHTML =
-
-    '<div class="address-loading">' +
-    '🔎 Шукаємо адресу...' +
-    '</div>';
-
-
-  try {
-
-    /*
-      Используем OpenStreetMap Nominatim.
-      Поэтому поиск НЕ зависит от Google Geocoder API.
-    */
-
-    const url =
-      "https://nominatim.openstreetmap.org/search" +
-      "?format=jsonv2" +
-      "&addressdetails=1" +
-      "&limit=5" +
-      "&countrycodes=ua" +
-      "&accept-language=uk" +
-      "&q=" +
-      encodeURIComponent(
-        address
-      );
-
-
-    const response =
-      await fetch(
-        url,
-        {
-          method: "GET",
-
-          headers: {
-            "Accept":
-              "application/json"
-          }
-        }
-      );
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        "HTTP " +
-        response.status
-      );
-
-    }
-
-
-    const results =
-      await response.json();
-
-
-    if (
-      !results ||
-      !results.length
-    ) {
-
-      resultsBox.innerHTML =
-
-        '<div class="address-error">' +
-
-        '❌ Адресу не знайдено.<br><br>' +
-
-        '<small>' +
-
-        'Спробуйте написати, наприклад:<br>' +
-
-        'Київ, Хрещатик 1<br>' +
-
-        'Київ, вул. Хрещатик, 1<br>' +
-
-        'Вишневе, Київська область' +
-
-        '</small>' +
-
-        '</div>';
-
-      return;
-
-    }
-
-
-    resultsBox.innerHTML = "";
-
-
-    results.forEach(
-      function(result) {
-
-        const button =
-          document.createElement(
-            "button"
-          );
-
-
-        button.type =
-          "button";
-
-
-        button.className =
-          "address-result";
-
-
-        button.textContent =
-          "📍 " +
-          result.display_name;
-
-
-        button.onclick =
-          function() {
-
-            selectAddressResult(
-              result
-            );
-
-          };
-
-
-        resultsBox.appendChild(
-          button
-        );
-
-      }
-    );
-
-
-  } catch(error) {
-
-    console.error(
-      "Address search error:",
-      error
-    );
-
-
-    resultsBox.innerHTML =
-
-      '<div class="address-error">' +
-
-      '❌ Не вдалося виконати пошук адреси.<br><br>' +
-
-      '<small>' +
-
-      'Перевірте інтернет або скористайтеся ' +
-
-      '«Вибрати місце на карті».' +
-
-      '</small>' +
-
-      '</div>';
-
-  }
+return;
 
 }
 
 
-/* ВЫБОР НАЙДЕННОГО АДРЕСА */
+resultsBox.style.display =
+"block";
+
+
+resultsBox.innerHTML =
+'<div class="address-loading">' +
+'🔎 Шукаємо адресу...' +
+'</div>';
+
+
+try{
+
+const url =
+"https://nominatim.openstreetmap.org/search" +
+"?format=jsonv2" +
+"&addressdetails=1" +
+"&limit=5" +
+"&countrycodes=ua" +
+"&accept-language=uk" +
+"&q=" +
+encodeURIComponent(address);
+
+
+const response =
+await fetch(
+url,
+{
+method:"GET",
+headers:{
+"Accept":
+"application/json"
+}
+}
+);
+
+
+if(!response.ok){
+
+throw new Error(
+"HTTP "+response.status
+);
+
+}
+
+
+const results =
+await response.json();
+
+
+if(
+!results ||
+!results.length
+){
+
+resultsBox.innerHTML =
+
+'<div class="address-error">' +
+
+'❌ Адресу не знайдено.<br><br>' +
+
+'<small>' +
+
+'Спробуйте написати:<br>' +
+
+'Київ, Хрещатик 1<br>' +
+
+'Київ, вул. Хрещатик, 1<br>' +
+
+'Вишневе, Київська область' +
+
+'</small>' +
+
+'</div>';
+
+return;
+
+}
+
+
+resultsBox.innerHTML =
+"";
+
+
+results.forEach(
+result=>{
+
+const button =
+document.createElement(
+"button"
+);
+
+
+button.type =
+"button";
+
+
+button.className =
+"address-result";
+
+
+button.textContent =
+"📍 " +
+result.display_name;
+
+
+button.onclick =
+()=>{
+selectAddressResult(
+result
+);
+};
+
+
+resultsBox.appendChild(
+button
+);
+
+}
+);
+
+
+}catch(error){
+
+console.error(
+"Address search:",
+error
+);
+
+
+resultsBox.innerHTML =
+
+'<div class="address-error">' +
+
+'❌ Не вдалося виконати пошук адреси.<br><br>' +
+
+'Скористайтеся «Вибрати місце на карті».' +
+
+'</div>';
+
+}
+
+}
+
+
+/* ВЫБОР АДРЕСА */
 
 function selectAddressResult(
-  result
-) {
+result
+){
 
-  const lat =
-    parseFloat(
-      result.lat
-    );
-
-
-  const lng =
-    parseFloat(
-      result.lon
-    );
+const lat =
+parseFloat(
+result.lat
+);
 
 
-  selectedLat =
-    lat;
+const lng =
+parseFloat(
+result.lon
+);
 
 
-  selectedLng =
-    lng;
+selectedLat =
+lat;
 
 
-  if (pickMarker) {
-
-    pickMarker.setMap(
-      null
-    );
-
-  }
+selectedLng =
+lng;
 
 
-  pickMarker =
-    new google.maps.Marker({
+if(pickMarker){
 
-      position: {
-        lat: lat,
-        lng: lng
-      },
-
-      map: map,
-
-      title:
-        result.display_name,
-
-      draggable: true
-
-    });
-
-
-  pickMarker.addListener(
-    "dragend",
-    function() {
-
-      const p =
-        pickMarker.getPosition();
-
-
-      selectedLat =
-        p.lat();
-
-
-      selectedLng =
-        p.lng();
-
-
-      document
-        .getElementById(
-          "selectedLocation"
-        )
-        .textContent =
-
-          "📍 " +
-          selectedLat.toFixed(6) +
-          ", " +
-          selectedLng.toFixed(6);
-
-    }
-  );
-
-
-  map.setCenter({
-
-    lat: lat,
-
-    lng: lng
-
-  });
-
-
-  map.setZoom(17);
-
-
-  document
-    .getElementById(
-      "newAddress"
-    )
-    .value =
-      result.display_name;
-
-
-  document
-    .getElementById(
-      "selectedLocation"
-    )
-    .textContent =
-
-      "📍 " +
-      result.display_name +
-      " (" +
-      lat.toFixed(6) +
-      ", " +
-      lng.toFixed(6) +
-      ")";
-
-
-  document
-    .getElementById(
-      "addressResults"
-    )
-    .style.display =
-      "none";
+pickMarker.setMap(
+null
+);
 
 }
 
 
-/* СОХРАНЕНИЕ ТОЧКИ */
+pickMarker =
+new google.maps.Marker({
 
-function savePoint() {
+position:{
+lat:lat,
+lng:lng
+},
 
-  const name =
-    document
-      .getElementById(
-        "newName"
-      )
-      .value
-      .trim();
+map:map,
 
+title:
+result.display_name,
 
-  if (!name) {
+draggable:true
 
-    tg.showAlert(
-      "Вкажіть назву точки."
-    );
-
-    return;
-
-  }
+});
 
 
-  if (
-    selectedLat === null ||
-    selectedLng === null
-  ) {
+pickMarker.addListener(
+"dragend",
+function(){
 
-    tg.showAlert(
-      "Спочатку знайдіть адресу або виберіть місце на карті."
-    );
-
-    return;
-
-  }
+const p =
+pickMarker.getPosition();
 
 
-  const category =
-    document
-      .getElementById(
-        "newCategory"
-      )
-      .value;
+selectedLat =
+p.lat();
+
+selectedLng =
+p.lng();
 
 
-  const categoryNames = {
+document
+.getElementById(
+"selectedLocation"
+)
+.textContent =
+"📍 " +
+selectedLat.toFixed(6) +
+", " +
+selectedLng.toFixed(6);
 
-    manufacturer:
-      "🏭 Виробник",
-
-    shop:
-      "🏪 Магазин / постачальник",
-
-    tools:
-      "🔧 Інструмент",
-
-    gas:
-      "🔥 Газ",
-
-    services:
-      "🛠 Послуги"
-
-  };
+}
+);
 
 
-  const logo =
-    document
-      .getElementById(
-        "logoPreview"
-      )
-      .src || "";
+map.setCenter({
+lat:lat,
+lng:lng
+});
 
 
-  const newPlace = {
-
-    name:
-      name,
-
-    category:
-      category,
-
-    categoryName:
-      categoryNames[
-        category
-      ],
-
-    address:
-      document
-        .getElementById(
-          "newAddress"
-        )
-        .value
-        .trim(),
-
-    phone:
-      document
-        .getElementById(
-          "newPhone"
-        )
-        .value
-        .trim(),
-
-    telegram:
-      document
-        .getElementById(
-          "newTelegram"
-        )
-        .value
-        .trim(),
-
-    website:
-      document
-        .getElementById(
-          "newWebsite"
-        )
-        .value
-        .trim(),
-
-    logo:
-      logo,
-
-    lat:
-      selectedLat,
-
-    lng:
-      selectedLng
-
-  };
+map.setZoom(
+17
+);
 
 
-  places.push(
-    newPlace
-  );
+document
+.getElementById(
+"newAddress"
+)
+.value =
+result.display_name;
 
 
-  /*
-    Пока локальное сохранение.
-    Позже подключаем общую базу
-    и модерацию через Telegram.
-  */
-
-  const customPlaces =
-    places.slice(2);
-
-
-  localStorage.setItem(
-    "ceilingPlaces",
-    JSON.stringify(
-      customPlaces
-    )
-  );
+document
+.getElementById(
+"selectedLocation"
+)
+.textContent =
+"📍 " +
+result.display_name +
+" (" +
+lat.toFixed(6) +
+", " +
+lng.toFixed(6) +
+")";
 
 
-  createMarkers();
+document
+.getElementById(
+"addressResults"
+)
+.style.display =
+"none";
+
+}
 
 
-  closeAddPoint();
+/* СОХРАНЕНИЕ */
+
+function savePoint(){
+
+const name =
+document
+.getElementById(
+"newName"
+)
+.value
+.trim();
 
 
-  map.setCenter({
+if(!name){
 
-    lat:
-      selectedLat,
+tg.showAlert(
+"Вкажіть назву точки."
+);
 
-    lng:
-      selectedLng
+return;
 
-  });
-
-
-  map.setZoom(
-    14
-  );
+}
 
 
-  tg.showAlert(
-    "Точку додано на карту."
-  );
+if(
+selectedLat===null ||
+selectedLng===null
+){
+
+tg.showAlert(
+"Спочатку знайдіть адресу або виберіть місце на карті."
+);
+
+return;
+
+}
+
+
+const category =
+document
+.getElementById(
+"newCategory"
+)
+.value;
+
+
+const categoryNames = {
+
+manufacturer:
+"🏭 Виробник",
+
+shop:
+"🏪 Магазин / постачальник",
+
+tools:
+"🔧 Інструмент",
+
+gas:
+"🔥 Газ",
+
+services:
+"🛠 Послуги"
+
+};
+
+
+const logo =
+document
+.getElementById(
+"logoPreview"
+)
+.src || "";
+
+
+const newPlace = {
+
+id:
+"place_" +
+Date.now() +
+"_" +
+Math.random()
+.toString(36)
+.slice(2),
+
+name:name,
+
+category:category,
+
+categoryName:
+categoryNames[category],
+
+address:
+document
+.getElementById(
+"newAddress"
+)
+.value
+.trim(),
+
+phone:
+document
+.getElementById(
+"newPhone"
+)
+.value
+.trim(),
+
+telegram:
+document
+.getElementById(
+"newTelegram"
+)
+.value
+.trim(),
+
+website:
+document
+.getElementById(
+"newWebsite"
+)
+.value
+.trim(),
+
+logo:logo,
+
+lat:selectedLat,
+
+lng:selectedLng,
+
+status:"pending",
+
+submittedAt:
+new Date()
+.toISOString()
+
+};
+
+
+/* РЕДАКТИРОВАНИЕ */
+
+if(
+isAdmin() &&
+editingPlaceId
+){
+
+const index =
+places.findIndex(
+p=>
+p.id===editingPlaceId
+);
+
+
+if(index>=0){
+
+newPlace.id =
+editingPlaceId;
+
+newPlace.status =
+"approved";
+
+places[index] =
+newPlace;
+
+savePlaces();
+
+createMarkers();
+
+editingPlaceId =
+null;
+
+closeAddPoint();
+
+tg.showAlert(
+"Точку оновлено."
+);
+
+return;
+
+}
+
+}
+
+
+/* АДМИНИСТРАТОР */
+
+if(isAdmin()){
+
+newPlace.status =
+"approved";
+
+places.push(
+newPlace
+);
+
+savePlaces();
+
+createMarkers();
+
+closeAddPoint();
+
+map.setCenter({
+
+lat:selectedLat,
+
+lng:selectedLng
+
+});
+
+map.setZoom(
+14
+);
+
+tg.showAlert(
+"Точку додано на карту."
+);
+
+return;
+
+}
+
+
+/* ОБЫЧНЫЙ ПОЛЬЗОВАТЕЛЬ */
+
+pendingPlaces.push(
+newPlace
+);
+
+savePendingPlaces();
+
+closeAddPoint();
+
+tg.showAlert(
+"Дякуємо! Точка відправлена на модерацію. Вона з'явиться на карті після схвалення."
+);
+
+}
+
+
+/* СОХРАНЕНИЕ */
+
+function savePlaces(){
+
+const customPlaces =
+places.filter(
+p=>
+p.id ||
+!(
+p.name ===
+"Potolki Everest / EverestComplekt" ||
+p.name ===
+"GoodHub"
+)
+);
+
+
+localStorage.setItem(
+"ceilingPlaces",
+JSON.stringify(
+customPlaces
+)
+);
+
+}
+
+
+function savePendingPlaces(){
+
+localStorage.setItem(
+"ceilingPendingPlaces",
+JSON.stringify(
+pendingPlaces
+)
+);
+
+}
+
+
+/* АДМИН */
+
+function isAdmin(){
+
+const userId =
+tg &&
+tg.initDataUnsafe &&
+tg.initDataUnsafe.user
+?
+String(
+tg.initDataUnsafe.user.id
+)
+:
+"";
+
+
+return ADMIN_IDS.includes(
+userId
+);
+
+}
+
+
+function updateAdminButton(){
+
+const button =
+document.getElementById(
+"adminMapButton"
+);
+
+
+if(button){
+
+button.style.display =
+isAdmin()
+?"block"
+:"none";
+
+}
+
+}
+
+
+/* РЕДАКТИРОВАНИЕ */
+
+function editPlace(place){
+
+closeCard();
+
+
+document.getElementById(
+"newCategory"
+).value =
+place.category;
+
+
+document.getElementById(
+"newName"
+).value =
+place.name;
+
+
+document.getElementById(
+"newAddress"
+).value =
+place.address || "";
+
+
+document.getElementById(
+"newPhone"
+).value =
+place.phone || "";
+
+
+document.getElementById(
+"newTelegram"
+).value =
+place.telegram || "";
+
+
+document.getElementById(
+"newWebsite"
+).value =
+place.website || "";
+
+
+selectedLat =
+place.lat;
+
+
+selectedLng =
+place.lng;
+
+
+editingPlaceId =
+place.id;
+
+
+openAddPoint();
+
+
+document.getElementById(
+"selectedLocation"
+).textContent =
+"📍 " +
+place.lat.toFixed(6) +
+", " +
+place.lng.toFixed(6);
+
+}
+
+
+/* УДАЛЕНИЕ */
+
+function deletePlace(place){
+
+if(
+!confirm(
+"Видалити точку «" +
+place.name +
+"» з карти?"
+)
+){
+
+return;
+
+}
+
+
+places =
+places.filter(
+p=>
+p!==place
+);
+
+
+savePlaces();
+
+createMarkers();
+
+closeCard();
+
+tg.showAlert(
+"Точку видалено."
+);
+
+}
+
+
+/* АДМИН-ПАНЕЛЬ */
+
+function openAdmin(){
+
+if(!isAdmin()){
+
+tg.showAlert(
+"Доступ тільки для адміністратора."
+);
+
+return;
+
+}
+
+
+document
+.getElementById(
+"adminModal"
+)
+.style.display =
+"flex";
+
+
+openPending();
+
+}
+
+
+function closeAdmin(){
+
+document
+.getElementById(
+"adminModal"
+)
+.style.display =
+"none";
+
+}
+
+
+/* ЗАЯВКИ */
+
+function openPending(){
+
+const list =
+document.getElementById(
+"pendingList"
+);
+
+
+if(!pendingPlaces.length){
+
+list.innerHTML =
+'<div class="selected-location">' +
+"Нових заявок немає." +
+"</div>";
+
+return;
+
+}
+
+
+list.innerHTML =
+"";
+
+
+pendingPlaces.forEach(
+place=>{
+
+const item =
+document.createElement(
+"div"
+);
+
+
+item.style =
+"border:1px solid #ddd;" +
+"border-radius:12px;" +
+"padding:12px;" +
+"margin-bottom:10px;";
+
+
+item.innerHTML =
+
+"<b>" +
+place.name +
+"</b><br>" +
+
+place.categoryName +
+"<br>" +
+
+"📍 " +
+place.address +
+"<br>" +
+
+"📞 " +
+(place.phone || "—");
+
+
+const buttons =
+document.createElement(
+"div"
+);
+
+
+buttons.className =
+"buttons";
+
+
+buttons.innerHTML =
+
+'<button class="button">' +
+"✅ Одобрити" +
+"</button>" +
+
+'<button class="button" style="background:#d93025;">' +
+"❌ Відхилити" +
+"</button>";
+
+
+buttons.children[0].onclick =
+()=>{
+approvePlace(
+place.id
+);
+};
+
+
+buttons.children[1].onclick =
+()=>{
+rejectPlace(
+place.id
+);
+};
+
+
+item.appendChild(
+buttons
+);
+
+
+list.appendChild(
+item
+);
+
+}
+);
+
+}
+
+
+function approvePlace(id){
+
+const index =
+pendingPlaces.findIndex(
+p=>
+p.id===id
+);
+
+
+if(index<0)return;
+
+
+const place =
+pendingPlaces[index];
+
+
+place.status =
+"approved";
+
+
+places.push(
+place
+);
+
+
+pendingPlaces.splice(
+index,
+1
+);
+
+
+savePlaces();
+
+savePendingPlaces();
+
+createMarkers();
+
+openPending();
+
+tg.showAlert(
+"Точку схвалено."
+);
+
+}
+
+
+function rejectPlace(id){
+
+pendingPlaces =
+pendingPlaces.filter(
+p=>
+p.id!==id
+);
+
+
+savePendingPlaces();
+
+openPending();
+
+tg.showAlert(
+"Заявку відхилено."
+);
 
 }
 
 
 /* МОЁ МЕСТОПОЛОЖЕНИЕ */
 
-function findMe() {
+function findMe(){
 
-  if (
-    !navigator.geolocation
-  ) {
+if(
+!navigator.geolocation
+){
 
-    tg.showAlert(
-      "Ваш браузер не підтримує геолокацію."
-    );
+tg.showAlert(
+"Ваш браузер не підтримує геолокацію."
+);
 
-    return;
+return;
 
-  }
-
-
-  navigator.geolocation.getCurrentPosition(
-
-    position => {
-
-      const location = {
-
-        lat:
-          position.coords.latitude,
-
-        lng:
-          position.coords.longitude
-
-      };
+}
 
 
-      map.setCenter(
-        location
-      );
+navigator.geolocation.getCurrentPosition(
+
+position=>{
+
+const location = {
+
+lat:
+position.coords.latitude,
+
+lng:
+position.coords.longitude
+
+};
 
 
-      map.setZoom(
-        13
-      );
+map.setCenter(
+location
+);
 
 
-      if (userMarker) {
-
-        userMarker.setMap(
-          null
-        );
-
-      }
+map.setZoom(
+13
+);
 
 
-      userMarker =
-        new google.maps.Marker({
+if(userMarker){
 
-          position:
-            location,
+userMarker.setMap(
+null
+);
 
-          map:
-            map,
-
-          title:
-            "Моє місцезнаходження"
-
-        });
-
-    },
+}
 
 
-    () => {
+userMarker =
+new google.maps.Marker({
 
-      tg.showAlert(
-        "Не вдалося отримати ваше місцезнаходження."
-      );
+position:location,
 
-    }
+map:map,
 
-  );
+title:
+"Моє місцезнаходження"
+
+});
+
+},
+
+
+()=>{
+
+tg.showAlert(
+"Не вдалося отримати ваше місцезнаходження."
+);
+
+}
+
+);
 
 }
 
@@ -1972,7 +2553,7 @@ function findMe() {
 
 
 <script async
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD8juKXcYCwBIqfLzQFW4qVApkKxosmQFw&callback=initMap">
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD8juKXcYCwBIqfLzQFW4qVApkKxosmQFw&callback=initMap">
 </script>
 
 </body>
