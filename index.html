@@ -261,6 +261,39 @@ html, body {
   font-size: 13px;
   color: #555;
   margin-bottom: 10px;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.address-result {
+  width: 100%;
+  text-align: left;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: white;
+  padding: 11px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.address-result:active {
+  background: #eeeeee;
+}
+
+.address-loading {
+  padding: 10px;
+  border-radius: 10px;
+  background: #f1f1f1;
+  font-size: 14px;
+}
+
+.address-error {
+  padding: 10px;
+  border-radius: 10px;
+  background: #fff0f0;
+  color: #a00000;
+  font-size: 14px;
 }
 
 .pick-mode {
@@ -340,7 +373,9 @@ html, body {
 
   </div>
 
+
   <div id="map"></div>
+
 
   <div class="map-actions">
 
@@ -352,25 +387,35 @@ html, body {
 
   </div>
 
+
   <button
     class="location-button"
     onclick="findMe()">
     ◎
   </button>
 
+
   <div id="pickMode" class="pick-mode">
+
     📍 Натисни на потрібне місце на карті
+
     <br><br>
+
     <button
       class="button close"
       onclick="cancelPick()">
       Скасувати
     </button>
+
   </div>
+
 
   <div id="empty" class="empty">
     Нічого не знайдено
   </div>
+
+
+  <!-- КАРТОЧКА -->
 
   <div id="card" class="card">
 
@@ -415,6 +460,9 @@ html, body {
 
   </div>
 
+
+  <!-- ДОБАВЛЕНИЕ ТОЧКИ -->
+
   <div id="addModal" class="modal">
 
     <div class="modal-content">
@@ -422,6 +470,7 @@ html, body {
       <div class="modal-title">
         ➕ Додати точку на карту
       </div>
+
 
       <div class="form-group">
 
@@ -455,6 +504,7 @@ html, body {
 
       </div>
 
+
       <div class="form-group">
 
         <label class="form-label">
@@ -467,6 +517,7 @@ html, body {
           placeholder="Наприклад: Alkor Draka">
 
       </div>
+
 
       <div class="form-group">
 
@@ -483,10 +534,18 @@ html, body {
           type="button"
           class="pick-location"
           onclick="findAddress()">
+
           🔎 Знайти адресу на карті
+
         </button>
 
+        <div
+          id="addressResults"
+          style="display:none;margin-top:8px;">
+        </div>
+
       </div>
+
 
       <div class="form-group">
 
@@ -502,6 +561,7 @@ html, body {
 
       </div>
 
+
       <div class="form-group">
 
         <label class="form-label">
@@ -515,6 +575,7 @@ html, body {
 
       </div>
 
+
       <div class="form-group">
 
         <label class="form-label">
@@ -527,6 +588,7 @@ html, body {
           placeholder="https://...">
 
       </div>
+
 
       <div class="form-group">
 
@@ -547,30 +609,42 @@ html, body {
 
       </div>
 
+
       <button
         class="pick-location"
         onclick="startPickLocation()">
+
         📍 Вибрати місце на карті
+
       </button>
+
 
       <div
         id="selectedLocation"
         class="selected-location">
+
         Координати поки не вибрані
+
       </div>
+
 
       <div class="buttons">
 
         <button
           class="button"
           onclick="savePoint()">
+
           ✅ Додати точку
+
         </button>
+
 
         <button
           class="button close"
           onclick="closeAddPoint()">
+
           Відміна
+
         </button>
 
       </div>
@@ -581,6 +655,7 @@ html, body {
 
 </div>
 
+
 <script>
 
 const tg = window.Telegram.WebApp;
@@ -588,18 +663,23 @@ const tg = window.Telegram.WebApp;
 tg.ready();
 tg.expand();
 
+
 let map;
+
 let userMarker = null;
+
 let pickMarker = null;
 
 let activeCategory = "all";
+
 let markers = [];
 
 let selectedLat = null;
+
 let selectedLng = null;
 
 
-/* Существующие точки */
+/* СУЩЕСТВУЮЩИЕ ТОЧКИ */
 
 let places = [
 
@@ -615,6 +695,7 @@ let places = [
     lat: 50.4714,
     lng: 30.35052
   },
+
 
   {
     name: "GoodHub",
@@ -632,7 +713,7 @@ let places = [
 ];
 
 
-/* Загружаем добавленные точки */
+/* СОХРАНЁННЫЕ ЛОКАЛЬНЫЕ ТОЧКИ */
 
 try {
 
@@ -641,32 +722,38 @@ try {
       localStorage.getItem("ceilingPlaces") || "[]"
     );
 
-  places = places.concat(saved);
+  places =
+    places.concat(saved);
 
 } catch(e) {}
 
 
-/* Карта */
+/* ИНИЦИАЛИЗАЦИЯ КАРТЫ */
 
 function initMap() {
 
-  map = new google.maps.Map(
-    document.getElementById("map"),
-    {
-      center: {
-        lat: 48.5,
-        lng: 31.2
-      },
+  map =
+    new google.maps.Map(
+      document.getElementById("map"),
+      {
 
-      zoom: 6,
+        center: {
+          lat: 48.5,
+          lng: 31.2
+        },
 
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: false,
+        zoom: 6,
 
-      gestureHandling: "greedy"
-    }
-  );
+        mapTypeControl: false,
+
+        streetViewControl: false,
+
+        fullscreenControl: false,
+
+        gestureHandling: "greedy"
+
+      }
+    );
 
 
   map.addListener(
@@ -679,107 +766,9 @@ function initMap() {
           .style.display === "block"
       ) {
 
-        selectedLat =
-          event.latLng.lat();
-
-        selectedLng =
-          event.latLng.lng();
-
-
-        if (pickMarker) {
-          pickMarker.setMap(null);
-        }
-
-
-        pickMarker =
-          new google.maps.Marker({
-            position: event.latLng,
-            map: map,
-            title: "Нова точка",
-            draggable: true
-          });
-
-
-        pickMarker.addListener("dragend", function() {
-
-          const p =
-            pickMarker.getPosition();
-
-          selectedLat =
-            p.lat();
-
-          selectedLng =
-            p.lng();
-
-          document
-            .getElementById("selectedLocation")
-            .textContent =
-              "📍 " +
-              selectedLat.toFixed(6) +
-              ", " +
-              selectedLng.toFixed(6);
-
-        });
-
-
-        document
-          .getElementById("selectedLocation")
-          .textContent =
-            "📍 " +
-            selectedLat.toFixed(6) +
-            ", " +
-            selectedLng.toFixed(6);
-
-
-        document
-          .getElementById("pickMode")
-          .style.display = "none";
-
-
-        /* Попытка определить адрес */
-
-        if (google.maps.Geocoder) {
-
-          const reverseGeocoder =
-            new google.maps.Geocoder();
-
-          reverseGeocoder.geocode(
-            {
-              location: event.latLng,
-              language: "uk"
-            },
-
-            function(results, status) {
-
-              if (
-                status === "OK" &&
-                results &&
-                results.length
-              ) {
-
-                document
-                  .getElementById("newAddress")
-                  .value =
-                    results[0].formatted_address;
-
-
-                document
-                  .getElementById("selectedLocation")
-                  .textContent =
-                    "📍 " +
-                    results[0].formatted_address +
-                    " (" +
-                    selectedLat.toFixed(6) +
-                    ", " +
-                    selectedLng.toFixed(6) +
-                    ")";
-
-              }
-
-            }
-          );
-
-        }
+        setManualLocation(
+          event.latLng
+        );
 
       }
 
@@ -788,90 +777,207 @@ function initMap() {
 
 
   createMarkers();
+
   setupSearch();
+
   setupCategories();
 
 }
 
 
-/* Маркеры */
+/* РУЧНАЯ УСТАНОВКА ТОЧКИ */
 
-function createMarkers() {
+function setManualLocation(
+  latLng
+) {
 
-  markers.forEach(item => {
-    item.marker.setMap(null);
-  });
+  selectedLat =
+    latLng.lat();
 
-  markers = [];
-
-
-  places.forEach(place => {
-
-    const marker =
-      new google.maps.Marker({
-
-        position: {
-          lat: place.lat,
-          lng: place.lng
-        },
-
-        map: map,
-
-        title: place.name
-
-      });
+  selectedLng =
+    latLng.lng();
 
 
-    marker.addListener(
-      "click",
-      () => openCard(place)
-    );
+  if (pickMarker) {
+
+    pickMarker.setMap(null);
+
+  }
 
 
-    markers.push({
-      place: place,
-      marker: marker
+  pickMarker =
+    new google.maps.Marker({
+
+      position: latLng,
+
+      map: map,
+
+      title: "Нова точка",
+
+      draggable: true
+
     });
 
-  });
+
+  pickMarker.addListener(
+    "dragend",
+    function() {
+
+      const p =
+        pickMarker.getPosition();
+
+
+      selectedLat =
+        p.lat();
+
+      selectedLng =
+        p.lng();
+
+
+      document
+        .getElementById(
+          "selectedLocation"
+        )
+        .textContent =
+
+          "📍 " +
+          selectedLat.toFixed(6) +
+          ", " +
+          selectedLng.toFixed(6);
+
+    }
+  );
+
+
+  document
+    .getElementById(
+      "selectedLocation"
+    )
+    .textContent =
+
+      "📍 " +
+      selectedLat.toFixed(6) +
+      ", " +
+      selectedLng.toFixed(6);
+
+
+  document
+    .getElementById(
+      "pickMode"
+    )
+    .style.display = "none";
+
+
+  map.setCenter(latLng);
+
+  map.setZoom(17);
 
 }
 
 
-/* Категории */
+/* МАРКЕРЫ */
+
+function createMarkers() {
+
+  markers.forEach(
+    item => {
+
+      item.marker.setMap(null);
+
+    }
+  );
+
+
+  markers = [];
+
+
+  places.forEach(
+    place => {
+
+      const marker =
+        new google.maps.Marker({
+
+          position: {
+
+            lat: place.lat,
+
+            lng: place.lng
+
+          },
+
+          map: map,
+
+          title: place.name
+
+        });
+
+
+      marker.addListener(
+        "click",
+        () => openCard(place)
+      );
+
+
+      markers.push({
+
+        place: place,
+
+        marker: marker
+
+      });
+
+    }
+  );
+
+}
+
+
+/* КАТЕГОРИИ */
 
 function setupCategories() {
 
   document
     .querySelectorAll(".category")
-    .forEach(button => {
+    .forEach(
+      button => {
 
-      button.addEventListener(
-        "click",
-        () => {
+        button.addEventListener(
+          "click",
+          () => {
 
-          document
-            .querySelectorAll(".category")
-            .forEach(
-              b => b.classList.remove("active")
+            document
+              .querySelectorAll(
+                ".category"
+              )
+              .forEach(
+                b =>
+                  b.classList.remove(
+                    "active"
+                  )
+              );
+
+
+            button.classList.add(
+              "active"
             );
 
-          button.classList.add("active");
 
-          activeCategory =
-            button.dataset.category;
+            activeCategory =
+              button.dataset.category;
 
-          filterPlaces();
 
-        }
-      );
+            filterPlaces();
 
-    });
+          }
+        );
+
+      }
+    );
 
 }
 
 
-/* Поиск */
+/* ПОИСК ПО КАРТЕ */
 
 function setupSearch() {
 
@@ -898,43 +1004,53 @@ function filterPlaces() {
   let visible = 0;
 
 
-  markers.forEach(item => {
+  markers.forEach(
+    item => {
 
-    const place = item.place;
-
-
-    const categoryOK =
-      activeCategory === "all" ||
-      place.category === activeCategory;
+      const place =
+        item.place;
 
 
-    const searchText =
-      (
-        place.name +
-        " " +
-        place.address +
-        " " +
-        place.categoryName
-      ).toLowerCase();
+      const categoryOK =
+        activeCategory === "all" ||
+        place.category ===
+          activeCategory;
 
 
-    const searchOK =
-      !query ||
-      searchText.includes(query);
+      const searchText =
+        (
+          place.name +
+          " " +
+          place.address +
+          " " +
+          place.categoryName
+        ).toLowerCase();
 
 
-    if (categoryOK && searchOK) {
+      const searchOK =
+        !query ||
+        searchText.includes(
+          query
+        );
 
-      item.marker.setMap(map);
-      visible++;
 
-    } else {
+      if (
+        categoryOK &&
+        searchOK
+      ) {
 
-      item.marker.setMap(null);
+        item.marker.setMap(map);
+
+        visible++;
+
+      } else {
+
+        item.marker.setMap(null);
+
+      }
 
     }
-
-  });
+  );
 
 
   document
@@ -947,18 +1063,22 @@ function filterPlaces() {
 }
 
 
-/* Карточка */
+/* КАРТОЧКА ТОЧКИ */
 
 function openCard(place) {
 
   document
-    .getElementById("cardTitle")
+    .getElementById(
+      "cardTitle"
+    )
     .textContent =
       place.name;
 
 
   document
-    .getElementById("cardInfo")
+    .getElementById(
+      "cardInfo"
+    )
     .innerHTML =
 
       `<b>${place.categoryName}</b><br>
@@ -966,143 +1086,184 @@ function openCard(place) {
 
 
   const logo =
-    document.getElementById("cardLogo");
+    document.getElementById(
+      "cardLogo"
+    );
 
 
   if (place.logo) {
 
-    logo.src = place.logo;
-    logo.style.display = "block";
+    logo.src =
+      place.logo;
+
+    logo.style.display =
+      "block";
 
   } else {
 
-    logo.style.display = "none";
+    logo.style.display =
+      "none";
 
   }
 
 
   const phoneButton =
-    document.getElementById("phoneButton");
+    document.getElementById(
+      "phoneButton"
+    );
 
 
   if (place.phone) {
 
-    phoneButton.style.display = "block";
+    phoneButton.style.display =
+      "block";
 
-    phoneButton.onclick = () => {
 
-      window.location.href =
-        "tel:" + place.phone;
+    phoneButton.onclick =
+      () => {
 
-    };
+        window.location.href =
+          "tel:" +
+          place.phone;
+
+      };
 
   } else {
 
-    phoneButton.style.display = "none";
+    phoneButton.style.display =
+      "none";
 
   }
 
 
   document
-    .getElementById("routeButton")
-    .onclick = () => {
+    .getElementById(
+      "routeButton"
+    )
+    .onclick =
+      () => {
 
-      const url =
-        "https://www.google.com/maps/dir/?api=1" +
-        "&destination=" +
-        place.lat +
-        "," +
-        place.lng;
+        const url =
+          "https://www.google.com/maps/dir/?api=1" +
+          "&destination=" +
+          place.lat +
+          "," +
+          place.lng;
 
-      tg.openLink(url);
 
-    };
+        tg.openLink(url);
+
+      };
 
 
   const telegramButton =
-    document.getElementById("telegramButton");
+    document.getElementById(
+      "telegramButton"
+    );
 
 
   if (place.telegram) {
 
-    telegramButton.style.display = "block";
+    telegramButton.style.display =
+      "block";
 
-    telegramButton.onclick = () => {
 
-      let link =
-        place.telegram;
+    telegramButton.onclick =
+      () => {
 
-      if (
-        !link.startsWith("http")
-      ) {
+        let link =
+          place.telegram;
 
-        link =
-          "https://t.me/" +
-          link.replace("@", "");
 
-      }
+        if (
+          !link.startsWith(
+            "http"
+          )
+        ) {
 
-      tg.openLink(link);
+          link =
+            "https://t.me/" +
+            link.replace(
+              "@",
+              ""
+            );
 
-    };
+        }
+
+
+        tg.openLink(link);
+
+      };
 
   } else {
 
-    telegramButton.style.display = "none";
+    telegramButton.style.display =
+      "none";
 
   }
 
 
   const websiteButton =
-    document.getElementById("websiteButton");
+    document.getElementById(
+      "websiteButton"
+    );
 
 
   if (place.website) {
 
-    websiteButton.style.display = "block";
+    websiteButton.style.display =
+      "block";
 
-    websiteButton.onclick = () => {
 
-      tg.openLink(
-        place.website
-      );
+    websiteButton.onclick =
+      () => {
 
-    };
+        tg.openLink(
+          place.website
+        );
+
+      };
 
   } else {
 
-    websiteButton.style.display = "none";
+    websiteButton.style.display =
+      "none";
 
   }
 
 
   document
-    .getElementById("shareButton")
-    .onclick = () => {
+    .getElementById(
+      "shareButton"
+    )
+    .onclick =
+      () => {
 
-      const text =
-        "📍 " +
-        place.name +
-        "\n" +
-        place.address +
-        "\n\n" +
-        "🗺 Карта натяжних стель України";
-
-
-      const shareUrl =
-        "https://t.me/share/url?url=" +
-        encodeURIComponent(
-          "https://wedencop-hub.github.io/ceilings-ukraine-map/"
-        ) +
-        "&text=" +
-        encodeURIComponent(text);
+        const text =
+          "📍 " +
+          place.name +
+          "\n" +
+          place.address +
+          "\n\n" +
+          "🗺 Карта натяжних стель України";
 
 
-      tg.openTelegramLink(
-        shareUrl
-      );
+        const shareUrl =
+          "https://t.me/share/url?url=" +
+          encodeURIComponent(
+            "https://wedencop-hub.github.io/ceilings-ukraine-map/"
+          ) +
+          "&text=" +
+          encodeURIComponent(
+            text
+          );
 
-    };
+
+        tg.openTelegramLink(
+          shareUrl
+        );
+
+      };
 
 
   document
@@ -1123,12 +1284,14 @@ function closeCard() {
 }
 
 
-/* Добавление точки */
+/* ОКНО ДОБАВЛЕНИЯ */
 
 function openAddPoint() {
 
   document
-    .getElementById("addModal")
+    .getElementById(
+      "addModal"
+    )
     .style.display =
       "flex";
 
@@ -1138,9 +1301,12 @@ function openAddPoint() {
 function closeAddPoint() {
 
   document
-    .getElementById("addModal")
+    .getElementById(
+      "addModal"
+    )
     .style.display =
       "none";
+
 
   cancelPick();
 
@@ -1150,13 +1316,17 @@ function closeAddPoint() {
 function startPickLocation() {
 
   document
-    .getElementById("addModal")
+    .getElementById(
+      "addModal"
+    )
     .style.display =
       "none";
 
 
   document
-    .getElementById("pickMode")
+    .getElementById(
+      "pickMode"
+    )
     .style.display =
       "block";
 
@@ -1166,19 +1336,22 @@ function startPickLocation() {
 function cancelPick() {
 
   document
-    .getElementById("pickMode")
+    .getElementById(
+      "pickMode"
+    )
     .style.display =
       "none";
 
 }
 
 
-/* Логотип */
+/* ЛОГОТИП */
 
 function previewLogo(event) {
 
   const file =
     event.target.files[0];
+
 
   if (!file) return;
 
@@ -1195,8 +1368,10 @@ function previewLogo(event) {
           "logoPreview"
         );
 
+
       preview.src =
         e.target.result;
+
 
       preview.style.display =
         "block";
@@ -1209,12 +1384,21 @@ function previewLogo(event) {
 }
 
 
-/* Поиск адреса */
+/* ПОИСК АДРЕСА */
 
-function findAddress() {
+async function findAddress() {
 
   const addressInput =
-    document.getElementById("newAddress");
+    document.getElementById(
+      "newAddress"
+    );
+
+
+  const resultsBox =
+    document.getElementById(
+      "addressResults"
+    );
+
 
   const address =
     addressInput.value.trim();
@@ -1231,144 +1415,305 @@ function findAddress() {
   }
 
 
-  if (
-    typeof google === "undefined" ||
-    !google.maps ||
-    !google.maps.Geocoder
-  ) {
-
-    tg.showAlert(
-      "Пошук адреси зараз недоступний. Спробуйте ще раз."
-    );
-
-    return;
-
-  }
+  resultsBox.style.display =
+    "block";
 
 
-  const geocoder =
-    new google.maps.Geocoder();
+  resultsBox.innerHTML =
+
+    '<div class="address-loading">' +
+    '🔎 Шукаємо адресу...' +
+    '</div>';
 
 
-  geocoder.geocode(
+  try {
 
-    {
-      address: address,
-      region: "UA",
-      language: "uk"
-    },
+    /*
+      Используем OpenStreetMap Nominatim.
+      Поэтому поиск НЕ зависит от Google Geocoder API.
+    */
 
-    function(results, status) {
-
-      if (
-        status !== "OK" ||
-        !results ||
-        !results.length
-      ) {
-
-        tg.showAlert(
-          "Адресу не знайдено. Спробуйте ввести місто, вулицю та номер, наприклад: Київ, Хрещатик, 1."
-        );
-
-        return;
-
-      }
+    const url =
+      "https://nominatim.openstreetmap.org/search" +
+      "?format=jsonv2" +
+      "&addressdetails=1" +
+      "&limit=5" +
+      "&countrycodes=ua" +
+      "&accept-language=uk" +
+      "&q=" +
+      encodeURIComponent(
+        address
+      );
 
 
-      const result =
-        results[0];
+    const response =
+      await fetch(
+        url,
+        {
+          method: "GET",
 
-      const location =
-        result.geometry.location;
-
-
-      selectedLat =
-        location.lat();
-
-      selectedLng =
-        location.lng();
-
-
-      if (pickMarker) {
-        pickMarker.setMap(null);
-      }
-
-
-      pickMarker =
-        new google.maps.Marker({
-
-          position: location,
-
-          map: map,
-
-          title:
-            result.formatted_address,
-
-          draggable: true
-
-        });
-
-
-      pickMarker.addListener(
-        "dragend",
-        function() {
-
-          const p =
-            pickMarker.getPosition();
-
-
-          selectedLat =
-            p.lat();
-
-          selectedLng =
-            p.lng();
-
-
-          document
-            .getElementById("selectedLocation")
-            .textContent =
-              "📍 " +
-              selectedLat.toFixed(6) +
-              ", " +
-              selectedLng.toFixed(6);
-
+          headers: {
+            "Accept":
+              "application/json"
+          }
         }
       );
 
 
-      map.setCenter(location);
-      map.setZoom(17);
+    if (!response.ok) {
 
-
-      document
-        .getElementById("selectedLocation")
-        .textContent =
-          "📍 " +
-          result.formatted_address +
-          " (" +
-          selectedLat.toFixed(6) +
-          ", " +
-          selectedLng.toFixed(6) +
-          ")";
-
-
-      addressInput.value =
-        result.formatted_address;
+      throw new Error(
+        "HTTP " +
+        response.status
+      );
 
     }
 
-  );
+
+    const results =
+      await response.json();
+
+
+    if (
+      !results ||
+      !results.length
+    ) {
+
+      resultsBox.innerHTML =
+
+        '<div class="address-error">' +
+
+        '❌ Адресу не знайдено.<br><br>' +
+
+        '<small>' +
+
+        'Спробуйте написати, наприклад:<br>' +
+
+        'Київ, Хрещатик 1<br>' +
+
+        'Київ, вул. Хрещатик, 1<br>' +
+
+        'Вишневе, Київська область' +
+
+        '</small>' +
+
+        '</div>';
+
+      return;
+
+    }
+
+
+    resultsBox.innerHTML = "";
+
+
+    results.forEach(
+      function(result) {
+
+        const button =
+          document.createElement(
+            "button"
+          );
+
+
+        button.type =
+          "button";
+
+
+        button.className =
+          "address-result";
+
+
+        button.textContent =
+          "📍 " +
+          result.display_name;
+
+
+        button.onclick =
+          function() {
+
+            selectAddressResult(
+              result
+            );
+
+          };
+
+
+        resultsBox.appendChild(
+          button
+        );
+
+      }
+    );
+
+
+  } catch(error) {
+
+    console.error(
+      "Address search error:",
+      error
+    );
+
+
+    resultsBox.innerHTML =
+
+      '<div class="address-error">' +
+
+      '❌ Не вдалося виконати пошук адреси.<br><br>' +
+
+      '<small>' +
+
+      'Перевірте інтернет або скористайтеся ' +
+
+      '«Вибрати місце на карті».' +
+
+      '</small>' +
+
+      '</div>';
+
+  }
 
 }
 
 
-/* Сохранение */
+/* ВЫБОР НАЙДЕННОГО АДРЕСА */
+
+function selectAddressResult(
+  result
+) {
+
+  const lat =
+    parseFloat(
+      result.lat
+    );
+
+
+  const lng =
+    parseFloat(
+      result.lon
+    );
+
+
+  selectedLat =
+    lat;
+
+
+  selectedLng =
+    lng;
+
+
+  if (pickMarker) {
+
+    pickMarker.setMap(
+      null
+    );
+
+  }
+
+
+  pickMarker =
+    new google.maps.Marker({
+
+      position: {
+        lat: lat,
+        lng: lng
+      },
+
+      map: map,
+
+      title:
+        result.display_name,
+
+      draggable: true
+
+    });
+
+
+  pickMarker.addListener(
+    "dragend",
+    function() {
+
+      const p =
+        pickMarker.getPosition();
+
+
+      selectedLat =
+        p.lat();
+
+
+      selectedLng =
+        p.lng();
+
+
+      document
+        .getElementById(
+          "selectedLocation"
+        )
+        .textContent =
+
+          "📍 " +
+          selectedLat.toFixed(6) +
+          ", " +
+          selectedLng.toFixed(6);
+
+    }
+  );
+
+
+  map.setCenter({
+
+    lat: lat,
+
+    lng: lng
+
+  });
+
+
+  map.setZoom(17);
+
+
+  document
+    .getElementById(
+      "newAddress"
+    )
+    .value =
+      result.display_name;
+
+
+  document
+    .getElementById(
+      "selectedLocation"
+    )
+    .textContent =
+
+      "📍 " +
+      result.display_name +
+      " (" +
+      lat.toFixed(6) +
+      ", " +
+      lng.toFixed(6) +
+      ")";
+
+
+  document
+    .getElementById(
+      "addressResults"
+    )
+    .style.display =
+      "none";
+
+}
+
+
+/* СОХРАНЕНИЕ ТОЧКИ */
 
 function savePoint() {
 
   const name =
     document
-      .getElementById("newName")
+      .getElementById(
+        "newName"
+      )
       .value
       .trim();
 
@@ -1390,7 +1735,7 @@ function savePoint() {
   ) {
 
     tg.showAlert(
-      "Спочатку виберіть місце на карті."
+      "Спочатку знайдіть адресу або виберіть місце на карті."
     );
 
     return;
@@ -1400,7 +1745,9 @@ function savePoint() {
 
   const category =
     document
-      .getElementById("newCategory")
+      .getElementById(
+        "newCategory"
+      )
       .value;
 
 
@@ -1426,53 +1773,79 @@ function savePoint() {
 
   const logo =
     document
-      .getElementById("logoPreview")
+      .getElementById(
+        "logoPreview"
+      )
       .src || "";
 
 
   const newPlace = {
 
-    name: name,
+    name:
+      name,
 
-    category: category,
+    category:
+      category,
 
     categoryName:
-      categoryNames[category],
+      categoryNames[
+        category
+      ],
 
     address:
       document
-        .getElementById("newAddress")
+        .getElementById(
+          "newAddress"
+        )
         .value
         .trim(),
 
     phone:
       document
-        .getElementById("newPhone")
+        .getElementById(
+          "newPhone"
+        )
         .value
         .trim(),
 
     telegram:
       document
-        .getElementById("newTelegram")
+        .getElementById(
+          "newTelegram"
+        )
         .value
         .trim(),
 
     website:
       document
-        .getElementById("newWebsite")
+        .getElementById(
+          "newWebsite"
+        )
         .value
         .trim(),
 
-    logo: logo,
+    logo:
+      logo,
 
-    lat: selectedLat,
-    lng: selectedLng
+    lat:
+      selectedLat,
+
+    lng:
+      selectedLng
 
   };
 
 
-  places.push(newPlace);
+  places.push(
+    newPlace
+  );
 
+
+  /*
+    Пока локальное сохранение.
+    Позже подключаем общую базу
+    и модерацию через Telegram.
+  */
 
   const customPlaces =
     places.slice(2);
@@ -1480,7 +1853,9 @@ function savePoint() {
 
   localStorage.setItem(
     "ceilingPlaces",
-    JSON.stringify(customPlaces)
+    JSON.stringify(
+      customPlaces
+    )
   );
 
 
@@ -1492,14 +1867,18 @@ function savePoint() {
 
   map.setCenter({
 
-    lat: selectedLat,
+    lat:
+      selectedLat,
 
-    lng: selectedLng
+    lng:
+      selectedLng
 
   });
 
 
-  map.setZoom(14);
+  map.setZoom(
+    14
+  );
 
 
   tg.showAlert(
@@ -1509,11 +1888,13 @@ function savePoint() {
 }
 
 
-/* Моё местоположение */
+/* МОЁ МЕСТОПОЛОЖЕНИЕ */
 
 function findMe() {
 
-  if (!navigator.geolocation) {
+  if (
+    !navigator.geolocation
+  ) {
 
     tg.showAlert(
       "Ваш браузер не підтримує геолокацію."
@@ -1539,21 +1920,33 @@ function findMe() {
       };
 
 
-      map.setCenter(location);
-      map.setZoom(13);
+      map.setCenter(
+        location
+      );
+
+
+      map.setZoom(
+        13
+      );
 
 
       if (userMarker) {
-        userMarker.setMap(null);
+
+        userMarker.setMap(
+          null
+        );
+
       }
 
 
       userMarker =
         new google.maps.Marker({
 
-          position: location,
+          position:
+            location,
 
-          map: map,
+          map:
+            map,
 
           title:
             "Моє місцезнаходження"
@@ -1576,6 +1969,7 @@ function findMe() {
 }
 
 </script>
+
 
 <script async
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD8juKXcYCwBIqfLzQFW4qVApkKxosmQFw&callback=initMap">
