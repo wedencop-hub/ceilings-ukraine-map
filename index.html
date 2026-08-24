@@ -2,643 +2,898 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
+>
 
 <title>Карта натяжних стель України</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-<style>
-*{box-sizing:border-box}
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
 
-html,body{
-margin:0;
-padding:0;
-width:100%;
-height:100%;
-overflow:hidden;
-font-family:Arial,Helvetica,sans-serif;
-background:#0b1118;
-color:#fff
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+<style>
+
+*{
+  box-sizing:border-box;
 }
 
-button,input,textarea,select{font-family:inherit}
-button{cursor:pointer}
+html,
+body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#081018;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+button,
+input,
+textarea,
+select{
+  font-family:inherit;
+}
+
+button{
+  cursor:pointer;
+}
 
 #app{
-width:100%;
-height:100%;
-position:relative
+  position:relative;
+  width:100%;
+  height:100%;
 }
 
+/* =========================
+   MAP
+========================= */
+
+#map{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:#15202b;
+}
+
+.leaflet-container{
+  background:#15202b;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+.leaflet-control-zoom{
+  display:none;
+}
+
+.leaflet-control-attribution{
+  background:rgba(7,12,17,.65)!important;
+  color:#8795a3!important;
+  font-size:9px!important;
+}
+
+.leaflet-control-attribution a{
+  color:#9eabb8!important;
+}
+
+.marker-rating{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+
+  min-width:58px;
+  height:34px;
+
+  padding:0 10px;
+
+  background:#fff;
+  color:#111;
+
+  border:2px solid rgba(0,0,0,.15);
+  border-radius:20px;
+
+  box-shadow:0 4px 14px rgba(0,0,0,.4);
+
+  font-size:13px;
+  font-weight:800;
+
+  white-space:nowrap;
+}
+
+.marker-rating .star{
+  color:#f5b900;
+  font-size:15px;
+}
+
+.marker-rating.empty{
+  min-width:46px;
+}
+
+/* =========================
+   TOP
+========================= */
+
 .top{
-position:absolute;
-top:0;
-left:0;
-right:0;
-z-index:20;
-padding:10px;
-background:rgba(10,16,23,.96);
-backdrop-filter:blur(15px);
-box-shadow:0 2px 15px rgba(0,0,0,.35)
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+
+  z-index:1000;
+
+  padding:9px;
+
+  background:rgba(8,14,20,.94);
+
+  backdrop-filter:blur(18px);
+
+  box-shadow:
+    0 2px 18px rgba(0,0,0,.4);
 }
 
 .header{
-display:flex;
-align-items:center;
-gap:8px;
-margin-bottom:9px
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  margin-bottom:8px;
 }
 
 .title{
-font-size:18px;
-font-weight:800;
-flex:1
+  flex:1;
+
+  font-size:17px;
+  font-weight:800;
 }
 
-.topbtn{
-height:40px;
-padding:0 13px;
-border:1px solid rgba(255,255,255,.15);
-border-radius:11px;
-background:#151f2a;
-color:#fff;
-font-weight:700
+.top-btn{
+  height:39px;
+
+  padding:0 12px;
+
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:11px;
+
+  background:#141f2a;
+  color:#fff;
+
+  font-size:13px;
+  font-weight:800;
 }
 
-.topbtn.blue{
-background:#087cf5;
-border-color:#087cf5
+.top-btn.blue{
+  background:#087cf5;
+  border-color:#087cf5;
 }
 
-.searchrow{
-display:flex;
-gap:8px
+.search-row{
+  display:flex;
+  gap:7px;
 }
 
 .search{
-height:44px;
-flex:1;
-border:1px solid rgba(255,255,255,.12);
-border-radius:12px;
-background:#131c26;
-color:#fff;
-padding:0 14px;
-font-size:15px;
-outline:none
+  flex:1;
+
+  height:43px;
+
+  padding:0 13px;
+
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:12px;
+
+  outline:none;
+
+  background:#121c26;
+  color:#fff;
+
+  font-size:14px;
 }
 
-.search::placeholder{color:#7e8b98}
-
-.filterbtn{
-width:45px;
-border:1px solid rgba(255,255,255,.12);
-border-radius:12px;
-background:#131c26;
-color:#fff;
-font-size:19px
+.search::placeholder{
+  color:#778594;
 }
+
+.filter-btn{
+  width:45px;
+
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:12px;
+
+  background:#121c26;
+  color:#fff;
+
+  font-size:19px;
+}
+
+/* =========================
+   CATEGORIES
+========================= */
 
 .categories{
-display:flex;
-gap:7px;
-overflow-x:auto;
-padding-top:8px;
-scrollbar-width:none
+  display:flex;
+
+  gap:7px;
+
+  padding-top:8px;
+
+  overflow-x:auto;
+
+  scrollbar-width:none;
 }
 
-.categories::-webkit-scrollbar{display:none}
-
-.cat{
-flex:0 0 auto;
-height:37px;
-padding:0 13px;
-border:1px solid rgba(255,255,255,.12);
-border-radius:20px;
-background:#141e28;
-color:#fff;
-font-size:13px;
-font-weight:700
+.categories::-webkit-scrollbar{
+  display:none;
 }
 
-.cat.active{
-background:#087cf5;
-border-color:#087cf5
+.category{
+  flex:0 0 auto;
+
+  height:36px;
+
+  padding:0 13px;
+
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;
+
+  background:#131e28;
+  color:#fff;
+
+  font-size:12px;
+  font-weight:800;
 }
 
-#map{
-position:absolute;
-inset:0
+.category.active{
+  background:#087cf5;
+  border-color:#087cf5;
 }
 
-.mapbuttons{
-position:absolute;
-right:12px;
-bottom:115px;
-z-index:15;
-display:flex;
-flex-direction:column;
-gap:7px
+/* =========================
+   MAP BUTTONS
+========================= */
+
+.map-buttons{
+  position:absolute;
+
+  right:12px;
+  bottom:115px;
+
+  z-index:900;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:8px;
 }
 
-.mapbtn{
-width:46px;
-height:46px;
-border:1px solid rgba(255,255,255,.15);
-border-radius:12px;
-background:#121b25;
-color:#fff;
-font-size:22px;
-box-shadow:0 4px 15px rgba(0,0,0,.3)
+.map-button{
+  width:47px;
+  height:47px;
+
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:13px;
+
+  background:#121c26;
+  color:#fff;
+
+  font-size:23px;
+
+  box-shadow:0 4px 16px rgba(0,0,0,.35);
 }
 
-.location{
-position:absolute;
-left:13px;
-bottom:115px;
-z-index:15;
-width:48px;
-height:48px;
-border:0;
-border-radius:50%;
-background:#087cf5;
-color:#fff;
-font-size:24px;
-box-shadow:0 4px 18px rgba(0,0,0,.4)
+.my-location{
+  position:absolute;
+
+  left:14px;
+  bottom:115px;
+
+  z-index:900;
+
+  width:49px;
+  height:49px;
+
+  border:0;
+  border-radius:50%;
+
+  background:#087cf5;
+  color:#fff;
+
+  font-size:24px;
+
+  box-shadow:0 4px 18px rgba(0,0,0,.4);
 }
 
-/* MARKER */
-
-.rating-marker{
-min-width:58px;
-height:34px;
-padding:0 9px;
-display:flex;
-align-items:center;
-justify-content:center;
-gap:3px;
-border-radius:18px;
-background:#fff;
-color:#111;
-font-size:13px;
-font-weight:800;
-box-shadow:0 3px 12px rgba(0,0,0,.35);
-border:2px solid rgba(0,0,0,.15);
-white-space:nowrap
-}
-
-.rating-marker .star{
-color:#f5b900;
-font-size:15px
-}
-
-/* CARD */
+/* =========================
+   CARD
+========================= */
 
 .card{
-position:absolute;
-left:8px;
-right:8px;
-bottom:8px;
-z-index:30;
-display:none;
-max-height:82%;
-overflow-y:auto;
-background:#0d151e;
-border:1px solid rgba(255,255,255,.14);
-border-radius:22px;
-box-shadow:0 -10px 40px rgba(0,0,0,.5)
+  position:absolute;
+
+  left:8px;
+  right:8px;
+  bottom:8px;
+
+  z-index:1200;
+
+  display:none;
+
+  max-height:82%;
+
+  overflow-y:auto;
+
+  background:#0d151e;
+
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:22px;
+
+  box-shadow:
+    0 -10px 40px rgba(0,0,0,.55);
 }
 
-.handle{
-width:40px;
-height:5px;
-margin:9px auto;
-background:#718090;
-border-radius:5px
+.card-handle{
+  width:40px;
+  height:5px;
+
+  margin:9px auto;
+
+  border-radius:5px;
+
+  background:#667582;
 }
 
-.closecard{
-position:absolute;
-right:12px;
-top:10px;
-z-index:5;
-width:38px;
-height:38px;
-border-radius:50%;
-border:1px solid rgba(255,255,255,.15);
-background:rgba(0,0,0,.45);
-color:#fff;
-font-size:22px
+.card-close{
+  position:absolute;
+
+  top:10px;
+  right:12px;
+
+  z-index:10;
+
+  width:38px;
+  height:38px;
+
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:50%;
+
+  background:rgba(0,0,0,.45);
+  color:#fff;
+
+  font-size:23px;
 }
 
-.cardhero{
-display:grid;
-grid-template-columns:35% 1fr;
-gap:17px;
-padding:7px 17px 0
+.card-main{
+  padding:5px 17px 0;
 }
 
-.cardimage{
-width:100%;
-height:220px;
-object-fit:cover;
-border-radius:15px;
-background:#18222d
+.card-image{
+  display:none;
+
+  width:100%;
+  height:210px;
+
+  object-fit:cover;
+
+  margin-bottom:12px;
+
+  border-radius:15px;
+
+  background:#17222c;
 }
 
-.cardname{
-font-size:23px;
-font-weight:800;
-line-height:1.15;
-padding-right:35px;
-margin-bottom:9px
+.card-name{
+  padding-right:45px;
+
+  font-size:23px;
+  font-weight:800;
+  line-height:1.18;
 }
 
-.ratingline{
-display:flex;
-align-items:center;
-gap:7px;
-flex-wrap:wrap;
-font-size:14px;
-margin-bottom:13px
+.rating-row{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+
+  gap:7px;
+
+  margin-top:8px;
+  margin-bottom:13px;
 }
 
-.ratingnum{
-font-size:19px;
-font-weight:800
+.rating-number{
+  font-size:20px;
+  font-weight:800;
 }
 
 .stars{
-color:#ffc400;
-letter-spacing:1px
+  color:#ffc400;
+  letter-spacing:1px;
 }
 
-.open{
-color:#20d26f
+.review-count{
+  color:#aab5c0;
+  font-size:13px;
 }
 
 .actions{
-display:flex;
-gap:7px;
-flex-wrap:wrap
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
 }
 
 .action{
-height:42px;
-padding:0 14px;
-border:1px solid rgba(255,255,255,.15);
-border-radius:21px;
-background:#141f29;
-color:#fff;
-font-weight:700
+  height:41px;
+
+  padding:0 14px;
+
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:21px;
+
+  background:#141f29;
+  color:#fff;
+
+  font-size:13px;
+  font-weight:800;
 }
 
 .action.primary{
-background:#087cf5;
-border-color:#087cf5
+  background:#087cf5;
+  border-color:#087cf5;
 }
 
 .action.danger{
-background:#d9343a;
-border-color:#d9343a
+  background:#d7353d;
+  border-color:#d7353d;
 }
 
 .info{
-margin:15px 17px 0;
-border:1px solid rgba(255,255,255,.12);
-border-radius:14px;
-overflow:hidden
+  margin:15px 17px 0;
+
+  overflow:hidden;
+
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:14px;
 }
 
-.inforow{
-display:flex;
-gap:10px;
-padding:12px;
-border-bottom:1px solid rgba(255,255,255,.07);
-font-size:14px
+.info-row{
+  display:flex;
+  gap:10px;
+
+  padding:12px;
+
+  border-bottom:1px solid rgba(255,255,255,.07);
+
+  font-size:14px;
 }
 
-.inforow:last-child{border-bottom:0}
-
-.infoicon{width:22px}
-
-.infovalue{
-flex:1;
-word-break:break-word;
-color:#d4dbe3
+.info-row:last-child{
+  border-bottom:0;
 }
 
-.infovalue a{
-color:#4db1ff;
-text-decoration:none
+.info-icon{
+  width:22px;
+}
+
+.info-value{
+  flex:1;
+
+  word-break:break-word;
+
+  color:#d5dce3;
+}
+
+.info-value a{
+  color:#48afff;
+  text-decoration:none;
 }
 
 .description{
-padding:15px 17px;
-font-size:14px;
-line-height:1.5;
-color:#cbd3dc
+  padding:15px 17px;
+
+  color:#c8d1da;
+
+  font-size:14px;
+  line-height:1.5;
 }
 
-.reviewtitle{
-padding:2px 17px 10px;
-font-size:19px;
-font-weight:800
+/* =========================
+   REVIEWS
+========================= */
+
+.review-title{
+  padding:3px 17px 9px;
+
+  font-size:19px;
+  font-weight:800;
 }
 
 .reviews{
-display:flex;
-gap:9px;
-overflow-x:auto;
-padding:0 17px 15px;
-scrollbar-width:none
+  display:flex;
+  gap:9px;
+
+  padding:0 17px 15px;
+
+  overflow-x:auto;
+
+  scrollbar-width:none;
+}
+
+.reviews::-webkit-scrollbar{
+  display:none;
 }
 
 .review{
-flex:0 0 270px;
-padding:13px;
-background:#121c26;
-border:1px solid rgba(255,255,255,.1);
-border-radius:14px
+  flex:0 0 270px;
+
+  padding:13px;
+
+  background:#121c26;
+
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;
 }
 
-.reviewauthor{
-font-weight:800
+.review-author{
+  font-weight:800;
 }
 
-.reviewdate{
-font-size:11px;
-color:#758290;
-margin-top:3px
+.review-date{
+  margin-top:3px;
+
+  color:#788592;
+
+  font-size:11px;
 }
 
-.reviewstars{
-color:#ffc400;
-margin:8px 0
+.review-stars{
+  margin:8px 0;
+
+  color:#ffc400;
 }
 
-.reviewtext{
-font-size:13px;
-line-height:1.45;
-color:#cbd3dc
+.review-text{
+  color:#cbd3dc;
+
+  font-size:13px;
+  line-height:1.45;
 }
 
-.reviewform{
-margin:0 17px 17px;
-padding:14px;
-background:#121c26;
-border:1px solid rgba(255,255,255,.1);
-border-radius:14px
+.review-form{
+  margin:0 17px 17px;
+  padding:14px;
+
+  background:#121c26;
+
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;
 }
 
-.reviewformtitle{
-font-weight:800;
-font-size:17px;
-margin-bottom:9px
+.review-form-title{
+  margin-bottom:8px;
+
+  font-size:17px;
+  font-weight:800;
 }
 
-.starselect{
-display:flex;
-gap:4px;
-margin-bottom:10px
+.star-select{
+  display:flex;
+  gap:3px;
+
+  margin-bottom:9px;
 }
 
-.starselect button{
-border:0;
-background:none;
-color:#687482;
-font-size:30px;
-padding:0
+.star-select button{
+  padding:0;
+
+  border:0;
+  background:none;
+
+  color:#66727f;
+
+  font-size:30px;
 }
 
-.starselect button.active{color:#ffc400}
+.star-select button.active{
+  color:#ffc400;
+}
 
-/* MODALS */
+/* =========================
+   MODALS
+========================= */
 
 .modal{
-position:absolute;
-inset:0;
-z-index:60;
-display:none;
-align-items:flex-end;
-background:rgba(0,0,0,.7)
+  position:absolute;
+  inset:0;
+
+  z-index:2000;
+
+  display:none;
+  align-items:flex-end;
+
+  background:rgba(0,0,0,.72);
 }
 
-.modalbox{
-width:100%;
-max-height:94%;
-overflow-y:auto;
-padding:18px;
-background:#0d151e;
-border-radius:22px 22px 0 0
+.modal-box{
+  width:100%;
+  max-height:94%;
+
+  overflow-y:auto;
+
+  padding:18px;
+
+  background:#0d151e;
+
+  border-radius:22px 22px 0 0;
 }
 
-.modaltitle{
-font-size:21px;
-font-weight:800;
-margin-bottom:15px
+.modal-title{
+  margin-bottom:15px;
+
+  font-size:21px;
+  font-weight:800;
 }
 
 .group{
-margin-bottom:11px
+  margin-bottom:11px;
 }
 
 .label{
-display:block;
-font-size:13px;
-font-weight:700;
-color:#aeb8c2;
-margin-bottom:5px
+  display:block;
+
+  margin-bottom:5px;
+
+  color:#aeb8c2;
+
+  font-size:13px;
+  font-weight:700;
 }
 
 .input,
 .select,
 .textarea{
-width:100%;
-border:1px solid rgba(255,255,255,.13);
-border-radius:10px;
-background:#101923;
-color:#fff;
-padding:12px;
-font-size:15px;
-outline:none
+  width:100%;
+
+  padding:12px;
+
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:10px;
+
+  outline:none;
+
+  background:#101923;
+  color:#fff;
+
+  font-size:15px;
 }
 
 .textarea{
-min-height:85px;
-resize:vertical
+  min-height:90px;
+  resize:vertical;
 }
 
-.modalbutton{
-width:100%;
-height:45px;
-border:0;
-border-radius:11px;
-background:#087cf5;
-color:#fff;
-font-size:15px;
-font-weight:800;
-margin-top:7px
+.modal-button{
+  width:100%;
+  height:45px;
+
+  margin-top:7px;
+
+  border:0;
+  border-radius:11px;
+
+  background:#087cf5;
+  color:#fff;
+
+  font-size:15px;
+  font-weight:800;
 }
 
-.modalbutton.gray{background:#28333e}
-.modalbutton.red{background:#d9343a}
+.modal-button.gray{
+  background:#293540;
+}
+
+.modal-button.red{
+  background:#d7353d;
+}
 
 .address-results{
-margin-top:6px
+  margin-top:7px;
 }
 
 .address-result{
-width:100%;
-text-align:left;
-padding:10px;
-margin-bottom:5px;
-border:1px solid rgba(255,255,255,.1);
-border-radius:9px;
-background:#151f29;
-color:#fff;
-font-size:13px
+  width:100%;
+
+  padding:10px;
+
+  margin-bottom:5px;
+
+  text-align:left;
+
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:9px;
+
+  background:#151f29;
+  color:#fff;
+
+  font-size:13px;
 }
 
 .coords{
-font-size:12px;
-color:#8c99a6;
-padding:6px 0
+  padding:7px 0;
+
+  color:#8c99a6;
+
+  font-size:12px;
 }
+
+/* =========================
+   ADMIN
+========================= */
 
 .pending{
-padding:12px;
-margin-bottom:9px;
-border:1px solid rgba(255,255,255,.12);
-border-radius:12px;
-background:#121c26
+  padding:12px;
+  margin-bottom:9px;
+
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:12px;
+
+  background:#121c26;
 }
 
-.pendingname{
-font-size:17px;
-font-weight:800;
-margin-bottom:5px
+.pending-name{
+  margin-bottom:5px;
+
+  font-size:17px;
+  font-weight:800;
 }
 
-.pendinginfo{
-font-size:13px;
-line-height:1.45;
-color:#aeb8c2
+.pending-info{
+  color:#aeb8c2;
+
+  font-size:13px;
+  line-height:1.5;
 }
 
-.pendingactions{
-display:flex;
-gap:7px;
-margin-top:9px
+.pending-actions{
+  display:flex;
+  gap:7px;
+
+  margin-top:9px;
 }
 
-.pendingactions button{flex:1}
-
-.adminitem{
-padding:12px;
-margin-bottom:8px;
-border-radius:11px;
-background:#121c26;
-border:1px solid rgba(255,255,255,.1)
+.pending-actions button{
+  flex:1;
 }
 
-.adminname{
-font-weight:800
+.admin-item{
+  padding:12px;
+  margin-bottom:8px;
+
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:11px;
+
+  background:#121c26;
 }
 
-.adminmeta{
-font-size:12px;
-color:#9da9b5;
-margin-top:4px
+.admin-name{
+  font-weight:800;
+}
+
+.admin-meta{
+  margin-top:4px;
+
+  color:#9da9b5;
+
+  font-size:12px;
 }
 
 .empty{
-position:absolute;
-top:160px;
-left:15px;
-right:15px;
-z-index:10;
-display:none;
-padding:13px;
-border-radius:12px;
-background:#121c26;
-text-align:center
+  position:absolute;
+
+  top:160px;
+  left:15px;
+  right:15px;
+
+  z-index:500;
+
+  display:none;
+
+  padding:13px;
+
+  border-radius:12px;
+
+  background:#121c26;
+
+  text-align:center;
 }
+
+/* =========================
+   MOBILE
+========================= */
 
 @media(max-width:700px){
 
-.top{padding:8px}
+  .top{
+    padding:8px;
+  }
 
-.title{font-size:16px}
+  .title{
+    font-size:16px;
+  }
 
-.topbtn{
-height:36px;
-padding:0 9px;
-font-size:12px
+  .top-btn{
+    height:36px;
+    padding:0 9px;
+
+    font-size:12px;
+  }
+
+  .card{
+    left:0;
+    right:0;
+    bottom:0;
+
+    max-height:89%;
+
+    border-radius:21px 21px 0 0;
+  }
+
+  .card-main{
+    padding:5px 12px 0;
+  }
+
+  .card-image{
+    height:205px;
+  }
+
+  .card-name{
+    margin-top:9px;
+
+    font-size:21px;
+  }
+
+  .info{
+    margin-left:12px;
+    margin-right:12px;
+  }
+
+  .description{
+    padding-left:12px;
+    padding-right:12px;
+  }
+
+  .review-title{
+    padding-left:12px;
+  }
+
+  .reviews{
+    padding-left:12px;
+  }
+
+  .review-form{
+    margin-left:12px;
+    margin-right:12px;
+  }
+
+  .map-buttons{
+    bottom:125px;
+  }
+
+  .my-location{
+    bottom:125px;
+  }
+
 }
 
-.card{
-left:0;
-right:0;
-bottom:0;
-max-height:89%;
-border-radius:21px 21px 0 0
-}
-
-.cardhero{
-display:block;
-padding:5px 12px 0
-}
-
-.cardimage{
-height:205px
-}
-
-.cardname{
-font-size:21px;
-margin-top:12px
-}
-
-.actions{
-display:grid;
-grid-template-columns:1fr 1fr 1fr
-}
-
-.action{
-padding:0 7px;
-font-size:11px
-}
-
-.info{
-margin:13px 12px 0
-}
-
-.description{
-padding:13px 12px
-}
-
-.reviewtitle{
-padding-left:12px
-}
-
-.reviews{
-padding-left:12px
-}
-
-.reviewform{
-margin-left:12px;
-margin-right:12px
-}
-
-.mapbuttons{
-bottom:125px
-}
-
-.location{
-bottom:125px
-}
-
-}
 </style>
 </head>
 
@@ -646,2753 +901,3502 @@ bottom:125px
 
 <div id="app">
 
-<div class="top">
+  <div class="top">
+
+    <div class="header">
+
+      <div class="title">
+        🗺 Карта натяжних стель
+      </div>
 
-<div class="header">
+      <button
+        id="addButton"
+        class="top-btn blue"
+        onclick="openAdd()">
+        ＋ Додати
+      </button>
 
-<div class="title">
-🗺 Карта натяжних стель
-</div>
+      <button
+        id="adminButton"
+        class="top-btn"
+        onclick="openAdmin()"
+        style="display:none">
+        👑 Адмін
+      </button>
 
-<button
-id="addButton"
-class="topbtn blue"
-onclick="openAdd()">
-＋ Додати
-</button>
+    </div>
 
-<button
-id="adminButton"
-class="topbtn"
-onclick="openAdmin()"
-style="display:none">
-👑 Адмін
-</button>
+    <div class="search-row">
 
-</div>
+      <input
+        id="search"
+        class="search"
+        placeholder="🔍 Пошук компанії, міста, адреси"
+      >
 
-<div class="searchrow">
+      <button
+        class="filter-btn"
+        onclick="toggleCategories()">
+        ☷
+      </button>
 
-<input
-id="search"
-class="search"
-placeholder="🔍 Пошук компанії, міста, адреси">
+    </div>
 
-<button
-class="filterbtn"
-onclick="toggleCategories()">
-☷
-</button>
+    <div
+      id="categories"
+      class="categories">
 
-</div>
+      <button
+        class="category active"
+        data-cat="all">
+        ▦ Всі
+      </button>
 
-<div
-id="categories"
-class="categories">
+      <button
+        class="category"
+        data-cat="manufacturer">
+        🏭 Виробники
+      </button>
 
-<button
-class="cat active"
-data-cat="all">
-▦ Всі
-</button>
+      <button
+        class="category"
+        data-cat="shop">
+        🏪 Магазини
+      </button>
 
-<button
-class="cat"
-data-cat="manufacturer">
-🏭 Виробники
-</button>
+      <button
+        class="category"
+        data-cat="tools">
+        🔧 Інструмент
+      </button>
 
-<button
-class="cat"
-data-cat="shop">
-🏪 Магазини
-</button>
+      <button
+        class="category"
+        data-cat="gas">
+        🔥 Газ
+      </button>
 
-<button
-class="cat"
-data-cat="tools">
-🔧 Інструмент
-</button>
+      <button
+        class="category"
+        data-cat="services">
+        🛠 Послуги
+      </button>
 
-<button
-class="cat"
-data-cat="gas">
-🔥 Газ
-</button>
+    </div>
 
-<button
-class="cat"
-data-cat="services">
-🛠 Послуги
-</button>
+  </div>
 
-</div>
 
-</div>
+  <div id="map"></div>
 
 
-<div id="map"></div>
+  <div class="map-buttons">
+
+    <button
+      class="map-button"
+      onclick="zoomIn()">
+      ＋
+    </button>
 
+    <button
+      class="map-button"
+      onclick="zoomOut()">
+      −
+    </button>
 
-<div class="mapbuttons">
+  </div>
 
-<button class="mapbtn" onclick="zoomIn()">＋</button>
-<button class="mapbtn" onclick="zoomOut()">−</button>
 
-</div>
+  <button
+    class="my-location"
+    onclick="findMe()">
+    ◎
+  </button>
 
 
-<button
-class="location"
-onclick="findMe()">
-◎
-</button>
+  <div
+    id="empty"
+    class="empty">
+    Нічого не знайдено
+  </div>
 
 
-<div id="empty" class="empty">
-Нічого не знайдено
-</div>
+  <!-- PLACE CARD -->
 
+  <div
+    id="card"
+    class="card">
 
-<!-- CARD -->
+    <div class="card-handle"></div>
 
-<div id="card" class="card">
+    <button
+      class="card-close"
+      onclick="closeCard()">
+      ×
+    </button>
 
-<div class="handle"></div>
+    <div class="card-main">
 
-<button
-class="closecard"
-onclick="closeCard()">
-×
-</button>
+      <img
+        id="cardImage"
+        class="card-image"
+      >
 
-<div class="cardhero">
+      <div
+        id="cardName"
+        class="card-name">
+      </div>
 
-<img
-id="cardImage"
-class="cardimage"
-style="display:none">
+      <div class="rating-row">
 
-<div>
+        <span
+          id="cardRating"
+          class="rating-number">
+        </span>
 
-<div
-id="cardName"
-class="cardname">
-</div>
+        <span
+          id="cardStars"
+          class="stars">
+        </span>
 
-<div class="ratingline">
+        <span
+          id="cardReviews"
+          class="review-count">
+        </span>
 
-<span
-id="cardRating"
-class="ratingnum">
-</span>
+      </div>
 
-<span
-id="cardStars"
-class="stars">
-</span>
+      <div class="actions">
 
-<span
-id="cardReviews">
-</span>
+        <button
+          id="routeButton"
+          class="action primary">
+          ➤ Маршрут
+        </button>
 
-</div>
+        <button
+          id="phoneButton"
+          class="action">
+          ☎ Дзвінок
+        </button>
 
-<div class="actions">
+        <button
+          id="siteButton"
+          class="action">
+          🌐 Сайт
+        </button>
 
-<button
-id="routeBtn"
-class="action primary">
-➤ Маршрут
-</button>
+        <button
+          id="telegramButton"
+          class="action">
+          ✈️ Telegram
+        </button>
 
-<button
-id="phoneBtn"
-class="action">
-☎ Дзвінок
-</button>
+      </div>
 
-<button
-id="siteBtn"
-class="action">
-🌐 Сайт
-</button>
+    </div>
 
-</div>
 
-</div>
+    <div
+      id="placeInfo"
+      class="info">
+    </div>
 
-</div>
 
+    <div
+      id="placeDescription"
+      class="description"
+      style="display:none">
+    </div>
 
-<div
-id="info"
-class="info">
-</div>
 
+    <div class="review-title">
+      Відгуки
+    </div>
 
-<div
-id="description"
-class="description"
-style="display:none">
-</div>
 
+    <div
+      id="reviews"
+      class="reviews">
+    </div>
 
-<div class="reviewtitle">
-Відгуки
-</div>
 
-<div
-id="reviews"
-class="reviews">
-</div>
+    <div class="review-form">
 
+      <div class="review-form-title">
+        ⭐ Ваша оцінка
+      </div>
 
-<div class="reviewform">
+      <div
+        id="starSelect"
+        class="star-select">
 
-<div class="reviewformtitle">
-⭐ Ваша оцінка
-</div>
+        <button data-star="1">☆</button>
+        <button data-star="2">☆</button>
+        <button data-star="3">☆</button>
+        <button data-star="4">☆</button>
+        <button data-star="5">☆</button>
 
-<div
-id="starSelect"
-class="starselect">
+      </div>
 
-<button data-star="1">☆</button>
-<button data-star="2">☆</button>
-<button data-star="3">☆</button>
-<button data-star="4">☆</button>
-<button data-star="5">☆</button>
+      <input
+        id="reviewName"
+        class="input"
+        placeholder="Ваше ім'я"
+      >
 
-</div>
+      <textarea
+        id="reviewText"
+        class="textarea"
+        placeholder="Ваш відгук..."
+      ></textarea>
 
-<input
-id="reviewName"
-class="input"
-placeholder="Ваше ім'я">
+      <button
+        class="modal-button"
+        onclick="sendReview()">
+        Надіслати відгук
+      </button>
 
-<textarea
-id="reviewText"
-class="textarea"
-placeholder="Ваш відгук..."></textarea>
+    </div>
 
-<button
-class="modalbutton"
-onclick="sendReview()">
-Надіслати відгук
-</button>
 
-</div>
+    <div
+      id="adminPlaceActions"
+      style="display:none;padding:0 17px 17px">
 
+      <div class="actions">
 
-<div
-id="adminPlaceActions"
-style="display:none;padding:0 17px 17px">
+        <button
+          class="action"
+          onclick="editPlace()">
+          ✏️ Редагувати
+        </button>
 
-<div class="actions">
+        <button
+          class="action danger"
+          onclick="deletePlace()">
+          🗑 Видалити
+        </button>
 
-<button
-class="action"
-onclick="editPlace()">
-✏️ Редагувати
-</button>
+      </div>
 
-<button
-class="action danger"
-onclick="deletePlace()">
-🗑 Видалити
-</button>
+    </div>
 
-</div>
+  </div>
 
-</div>
 
-</div>
+  <!-- ADD PLACE -->
 
+  <div
+    id="addModal"
+    class="modal">
 
-<!-- ADD MODAL -->
+    <div class="modal-box">
 
-<div
-id="addModal"
-class="modal">
+      <div
+        id="addTitle"
+        class="modal-title">
+        ➕ Додати точку
+      </div>
 
-<div class="modalbox">
 
-<div
-id="addTitle"
-class="modaltitle">
-➕ Додати точку
-</div>
+      <div class="group">
 
-<div class="group">
+        <label class="label">
+          Тип точки
+        </label>
 
-<label class="label">
-Тип точки
-</label>
+        <select
+          id="newCategory"
+          class="select">
 
-<select
-id="newCategory"
-class="select">
+          <option value="manufacturer">
+            🏭 Виробник
+          </option>
 
-<option value="manufacturer">🏭 Виробник</option>
-<option value="shop">🏪 Магазин / постачальник</option>
-<option value="tools">🔧 Інструмент</option>
-<option value="gas">🔥 Газ</option>
-<option value="services">🛠 Послуги</option>
+          <option value="shop">
+            🏪 Магазин / постачальник
+          </option>
 
-</select>
+          <option value="tools">
+            🔧 Інструмент
+          </option>
 
-</div>
+          <option value="gas">
+            🔥 Газ
+          </option>
 
+          <option value="services">
+            🛠 Послуги
+          </option>
 
-<div class="group">
+        </select>
 
-<label class="label">
-Назва
-</label>
+      </div>
 
-<input
-id="newName"
-class="input"
-placeholder="Назва компанії">
 
-</div>
+      <div class="group">
 
+        <label class="label">
+          Назва
+        </label>
 
-<div class="group">
+        <input
+          id="newName"
+          class="input"
+          placeholder="Назва компанії"
+        >
 
-<label class="label">
-Адреса
-</label>
+      </div>
 
-<input
-id="newAddress"
-class="input"
-placeholder="Київ, вул. ...">
 
-<button
-class="modalbutton"
-onclick="searchAddress()">
-🔎 Знайти адресу
-</button>
+      <div class="group">
 
-<div
-id="addressResults"
-class="address-results">
-</div>
+        <label class="label">
+          Адреса
+        </label>
 
-</div>
+        <input
+          id="newAddress"
+          class="input"
+          placeholder="Київ, вул. ..."
+        >
 
+        <button
+          class="modal-button"
+          onclick="searchAddress()">
+          🔎 Знайти адресу
+        </button>
 
-<div class="group">
+        <div
+          id="addressResults"
+          class="address-results">
+        </div>
 
-<label class="label">
-Телефон
-</label>
+      </div>
 
-<input
-id="newPhone"
-class="input"
-type="tel"
-placeholder="+380...">
 
-</div>
+      <div class="group">
 
+        <label class="label">
+          Телефон
+        </label>
 
-<div class="group">
+        <input
+          id="newPhone"
+          class="input"
+          type="tel"
+          placeholder="+380..."
+        >
 
-<label class="label">
-Telegram
-</label>
+      </div>
 
-<input
-id="newTelegram"
-class="input"
-placeholder="@username">
 
-</div>
+      <div class="group">
 
+        <label class="label">
+          Telegram
+        </label>
 
-<div class="group">
+        <input
+          id="newTelegram"
+          class="input"
+          placeholder="@username або посилання"
+        >
 
-<label class="label">
-Сайт
-</label>
+      </div>
 
-<input
-id="newWebsite"
-class="input"
-placeholder="https://...">
 
-</div>
+      <div class="group">
 
+        <label class="label">
+          Сайт
+        </label>
 
-<div class="group">
+        <input
+          id="newWebsite"
+          class="input"
+          placeholder="https://..."
+        >
 
-<label class="label">
-Опис
-</label>
+      </div>
 
-<textarea
-id="newDescription"
-class="textarea"
-placeholder="Короткий опис..."></textarea>
 
-</div>
+      <div class="group">
 
+        <label class="label">
+          Опис
+        </label>
 
-<div class="group">
+        <textarea
+          id="newDescription"
+          class="textarea"
+          placeholder="Короткий опис компанії...">
+        </textarea>
 
-<label class="label">
-Фото / логотип
-</label>
+      </div>
 
-<input
-id="newLogo"
-class="input"
-type="file"
-accept="image/*">
 
-</div>
+      <div class="group">
 
+        <label class="label">
+          Фото / логотип
+        </label>
 
-<div
-id="coords"
-class="coords">
-📍 Координати не вибрані
-</div>
+        <input
+          id="newLogo"
+          class="input"
+          type="file"
+          accept="image/*"
+        >
 
+      </div>
 
-<button
-class="modalbutton"
-onclick="pickOnMap()">
-📍 Поставити точку на карті
-</button>
 
+      <div
+        id="coords"
+        class="coords">
+        📍 Координати не вибрані
+      </div>
 
-<button
-class="modalbutton"
-onclick="savePlace()">
-✅ Зберегти
-</button>
 
+      <button
+        class="modal-button"
+        onclick="startMapPick()">
+        📍 Поставити точку на карті
+      </button>
 
-<button
-class="modalbutton gray"
-onclick="closeAdd()">
-Закрити
-</button>
 
-</div>
+      <button
+        class="modal-button"
+        onclick="savePlace()">
+        ✅ Зберегти
+      </button>
 
-</div>
 
+      <button
+        class="modal-button gray"
+        onclick="closeAdd()">
+        Закрити
+      </button>
 
-<!-- ADMIN MODAL -->
+    </div>
 
-<div
-id="adminModal"
-class="modal">
+  </div>
 
-<div class="modalbox">
 
-<div class="modaltitle">
-👑 Адмін-панель
-</div>
+  <!-- ADMIN -->
 
+  <div
+    id="adminModal"
+    class="modal">
 
-<button
-class="modalbutton"
-onclick="showPending()">
-⏳ Заявки на модерацію
-</button>
+    <div class="modal-box">
 
+      <div class="modal-title">
+        👑 Адмін-панель
+      </div>
 
-<div
-id="ownerAdminSection"
-style="display:none">
 
-<button
-class="modalbutton"
-onclick="showAdmins()">
-👥 Адміністратори
-</button>
+      <button
+        class="modal-button"
+        onclick="showPending()">
+        ⏳ Заявки на модерацію
+      </button>
 
-<div
-id="adminsBox"
-style="margin-top:12px">
-</div>
 
-</div>
+      <div
+        id="ownerSection"
+        style="display:none">
 
+        <button
+          class="modal-button"
+          onclick="showAdmins()">
+          👥 Адміністратори
+        </button>
 
-<div
-id="pendingBox"
-style="margin-top:12px">
-</div>
+        <div
+          id="adminsBox"
+          style="margin-top:12px">
+        </div>
 
+      </div>
 
-<button
-class="modalbutton gray"
-onclick="closeAdmin()">
-Закрити
-</button>
 
-</div>
+      <div
+        id="pendingBox"
+        style="margin-top:12px">
+      </div>
 
-</div>
 
+      <button
+        class="modal-button gray"
+        onclick="closeAdmin()">
+        Закрити
+      </button>
 
-<!-- ADD ADMIN -->
+    </div>
 
-<div
-id="addAdminModal"
-class="modal">
+  </div>
 
-<div class="modalbox">
 
-<div class="modaltitle">
-👥 Додати адміністратора
-</div>
+  <!-- ADD ADMIN -->
 
-<div class="group">
+  <div
+    id="addAdminModal"
+    class="modal">
 
-<label class="label">
-Telegram ID
-</label>
+    <div class="modal-box">
 
-<input
-id="adminTelegramId"
-class="input"
-placeholder="Наприклад: 123456789">
+      <div class="modal-title">
+        👥 Додати адміністратора
+      </div>
 
-</div>
 
-<div class="group">
+      <div class="group">
 
-<label class="label">
-Имя
-</label>
+        <label class="label">
+          Telegram ID
+        </label>
 
-<input
-id="adminName"
-class="input"
-placeholder="Саша">
+        <input
+          id="adminTelegramId"
+          class="input"
+          placeholder="Наприклад: 123456789"
+        >
 
-</div>
+      </div>
 
-<div class="group">
 
-<label class="label">
-Роль
-</label>
+      <div class="group">
 
-<select
-id="adminRole"
-class="select">
+        <label class="label">
+          Ім'я
+        </label>
 
-<option value="moderator">
-🛠 Модератор
-</option>
+        <input
+          id="adminName"
+          class="input"
+          placeholder="Ім'я адміністратора"
+        >
 
-<option value="owner">
-👑 Владелец
-</option>
+      </div>
 
-</select>
 
-</div>
+      <div class="group">
 
-<button
-class="modalbutton"
-onclick="addAdmin()">
-✅ Добавить
-</button>
+        <label class="label">
+          Роль
+        </label>
 
-<button
-class="modalbutton gray"
-onclick="closeAddAdmin()">
-Закрыть
-</button>
+        <select
+          id="adminRole"
+          class="select">
 
-</div>
+          <option value="moderator">
+            🛠 Модератор
+          </option>
 
-</div>
+          <option value="owner">
+            👑 Власник
+          </option>
 
+        </select>
+
+      </div>
+
+
+      <button
+        class="modal-button"
+        onclick="addAdmin()">
+        ✅ Додати
+      </button>
+
+
+      <button
+        class="modal-button gray"
+        onclick="closeAddAdmin()">
+        Закрити
+      </button>
+
+    </div>
+
+  </div>
 
 </div>
 
 
 <script>
 
-const SUPABASE_URL=
-"https://usggjqukcqzttrilgmmo.supabase.co";
+/* =====================================================
+   CONFIG
+===================================================== */
 
-const SUPABASE_KEY=
-"sb_publishable_g3Hi1tMxV4sV5bYXBpijBA_nHFd0zxA";
+const SUPABASE_URL =
+  "https://usggjqukcqzttrilgmmo.supabase.co";
 
-const MAP_API=
-SUPABASE_URL+
-"/functions/v1/map-api";
+const SUPABASE_KEY =
+  "sb_publishable_g3Hi1tMxV4sV5bYXBpijBA_nHFd0zxA";
 
-const OWNER_ID=
-"8186262020";
+const MAP_API =
+  SUPABASE_URL +
+  "/functions/v1/map-api";
 
-let tg=
-window.Telegram &&
-window.Telegram.WebApp
-?
-window.Telegram.WebApp
-:
-null;
-
-let telegramId="";
-
-let currentAdmin=null;
-
-let places=[];
-
-let markers=[];
-
-let map=null;
-
-let currentPlace=null;
-
-let selectedLat=null;
-
-let selectedLng=null;
-
-let pickMode=false;
-
-let pickMarker=null;
-
-let editingId=null;
-
-let selectedRating=0;
-
-let activeCategory="all";
+const OWNER_ID =
+  "8186262020";
 
 
-/* ================================
-API
-================================ */
+/* =====================================================
+   TELEGRAM
+===================================================== */
+
+const tg =
+  window.Telegram &&
+  window.Telegram.WebApp
+    ? window.Telegram.WebApp
+    : null;
+
+
+if(tg){
+
+  tg.ready();
+
+  try{
+    tg.expand();
+  }catch(e){}
+
+}
+
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let telegramId = "";
+
+let currentAdmin = null;
+
+let places = [];
+
+let currentPlace = null;
+
+let currentMarker = null;
+
+let selectedLat = null;
+
+let selectedLng = null;
+
+let pickMode = false;
+
+let editingId = null;
+
+let selectedRating = 0;
+
+let activeCategory = "all";
+
+let map = null;
+
+let markerLayer = null;
+
+let temporaryMarker = null;
+
+
+/* =====================================================
+   API
+===================================================== */
 
 async function api(body){
 
-const r=
-await fetch(
-MAP_API,
-{
-method:"POST",
-headers:{
-"Content-Type":"application/json",
-"apikey":SUPABASE_KEY
-},
-body:JSON.stringify(body)
-}
-);
+  const response =
+    await fetch(
+      MAP_API,
+      {
+        method:"POST",
 
-const data=
-await r.json();
+        headers:{
+          "Content-Type":"application/json",
+          "apikey":SUPABASE_KEY
+        },
 
-if(!r.ok){
-
-throw new Error(
-data.error||
-"Помилка сервера"
-);
-
-}
-
-return data;
-
-}
+        body:JSON.stringify(body)
+      }
+    );
 
 
-/* ================================
-INIT
-================================ */
+  let data = null;
 
-async function initMap(){
+  try{
+    data = await response.json();
+  }catch(e){
+    data = {};
+  }
 
-if(tg){
 
-tg.ready();
-tg.expand();
+  if(!response.ok){
 
-telegramId=
-String(
-tg.initDataUnsafe?.user?.id||
-""
-);
+    throw new Error(
+      data.error ||
+      data.message ||
+      "Помилка сервера"
+    );
+
+  }
+
+
+  return data;
 
 }
 
 
-map=
-new google.maps.Map(
-document.getElementById("map"),
-{
-center:{
-lat:48.5,
-lng:31.2
-},
-zoom:6,
-mapTypeControl:false,
-streetViewControl:false,
-fullscreenControl:false,
-gestureHandling:"greedy",
-styles:darkMapStyle()
-}
-);
+/* =====================================================
+   INIT
+===================================================== */
+
+async function init(){
+
+  if(tg){
+
+    telegramId =
+      String(
+        tg.initDataUnsafe &&
+        tg.initDataUnsafe.user &&
+        tg.initDataUnsafe.user.id
+        || ""
+      );
+
+  }
 
 
-map.addListener(
-"click",
-e=>{
+  createMap();
 
-if(pickMode){
+  setupInterface();
 
-setCoordinates(
-e.latLng.lat(),
-e.latLng.lng()
-);
+  setupReviews();
 
-}
+  await loadPlaces();
 
-});
-
-
-document
-.querySelectorAll(".cat")
-.forEach(
-button=>{
-
-button.onclick=()=>{
-
-document
-.querySelectorAll(".cat")
-.forEach(
-b=>b.classList.remove("active")
-);
-
-button.classList.add("active");
-
-activeCategory=
-button.dataset.cat;
-
-renderMarkers();
-
-};
-
-}
-);
-
-
-document
-.getElementById("search")
-.addEventListener(
-"input",
-renderMarkers
-);
-
-
-setupStars();
-
-await loadPlaces();
-
-await detectAdmin();
+  await detectAdmin();
 
 }
 
 
-/* ================================
-DARK MAP
-================================ */
+/* =====================================================
+   MAP
+===================================================== */
 
-function darkMapStyle(){
+function createMap(){
 
-return [
+  map =
+    L.map(
+      "map",
+      {
+        zoomControl:false,
+        attributionControl:true,
+        preferCanvas:true
+      }
+    );
 
-{
-elementType:"geometry",
-stylers:[
-{color:"#18212b"}
-]
-},
 
-{
-elementType:"labels.text.fill",
-stylers:[
-{color:"#b8c2cc"}
-]
-},
+  L.tileLayer(
+    "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    {
+      maxZoom:19,
+      attribution:
+        '&copy; OpenStreetMap &copy; CARTO'
+    }
+  ).addTo(map);
 
-{
-elementType:"labels.text.stroke",
-stylers:[
-{color:"#18212b"}
-]
-},
 
-{
-featureType:"road",
-elementType:"geometry",
-stylers:[
-{color:"#354250"}
-]
-},
+  map.setView(
+    [48.5,31.2],
+    6
+  );
 
-{
-featureType:"road.highway",
-elementType:"geometry",
-stylers:[
-{color:"#455463"}
-]
-},
 
-{
-featureType:"water",
-elementType:"geometry",
-stylers:[
-{color:"#071e3c"}
-]
-},
+  markerLayer =
+    L.layerGroup().addTo(map);
 
-{
-featureType:"poi",
-stylers:[
-{visibility:"simplified"}
-]
-}
 
-];
+  map.on(
+    "click",
+    function(event){
+
+      if(!pickMode){
+        return;
+      }
+
+
+      setCoordinates(
+        event.latlng.lat,
+        event.latlng.lng
+      );
+
+    }
+  );
 
 }
 
 
-/* ================================
-ADMIN DETECTION
-================================ */
+/* =====================================================
+   INTERFACE
+===================================================== */
 
-async function detectAdmin(){
+function setupInterface(){
 
-if(!telegramId){
-
-return;
-
-}
-
-
-try{
-
-const list=
-await api({
-action:"admins",
-telegram_id:
-telegramId
-});
+  document
+    .getElementById("search")
+    .addEventListener(
+      "input",
+      renderMarkers
+    );
 
 
-currentAdmin=
-list.find(
-a=>
-String(a.telegram_id)===
-telegramId &&
-a.active
-)
-||
-null;
+  document
+    .querySelectorAll(".category")
+    .forEach(
+      button=>{
+
+        button.onclick =
+          function(){
+
+            document
+              .querySelectorAll(".category")
+              .forEach(
+                b=>b.classList.remove("active")
+              );
 
 
-if(currentAdmin){
+            button.classList.add("active");
 
-document
-.getElementById("adminButton")
-.style.display=
-"block";
+            activeCategory =
+              button.dataset.cat;
 
+            renderMarkers();
 
-if(currentAdmin.role==="owner"){
+          };
 
-document
-.getElementById(
-"ownerAdminSection"
-)
-.style.display=
-"block";
-
-}
-
-}
-
-}catch(e){
-
-console.log(
-"Not admin"
-);
-
-}
+      }
+    );
 
 }
 
 
-/* ================================
-LOAD
-================================ */
+/* =====================================================
+   LOAD PLACES
+===================================================== */
 
 async function loadPlaces(){
 
-try{
+  try{
 
-places=
-await fetch(
-MAP_API,
-{
-headers:{
-"apikey":SUPABASE_KEY
+    const response =
+      await fetch(
+        MAP_API,
+        {
+          headers:{
+            "apikey":SUPABASE_KEY
+          }
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if(Array.isArray(data)){
+
+      places = data;
+
+    }else if(
+      data &&
+      Array.isArray(data.places)
+    ){
+
+      places = data.places;
+
+    }else{
+
+      places = [];
+
+    }
+
+
+    renderMarkers();
+
+  }catch(error){
+
+    console.error(error);
+
+    places = [];
+
+    renderMarkers();
+
+  }
+
 }
-}
-)
-.then(
-r=>r.json()
-);
-
-renderMarkers();
-
-}catch(e){
-
-console.error(e);
-
-}
-
-}
 
 
-/* ================================
-MARKERS
-================================ */
+/* =====================================================
+   MARKERS
+===================================================== */
 
 function renderMarkers(){
 
-markers.forEach(
-m=>m.setMap(null)
-);
-
-markers=[];
+  markerLayer.clearLayers();
 
 
-const query=
-document
-.getElementById("search")
-.value
-.toLowerCase()
-.trim();
+  const query =
+    document
+      .getElementById("search")
+      .value
+      .trim()
+      .toLowerCase();
 
 
-places.forEach(
-place=>{
-
-const categoryOk=
-activeCategory==="all"||
-place.category===
-activeCategory;
+  let visible = 0;
 
 
-const text=
-(
-place.name+
-" "+
-(place.address||"")
-)
-.toLowerCase();
+  places.forEach(
+    place=>{
+
+      const lat =
+        Number(
+          place.latitude ??
+          place.lat
+        );
 
 
-const searchOk=
-!query||
-text.includes(query);
+      const lng =
+        Number(
+          place.longitude ??
+          place.lng
+        );
 
 
-if(
-!categoryOk||
-!searchOk
-){
+      if(
+        !Number.isFinite(lat) ||
+        !Number.isFinite(lng)
+      ){
 
-return;
+        return;
+
+      }
+
+
+      const category =
+        String(
+          place.category ||
+          ""
+        );
+
+
+      const categoryOK =
+        activeCategory === "all" ||
+        category === activeCategory;
+
+
+      const searchable =
+        (
+          String(place.name || "") +
+          " " +
+          String(place.address || "") +
+          " " +
+          String(place.city || "")
+        )
+        .toLowerCase();
+
+
+      const searchOK =
+        !query ||
+        searchable.includes(query);
+
+
+      if(!categoryOK || !searchOK){
+
+        return;
+
+      }
+
+
+      visible++;
+
+
+      const rating =
+        Number(
+          place.rating || 0
+        );
+
+
+      const label =
+        rating > 0
+          ? `★ ${rating.toFixed(1)}`
+          : "★ —";
+
+
+      const icon =
+        L.divIcon(
+          {
+            className:"custom-marker",
+
+            html:
+              `
+              <div class="marker-rating">
+                <span class="star">★</span>
+                <span>${escapeHtml(
+                  label.replace("★ ","")
+                )}</span>
+              </div>
+              `,
+
+            iconSize:[64,36],
+
+            iconAnchor:[32,18]
+          }
+        );
+
+
+      const marker =
+        L.marker(
+          [lat,lng],
+          {
+            icon
+          }
+        );
+
+
+      marker.on(
+        "click",
+        function(){
+
+          openPlace(place);
+
+        }
+      );
+
+
+      marker.addTo(
+        markerLayer
+      );
+
+    }
+  );
+
+
+  document
+    .getElementById("empty")
+    .style.display =
+      visible
+        ? "none"
+        : "block";
 
 }
 
 
-const rating=
-Number(place.rating||0);
-
-
-const marker=
-new google.maps.Marker({
-
-map:map,
-
-position:{
-lat:Number(place.latitude),
-lng:Number(place.longitude)
-},
-
-title:place.name,
-
-label:{
-text:
-rating
-?
-"★ "+rating.toFixed(1)
-:
-"★ —",
-
-color:"#111",
-fontWeight:"800",
-fontSize:"13px"
-}
-
-});
-
-
-marker.addListener(
-"click",
-()=>openPlace(place)
-);
-
-
-markers.push(marker);
-
-}
-);
-
-
-document
-.getElementById("empty")
-.style.display=
-markers.length
-?
-"none"
-:
-"block";
-
-}
-
-
-/* ================================
-PLACE CARD
-================================ */
+/* =====================================================
+   PLACE CARD
+===================================================== */
 
 async function openPlace(place){
 
-currentPlace=place;
-
-document
-.getElementById("card")
-.style.display=
-"block";
+  currentPlace = place;
 
 
-document
-.getElementById("cardName")
-.textContent=
-place.name;
+  const card =
+    document.getElementById("card");
 
 
-const rating=
-Number(place.rating||0);
+  card.style.display =
+    "block";
 
 
-document
-.getElementById("cardRating")
-.textContent=
-rating
-?
-rating.toFixed(1)
-:
-"—";
+  const name =
+    place.name ||
+    "Без назви";
 
 
-document
-.getElementById("cardStars")
-.textContent=
-stars(rating);
+  document
+    .getElementById("cardName")
+    .textContent =
+      name;
 
 
-document
-.getElementById("cardReviews")
-.textContent=
-`(${place.reviews_count||0})`;
+  const rating =
+    Number(
+      place.rating || 0
+    );
 
 
-const image=
-document
-.getElementById("cardImage");
+  document
+    .getElementById("cardRating")
+    .textContent =
+      rating
+        ? rating.toFixed(1)
+        : "—";
 
 
-if(place.logo_url){
+  document
+    .getElementById("cardStars")
+    .textContent =
+      makeStars(rating);
 
-image.src=
-place.logo_url;
 
-image.style.display=
-"block";
+  document
+    .getElementById("cardReviews")
+    .textContent =
+      `(${place.reviews_count || 0})`;
 
-}else{
 
-image.style.display=
-"none";
+  const image =
+    document.getElementById(
+      "cardImage"
+    );
+
+
+  if(place.logo_url){
+
+    image.src =
+      place.logo_url;
+
+    image.style.display =
+      "block";
+
+  }else{
+
+    image.removeAttribute("src");
+
+    image.style.display =
+      "none";
+
+  }
+
+
+  const info =
+    document.getElementById(
+      "placeInfo"
+    );
+
+
+  info.innerHTML =
+
+    infoRow(
+      "📍",
+      escapeHtml(
+        place.address ||
+        "Адреса не вказана"
+      )
+    ) +
+
+    infoRow(
+      "☎",
+      place.phone
+        ? `
+          <a href="tel:${escapeAttribute(place.phone)}">
+            ${escapeHtml(place.phone)}
+          </a>
+        `
+        : "Телефон не вказаний"
+    ) +
+
+    infoRow(
+      "✈️",
+      place.telegram
+        ? `
+          <a href="${telegramUrl(place.telegram)}"
+             target="_blank">
+            ${escapeHtml(place.telegram)}
+          </a>
+        `
+        : "Telegram не вказаний"
+    ) +
+
+    infoRow(
+      "🌐",
+      place.website
+        ? `
+          <a href="${safeUrl(place.website)}"
+             target="_blank">
+            ${escapeHtml(place.website)}
+          </a>
+        `
+        : "Сайт не вказаний"
+    );
+
+
+  const description =
+    document.getElementById(
+      "placeDescription"
+    );
+
+
+  if(place.description){
+
+    description.textContent =
+      place.description;
+
+    description.style.display =
+      "block";
+
+  }else{
+
+    description.style.display =
+      "none";
+
+  }
+
+
+  setupCardButtons(
+    place
+  );
+
+
+  document
+    .getElementById(
+      "adminPlaceActions"
+    )
+    .style.display =
+      currentAdmin
+        ? "block"
+        : "none";
+
+
+  await loadReviews(
+    place.id
+  );
+
+}
+
+
+/* =====================================================
+   INFO ROW
+===================================================== */
+
+function infoRow(icon,value){
+
+  return `
+    <div class="info-row">
+
+      <div class="info-icon">
+        ${icon}
+      </div>
+
+      <div class="info-value">
+        ${value}
+      </div>
+
+    </div>
+  `;
 
 }
 
 
-document
-.getElementById("info")
-.innerHTML=
-`
-<div class="inforow">
-<div class="infoicon">📍</div>
-<div class="infovalue">
-${esc(place.address||"Адреса не вказана")}
-</div>
-</div>
+/* =====================================================
+   CARD BUTTONS
+===================================================== */
 
-<div class="inforow">
-<div class="infoicon">☎</div>
-<div class="infovalue">
-${place.phone?
-`<a href="tel:${esc(place.phone)}">
-${esc(place.phone)}
-</a>`
-:
-"Телефон не вказаний"}
-</div>
-</div>
+function setupCardButtons(place){
 
-<div class="inforow">
-<div class="infoicon">✈️</div>
-<div class="infovalue">
-${esc(place.telegram||"")}
-</div>
-</div>
-
-<div class="inforow">
-<div class="infoicon">🌐</div>
-<div class="infovalue">
-${
-place.website
-?
-`<a href="${safeUrl(place.website)}" target="_blank">
-${esc(place.website)}
-</a>`
-:
-"Сайт не вказаний"
-}
-</div>
-</div>
-`;
+  const lat =
+    Number(
+      place.latitude ??
+      place.lat
+    );
 
 
-const description=
-document.getElementById(
-"description"
-);
+  const lng =
+    Number(
+      place.longitude ??
+      place.lng
+    );
 
 
-if(place.description){
+  document
+    .getElementById("routeButton")
+    .onclick =
+      function(){
 
-description.textContent=
-place.description;
-
-description.style.display=
-"block";
-
-}else{
-
-description.style.display=
-"none";
-
-}
+        const url =
+          "https://www.google.com/maps/dir/?api=1" +
+          "&destination=" +
+          encodeURIComponent(
+            `${lat},${lng}`
+          );
 
 
-document
-.getElementById("routeBtn")
-.onclick=
-()=>{
+        openExternal(
+          url
+        );
 
-const url=
-"https://www.google.com/maps/dir/?api=1"+
-"&destination="+
-place.latitude+
-","+
-place.longitude;
-
-if(tg){
-
-tg.openLink(url);
-
-}else{
-
-window.open(url,"_blank");
-
-}
-
-};
+      };
 
 
-const phone=
-document.getElementById(
-"phoneBtn"
-);
-
-phone.style.display=
-place.phone
-?
-"block"
-:
-"none";
-
-phone.onclick=
-()=>{
-
-window.location.href=
-"tel:"+
-place.phone;
-
-};
+  const phoneButton =
+    document.getElementById(
+      "phoneButton"
+    );
 
 
-const site=
-document.getElementById(
-"siteBtn"
-);
+  if(place.phone){
 
-site.style.display=
-place.website
-?
-"block"
-:
-"none";
+    phoneButton.style.display =
+      "block";
 
-site.onclick=
-()=>{
+    phoneButton.onclick =
+      function(){
 
-const url=
-safeUrl(place.website);
+        window.location.href =
+          "tel:" +
+          place.phone;
 
-if(tg){
+      };
 
-tg.openLink(url);
+  }else{
 
-}else{
+    phoneButton.style.display =
+      "none";
 
-window.open(url,"_blank");
+  }
+
+
+  const siteButton =
+    document.getElementById(
+      "siteButton"
+    );
+
+
+  if(place.website){
+
+    siteButton.style.display =
+      "block";
+
+    siteButton.onclick =
+      function(){
+
+        openExternal(
+          safeUrl(place.website)
+        );
+
+      };
+
+  }else{
+
+    siteButton.style.display =
+      "none";
+
+  }
+
+
+  const telegramButton =
+    document.getElementById(
+      "telegramButton"
+    );
+
+
+  if(place.telegram){
+
+    telegramButton.style.display =
+      "block";
+
+    telegramButton.onclick =
+      function(){
+
+        openExternal(
+          telegramUrl(
+            place.telegram
+          )
+        );
+
+      };
+
+  }else{
+
+    telegramButton.style.display =
+      "none";
+
+  }
 
 }
 
-};
 
-
-document
-.getElementById(
-"adminPlaceActions"
-)
-.style.display=
-currentAdmin
-?
-"block"
-:
-"none";
-
-
-await loadReviews(
-place.id
-);
-
-}
-
+/* =====================================================
+   CLOSE CARD
+===================================================== */
 
 function closeCard(){
 
-document
-.getElementById("card")
-.style.display=
-"none";
+  document
+    .getElementById("card")
+    .style.display =
+      "none";
 
-currentPlace=null;
+  currentPlace = null;
 
 }
 
 
-/* ================================
-REVIEWS
-================================ */
+/* =====================================================
+   REVIEWS
+===================================================== */
+
+function setupReviews(){
+
+  document
+    .querySelectorAll(
+      "#starSelect button"
+    )
+    .forEach(
+      button=>{
+
+        button.onclick =
+          function(){
+
+            selectedRating =
+              Number(
+                button.dataset.star
+              );
+
+
+            document
+              .querySelectorAll(
+                "#starSelect button"
+              )
+              .forEach(
+                item=>{
+
+                  const n =
+                    Number(
+                      item.dataset.star
+                    );
+
+
+                  item.textContent =
+                    n <= selectedRating
+                      ? "★"
+                      : "☆";
+
+
+                  item.classList.toggle(
+                    "active",
+                    n <= selectedRating
+                  );
+
+                }
+              );
+
+          };
+
+      }
+    );
+
+}
+
+
+/* =====================================================
+   LOAD REVIEWS
+===================================================== */
 
 async function loadReviews(placeId){
 
-try{
-
-const list=
-await api({
-action:"reviews",
-place_id:
-placeId
-});
+  const box =
+    document.getElementById(
+      "reviews"
+    );
 
 
-const box=
-document
-.getElementById("reviews");
+  box.innerHTML =
+    `
+      <div class="review">
+        Завантаження відгуків...
+      </div>
+    `;
 
 
-if(!list.length){
+  try{
 
-box.innerHTML=
-`
-<div class="review">
-<div class="reviewauthor">
-Поки немає відгуків
-</div>
-<div class="reviewtext">
-Будьте першим!
-</div>
-</div>
-`;
-
-return;
-
-}
+    const data =
+      await api(
+        {
+          action:"reviews",
+          place_id:placeId
+        }
+      );
 
 
-box.innerHTML=
-list.map(
-r=>
-`
-<div class="review">
-
-<div class="reviewauthor">
-${esc(r.author_name)}
-</div>
-
-<div class="reviewdate">
-${formatDate(r.created_at)}
-</div>
-
-<div class="reviewstars">
-${stars(Number(r.rating))}
-</div>
-
-<div class="reviewtext">
-${esc(r.review_text)}
-</div>
-
-</div>
-`
-).join("");
-
-}catch(e){
-
-console.error(e);
-
-}
-
-}
+    const list =
+      Array.isArray(data)
+        ? data
+        : (
+            Array.isArray(data.reviews)
+              ? data.reviews
+              : []
+          );
 
 
-function setupStars(){
+    if(!list.length){
 
-document
-.querySelectorAll(
-"#starSelect button"
-)
-.forEach(
-button=>{
+      box.innerHTML =
+        `
+          <div class="review">
 
-button.onclick=
-()=>{
+            <div class="review-author">
+              Поки немає відгуків
+            </div>
 
-selectedRating=
-Number(
-button.dataset.star
-);
+            <div class="review-text">
+              Будьте першим!
+            </div>
 
-document
-.querySelectorAll(
-"#starSelect button"
-)
-.forEach(
-b=>{
+          </div>
+        `;
 
-const n=
-Number(
-b.dataset.star
-);
+      return;
 
-b.textContent=
-n<=selectedRating
-?
-"★"
-:
-"☆";
+    }
 
-b.classList.toggle(
-"active",
-n<=selectedRating
-);
 
-}
+    box.innerHTML =
+      list
+        .map(
+          review=>`
 
-);
+            <div class="review">
 
-};
+              <div class="review-author">
+                ${escapeHtml(
+                  review.author_name ||
+                  review.name ||
+                  "Анонім"
+                )}
+              </div>
 
-}
-);
+              <div class="review-date">
+                ${formatDate(
+                  review.created_at
+                )}
+              </div>
+
+              <div class="review-stars">
+                ${makeStars(
+                  Number(
+                    review.rating || 0
+                  )
+                )}
+              </div>
+
+              <div class="review-text">
+                ${escapeHtml(
+                  review.review_text ||
+                  review.text ||
+                  ""
+                )}
+              </div>
+
+            </div>
+
+          `
+        )
+        .join("");
+
+  }catch(error){
+
+    box.innerHTML =
+      `
+        <div class="review">
+          Не вдалося завантажити відгуки.
+        </div>
+      `;
+
+  }
 
 }
 
+
+/* =====================================================
+   SEND REVIEW
+===================================================== */
 
 async function sendReview(){
 
-if(!currentPlace){
+  if(!currentPlace){
 
-return;
+    return;
 
-}
-
-
-if(!selectedRating){
-
-alert(
-"Оберіть оцінку."
-);
-
-return;
-
-}
+  }
 
 
-const text=
-document
-.getElementById(
-"reviewText"
-)
-.value
-.trim();
+  if(!selectedRating){
+
+    alert(
+      "Оберіть оцінку."
+    );
+
+    return;
+
+  }
 
 
-if(!text){
-
-alert(
-"Напишіть відгук."
-);
-
-return;
-
-}
+  const text =
+    document
+      .getElementById("reviewText")
+      .value
+      .trim();
 
 
-const name=
-document
-.getElementById(
-"reviewName"
-)
-.value
-.trim()
-||
-"Анонім";
+  if(!text){
+
+    alert(
+      "Напишіть відгук."
+    );
+
+    return;
+
+  }
 
 
-try{
-
-await api({
-
-action:"add_review",
-
-place_id:
-currentPlace.id,
-
-author_name:
-name,
-
-rating:
-selectedRating,
-
-review_text:
-text
-
-});
+  const name =
+    document
+      .getElementById("reviewName")
+      .value
+      .trim()
+      ||
+      "Анонім";
 
 
-document
-.getElementById(
-"reviewName"
-)
-.value="";
+  try{
+
+    await api(
+      {
+        action:"add_review",
+
+        place_id:
+          currentPlace.id,
+
+        author_name:
+          name,
+
+        rating:
+          selectedRating,
+
+        review_text:
+          text
+      }
+    );
 
 
-document
-.getElementById(
-"reviewText"
-)
-.value="";
+    document
+      .getElementById("reviewName")
+      .value = "";
 
 
-selectedRating=0;
+    document
+      .getElementById("reviewText")
+      .value = "";
 
 
-document
-.querySelectorAll(
-"#starSelect button"
-)
-.forEach(
-b=>{
-b.textContent="☆";
-b.classList.remove("active");
-}
-);
+    selectedRating = 0;
 
 
-alert(
-"Дякуємо за відгук!"
-);
+    document
+      .querySelectorAll(
+        "#starSelect button"
+      )
+      .forEach(
+        button=>{
+
+          button.textContent =
+            "☆";
+
+          button.classList.remove(
+            "active"
+          );
+
+        }
+      );
 
 
-await loadPlaces();
+    alert(
+      "Дякуємо за відгук!"
+    );
 
 
-const updated=
-places.find(
-p=>
-p.id===
-currentPlace.id
-);
+    await loadPlaces();
 
 
-if(updated){
+    const updated =
+      places.find(
+        item =>
+          String(item.id) ===
+          String(currentPlace.id)
+      );
 
-currentPlace=
-updated;
 
-await openPlace(
-updated
-);
+    if(updated){
 
-}
+      await openPlace(
+        updated
+      );
 
-}catch(e){
+    }
 
-alert(
-"❌ "+
-e.message
-);
 
-}
+  }catch(error){
+
+    alert(
+      "❌ " +
+      error.message
+    );
+
+  }
 
 }
 
 
-/* ================================
-ADD
-================================ */
+/* =====================================================
+   ADD PLACE
+===================================================== */
 
 function openAdd(){
 
-editingId=null;
+  editingId = null;
 
-document
-.getElementById("addTitle")
-.textContent=
-"➕ Додати точку";
+  clearForm();
 
-clearForm();
 
-document
-.getElementById("addModal")
-.style.display=
-"flex";
+  document
+    .getElementById("addTitle")
+    .textContent =
+      "➕ Додати точку";
+
+
+  document
+    .getElementById("addModal")
+    .style.display =
+      "flex";
 
 }
 
 
 function closeAdd(){
 
-document
-.getElementById("addModal")
-.style.display=
-"none";
+  document
+    .getElementById("addModal")
+    .style.display =
+      "none";
 
-pickMode=false;
+  pickMode = false;
 
 }
 
 
 function clearForm(){
 
-[
-"newName",
-"newAddress",
-"newPhone",
-"newTelegram",
-"newWebsite",
-"newDescription"
-]
-.forEach(
-id=>{
-document
-.getElementById(id)
-.value="";
+  [
+    "newName",
+    "newAddress",
+    "newPhone",
+    "newTelegram",
+    "newWebsite",
+    "newDescription"
+  ]
+  .forEach(
+    id=>{
+
+      document
+        .getElementById(id)
+        .value = "";
+
+    }
+  );
+
+
+  document
+    .getElementById("newLogo")
+    .value = "";
+
+
+  document
+    .getElementById(
+      "addressResults"
+    )
+    .innerHTML = "";
+
+
+  selectedLat = null;
+  selectedLng = null;
+
+
+  document
+    .getElementById("coords")
+    .textContent =
+      "📍 Координати не вибрані";
+
+
+  if(temporaryMarker){
+
+    map.removeLayer(
+      temporaryMarker
+    );
+
+    temporaryMarker = null;
+
+  }
+
 }
-);
 
 
-document
-.getElementById("newLogo")
-.value="";
-
-
-document
-.getElementById(
-"addressResults"
-)
-.innerHTML="";
-
-
-selectedLat=null;
-selectedLng=null;
-
-document
-.getElementById("coords")
-.textContent=
-"📍 Координати не вибрані";
-
-}
-
-
-/* ================================
-ADDRESS SEARCH
-================================ */
+/* =====================================================
+   ADDRESS SEARCH
+===================================================== */
 
 async function searchAddress(){
 
-const q=
-document
-.getElementById("newAddress")
-.value
-.trim();
+  const query =
+    document
+      .getElementById(
+        "newAddress"
+      )
+      .value
+      .trim();
 
 
-if(!q){
+  if(!query){
 
-alert(
-"Введіть адресу."
-);
+    alert(
+      "Введіть адресу."
+    );
 
-return;
+    return;
+
+  }
+
+
+  const box =
+    document.getElementById(
+      "addressResults"
+    );
+
+
+  box.innerHTML =
+    "🔎 Шукаємо адресу...";
+
+
+  try{
+
+    const url =
+      "https://nominatim.openstreetmap.org/search" +
+      "?format=jsonv2" +
+      "&countrycodes=ua" +
+      "&limit=6" +
+      "&accept-language=uk" +
+      "&q=" +
+      encodeURIComponent(
+        query
+      );
+
+
+    const response =
+      await fetch(
+        url,
+        {
+          headers:{
+            "Accept":
+              "application/json"
+          }
+        }
+      );
+
+
+    const results =
+      await response.json();
+
+
+    box.innerHTML = "";
+
+
+    if(!results.length){
+
+      box.innerHTML =
+        `
+          <div
+            style="
+              padding:10px;
+              color:#9da9b5;
+            ">
+            ❌ Адресу не знайдено
+          </div>
+        `;
+
+      return;
+
+    }
+
+
+    results.forEach(
+      result=>{
+
+        const button =
+          document.createElement(
+            "button"
+          );
+
+
+        button.className =
+          "address-result";
+
+
+        button.textContent =
+          "📍 " +
+          result.display_name;
+
+
+        button.onclick =
+          function(){
+
+            const lat =
+              Number(
+                result.lat
+              );
+
+
+            const lng =
+              Number(
+                result.lon
+              );
+
+
+            document
+              .getElementById(
+                "newAddress"
+              )
+              .value =
+                result.display_name;
+
+
+            setCoordinates(
+              lat,
+              lng
+            );
+
+
+            box.innerHTML =
+              "";
+
+          };
+
+
+        box.appendChild(
+          button
+        );
+
+      }
+    );
+
+
+  }catch(error){
+
+    box.innerHTML =
+      `
+        <div
+          style="
+            padding:10px;
+            color:#ff7272;
+          ">
+          ❌ Помилка пошуку адреси
+        </div>
+      `;
+
+  }
 
 }
 
 
-const box=
-document
-.getElementById(
-"addressResults"
-);
+/* =====================================================
+   PICK POINT
+===================================================== */
+
+function startMapPick(){
+
+  closeAdd();
+
+  pickMode = true;
 
 
-box.innerHTML=
-"🔎 Шукаємо адресу...";
-
-
-try{
-
-const url=
-"https://nominatim.openstreetmap.org/search"+
-"?format=jsonv2"+
-"&countrycodes=ua"+
-"&limit=5"+
-"&accept-language=uk"+
-"&q="+
-encodeURIComponent(q);
-
-
-const r=
-await fetch(url);
-
-
-const data=
-await r.json();
-
-
-if(!data.length){
-
-box.innerHTML=
-"❌ Адресу не знайдено.";
-
-return;
+  alert(
+    "Натисніть потрібне місце на карті."
+  );
 
 }
 
 
-box.innerHTML="";
+function setCoordinates(
+  lat,
+  lng
+){
+
+  selectedLat = lat;
+  selectedLng = lng;
 
 
-data.forEach(
-item=>{
+  if(temporaryMarker){
 
-const button=
-document.createElement(
-"button"
-);
+    map.removeLayer(
+      temporaryMarker
+    );
 
-button.className=
-"address-result";
-
-button.textContent=
-"📍 "+
-item.display_name;
-
-button.onclick=
-()=>{
-
-setCoordinates(
-Number(item.lat),
-Number(item.lon)
-);
-
-document
-.getElementById(
-"newAddress"
-)
-.value=
-item.display_name;
-
-box.innerHTML="";
-
-};
-
-box.appendChild(
-button
-);
-
-}
-);
-
-}catch(e){
-
-box.innerHTML=
-"❌ Помилка пошуку.";
-
-}
-
-}
+  }
 
 
-/* ================================
-PICK MAP
-================================ */
-
-function pickOnMap(){
-
-closeAdd();
-
-pickMode=true;
-
-alert(
-"Натисніть потрібне місце на карті."
-);
-
-}
+  temporaryMarker =
+    L.marker(
+      [lat,lng],
+      {
+        draggable:true
+      }
+    )
+    .addTo(map);
 
 
-function setCoordinates(lat,lng){
+  temporaryMarker.on(
+    "dragend",
+    function(event){
 
-selectedLat=lat;
-selectedLng=lng;
+      const point =
+        event.target.getLatLng();
 
 
-if(pickMarker){
+      selectedLat =
+        point.lat;
 
-pickMarker.setMap(null);
+
+      selectedLng =
+        point.lng;
+
+
+      updateCoordinates();
+
+    }
+  );
+
+
+  map.setView(
+    [lat,lng],
+    16
+  );
+
+
+  updateCoordinates();
+
+
+  pickMode = false;
+
+
+  document
+    .getElementById(
+      "addModal"
+    )
+    .style.display =
+      "flex";
 
 }
 
 
-pickMarker=
-new google.maps.Marker({
+function updateCoordinates(){
 
-map:map,
+  if(
+    selectedLat === null ||
+    selectedLng === null
+  ){
 
-position:{
-lat:lat,
-lng:lng
-},
+    document
+      .getElementById(
+        "coords"
+      )
+      .textContent =
+        "📍 Координати не вибрані";
 
-draggable:true
+    return;
 
-});
-
-
-pickMarker.addListener(
-"dragend",
-()=>{
-
-const p=
-pickMarker.getPosition();
-
-selectedLat=
-p.lat();
-
-selectedLng=
-p.lng();
-
-updateCoords();
-
-}
-);
+  }
 
 
-map.setCenter({
-lat:lat,
-lng:lng
-});
-
-map.setZoom(16);
-
-updateCoords();
-
-pickMode=false;
-
-document
-.getElementById("addModal")
-.style.display=
-"flex";
+  document
+    .getElementById(
+      "coords"
+    )
+    .textContent =
+      "📍 " +
+      selectedLat.toFixed(6) +
+      ", " +
+      selectedLng.toFixed(6);
 
 }
 
 
-function updateCoords(){
-
-document
-.getElementById("coords")
-.textContent=
-"📍 "+
-selectedLat.toFixed(6)+
-", "+
-selectedLng.toFixed(6);
-
-}
-
-
-/* ================================
-SAVE
-================================ */
+/* =====================================================
+   SAVE PLACE
+===================================================== */
 
 async function savePlace(){
 
-const name=
-document
-.getElementById("newName")
-.value
-.trim();
+  const name =
+    document
+      .getElementById(
+        "newName"
+      )
+      .value
+      .trim();
 
 
-if(!name){
+  if(!name){
 
-alert(
-"Вкажіть назву."
-);
+    alert(
+      "Вкажіть назву."
+    );
 
-return;
+    return;
 
-}
-
-
-if(
-selectedLat===null||
-selectedLng===null
-){
-
-alert(
-"Знайдіть адресу або поставте точку на карті."
-);
-
-return;
-
-}
+  }
 
 
-const categories={
+  if(
+    selectedLat === null ||
+    selectedLng === null
+  ){
 
-manufacturer:"🏭 Виробник",
-shop:"🏪 Магазин / постачальник",
-tools:"🔧 Інструмент",
-gas:"🔥 Газ",
-services:"🛠 Послуги"
+    alert(
+      "Знайдіть адресу або поставте точку на карті."
+    );
 
-};
+    return;
 
-
-const file=
-document
-.getElementById("newLogo")
-.files[0];
+  }
 
 
-let logoData=null;
-
-let logoType=null;
-
-
-if(file){
-
-logoData=
-await fileToBase64(file);
-
-logoType=
-file.type;
-
-}
+  const file =
+    document
+      .getElementById(
+        "newLogo"
+      )
+      .files[0];
 
 
-const place={
-
-name:name,
-
-category:
-document
-.getElementById("newCategory")
-.value,
-
-category_name:
-categories[
-document
-.getElementById("newCategory")
-.value
-],
-
-address:
-document
-.getElementById("newAddress")
-.value
-.trim(),
-
-phone:
-document
-.getElementById("newPhone")
-.value
-.trim(),
-
-telegram:
-document
-.getElementById("newTelegram")
-.value
-.trim(),
-
-website:
-document
-.getElementById("newWebsite")
-.value
-.trim(),
-
-description:
-document
-.getElementById("newDescription")
-.value
-.trim(),
-
-latitude:
-selectedLat,
-
-longitude:
-selectedLng
-
-};
+  let logoData = null;
+  let logoType = null;
 
 
-if(logoData){
+  if(file){
 
-place.logo_data=
-logoData;
+    logoData =
+      await fileToBase64(
+        file
+      );
 
-place.logo_type=
-logoType;
+    logoType =
+      file.type;
 
-}
-
-
-try{
-
-await api({
-
-action:
-editingId
-?
-"update"
-:
-"submit",
-
-id:
-editingId,
-
-telegram_id:
-telegramId,
-
-place:place
-
-});
+  }
 
 
-alert(
-editingId
-?
-"Точку оновлено."
-:
-currentAdmin
-?
-"Точку додано на карту."
-:
-"Точку відправлено на модерацію."
-);
+  const place = {
+
+    name:name,
+
+    category:
+      document
+        .getElementById(
+          "newCategory"
+        )
+        .value,
+
+    address:
+      document
+        .getElementById(
+          "newAddress"
+        )
+        .value
+        .trim(),
+
+    phone:
+      document
+        .getElementById(
+          "newPhone"
+        )
+        .value
+        .trim(),
+
+    telegram:
+      document
+        .getElementById(
+          "newTelegram"
+        )
+        .value
+        .trim(),
+
+    website:
+      document
+        .getElementById(
+          "newWebsite"
+        )
+        .value
+        .trim(),
+
+    description:
+      document
+        .getElementById(
+          "newDescription"
+        )
+        .value
+        .trim(),
+
+    latitude:
+      selectedLat,
+
+    longitude:
+      selectedLng
+
+  };
 
 
-closeAdd();
+  if(logoData){
 
-await loadPlaces();
+    place.logo_data =
+      logoData;
 
-}catch(e){
+    place.logo_type =
+      logoType;
 
-alert(
-"❌ "+
-e.message
-);
+  }
 
-}
+
+  try{
+
+    await api(
+      {
+        action:
+          editingId
+            ? "update"
+            : "submit",
+
+        id:
+          editingId,
+
+        telegram_id:
+          telegramId,
+
+        place
+      }
+    );
+
+
+    alert(
+      editingId
+        ? "Точку оновлено."
+        : currentAdmin
+          ? "Точку додано."
+          : "Заявку відправлено на модерацію."
+    );
+
+
+    closeAdd();
+
+    await loadPlaces();
+
+
+  }catch(error){
+
+    alert(
+      "❌ " +
+      error.message
+    );
+
+  }
 
 }
 
 
-/* ================================
-EDIT
-================================ */
+/* =====================================================
+   EDIT
+===================================================== */
 
 function editPlace(){
 
-if(!currentPlace){
+  if(!currentPlace){
 
-return;
+    return;
+
+  }
+
+
+  editingId =
+    currentPlace.id;
+
+
+  document
+    .getElementById(
+      "addTitle"
+    )
+    .textContent =
+      "✏️ Редагувати точку";
+
+
+  document
+    .getElementById(
+      "newCategory"
+    )
+    .value =
+      currentPlace.category ||
+      "shop";
+
+
+  document
+    .getElementById(
+      "newName"
+    )
+    .value =
+      currentPlace.name ||
+      "";
+
+
+  document
+    .getElementById(
+      "newAddress"
+    )
+    .value =
+      currentPlace.address ||
+      "";
+
+
+  document
+    .getElementById(
+      "newPhone"
+    )
+    .value =
+      currentPlace.phone ||
+      "";
+
+
+  document
+    .getElementById(
+      "newTelegram"
+    )
+    .value =
+      currentPlace.telegram ||
+      "";
+
+
+  document
+    .getElementById(
+      "newWebsite"
+    )
+    .value =
+      currentPlace.website ||
+      "";
+
+
+  document
+    .getElementById(
+      "newDescription"
+    )
+    .value =
+      currentPlace.description ||
+      "";
+
+
+  selectedLat =
+    Number(
+      currentPlace.latitude
+    );
+
+
+  selectedLng =
+    Number(
+      currentPlace.longitude
+    );
+
+
+  updateCoordinates();
+
+  closeCard();
+
+
+  document
+    .getElementById(
+      "addModal"
+    )
+    .style.display =
+      "flex";
 
 }
 
 
-editingId=
-currentPlace.id;
-
-
-document
-.getElementById("addTitle")
-.textContent=
-"✏️ Редагувати точку";
-
-
-document
-.getElementById("newCategory")
-.value=
-currentPlace.category;
-
-
-document
-.getElementById("newName")
-.value=
-currentPlace.name;
-
-
-document
-.getElementById("newAddress")
-.value=
-currentPlace.address||"";
-
-
-document
-.getElementById("newPhone")
-.value=
-currentPlace.phone||"";
-
-
-document
-.getElementById("newTelegram")
-.value=
-currentPlace.telegram||"";
-
-
-document
-.getElementById("newWebsite")
-.value=
-currentPlace.website||"";
-
-
-document
-.getElementById("newDescription")
-.value=
-currentPlace.description||"";
-
-
-selectedLat=
-Number(currentPlace.latitude);
-
-selectedLng=
-Number(currentPlace.longitude);
-
-updateCoords();
-
-closeCard();
-
-document
-.getElementById("addModal")
-.style.display=
-"flex";
-
-}
-
-
-/* ================================
-DELETE
-================================ */
+/* =====================================================
+   DELETE
+===================================================== */
 
 async function deletePlace(){
 
-if(!currentPlace){
+  if(!currentPlace){
 
-return;
+    return;
+
+  }
+
+
+  const confirmed =
+    confirm(
+      `Видалити «${currentPlace.name}»?`
+    );
+
+
+  if(!confirmed){
+
+    return;
+
+  }
+
+
+  try{
+
+    await api(
+      {
+        action:"delete",
+
+        telegram_id:
+          telegramId,
+
+        id:
+          currentPlace.id
+      }
+    );
+
+
+    closeCard();
+
+    await loadPlaces();
+
+
+    alert(
+      "Точку видалено."
+    );
+
+
+  }catch(error){
+
+    alert(
+      "❌ " +
+      error.message
+    );
+
+  }
 
 }
 
 
-if(
-!confirm(
-"Видалити «"+
-currentPlace.name+
-"»?"
-)
-){
+/* =====================================================
+   ADMIN DETECTION
+===================================================== */
 
-return;
+async function detectAdmin(){
+
+  /*
+     В Telegram WebApp отримуємо реальний ID.
+     Для власника:
+     8186262020
+  */
+
+
+  if(
+    !telegramId
+  ){
+
+    return;
+
+  }
+
+
+  try{
+
+    const data =
+      await api(
+        {
+          action:"admins",
+
+          telegram_id:
+            telegramId
+        }
+      );
+
+
+    const list =
+      Array.isArray(data)
+        ? data
+        : (
+            Array.isArray(data.admins)
+              ? data.admins
+              : []
+          );
+
+
+    currentAdmin =
+      list.find(
+        admin =>
+          String(
+            admin.telegram_id
+          ) ===
+          String(
+            telegramId
+          ) &&
+          admin.active !== false
+      )
+      ||
+      null;
+
+
+    if(
+      currentAdmin
+    ){
+
+      localStorage.setItem(
+        "map_admin_id",
+        telegramId
+      );
+
+
+      document
+        .getElementById(
+          "adminButton"
+        )
+        .style.display =
+          "block";
+
+
+      if(
+        currentAdmin.role ===
+        "owner"
+      ){
+
+        document
+          .getElementById(
+            "ownerSection"
+          )
+          .style.display =
+            "block";
+
+      }
+
+    }
+
+
+  }catch(error){
+
+    console.log(
+      "Користувач не адміністратор"
+    );
+
+  }
 
 }
 
 
-try{
-
-await api({
-
-action:"delete",
-
-telegram_id:
-telegramId,
-
-id:
-currentPlace.id
-
-});
-
-
-closeCard();
-
-await loadPlaces();
-
-alert(
-"Точку видалено."
-);
-
-}catch(e){
-
-alert(
-"❌ "+
-e.message
-);
-
-}
-
-}
-
-
-/* ================================
-ADMIN
-================================ */
+/* =====================================================
+   ADMIN PANEL
+===================================================== */
 
 async function openAdmin(){
 
-if(!currentAdmin){
+  if(!currentAdmin){
 
-return;
+    return;
 
-}
+  }
 
-document
-.getElementById("adminModal")
-.style.display=
-"flex";
 
-await showPending();
+  document
+    .getElementById(
+      "adminModal"
+    )
+    .style.display =
+      "flex";
+
+
+  await showPending();
 
 }
 
 
 function closeAdmin(){
 
-document
-.getElementById("adminModal")
-.style.display=
-"none";
+  document
+    .getElementById(
+      "adminModal"
+    )
+    .style.display =
+      "none";
 
 }
 
+
+/* =====================================================
+   PENDING
+===================================================== */
 
 async function showPending(){
 
-try{
-
-const list=
-await api({
-
-action:"pending",
-
-telegram_id:
-telegramId
-
-});
+  const box =
+    document.getElementById(
+      "pendingBox"
+    );
 
 
-const box=
-document
-.getElementById("pendingBox");
+  box.innerHTML =
+    "⏳ Завантаження...";
 
 
-if(!list.length){
+  try{
 
-box.innerHTML=
-`
-<div style="padding:12px;color:#8996a3">
-Заявок немає.
-</div>
-`;
+    const data =
+      await api(
+        {
+          action:"pending",
 
-return;
-
-}
-
-
-box.innerHTML=
-list.map(
-p=>
-`
-<div class="pending">
-
-<div class="pendingname">
-${esc(p.name)}
-</div>
-
-<div class="pendinginfo">
-${esc(p.category_name||"")}<br>
-📍 ${esc(p.address||"")}<br>
-☎ ${esc(p.phone||"")}
-</div>
-
-<div class="pendingactions">
-
-<button
-class="modalbutton"
-onclick="approve('${p.id}')">
-✅ Одобрити
-</button>
-
-<button
-class="modalbutton red"
-onclick="reject('${p.id}')">
-❌ Відхилити
-</button>
-
-</div>
-
-</div>
-`
-).join("");
-
-}catch(e){
-
-alert(
-"❌ "+
-e.message
-);
-
-}
-
-}
+          telegram_id:
+            telegramId
+        }
+      );
 
 
-async function approve(id){
-
-await moderate(
-"approve",
-id
-);
-
-}
-
-
-async function reject(id){
-
-await moderate(
-"reject",
-id
-);
-
-}
+    const list =
+      Array.isArray(data)
+        ? data
+        : (
+            Array.isArray(data.pending)
+              ? data.pending
+              : []
+          );
 
 
-async function moderate(action,id){
+    if(!list.length){
 
-try{
+      box.innerHTML =
+        `
+          <div
+            style="
+              padding:12px;
+              color:#8e9aa6;
+            ">
+            Заявок немає.
+          </div>
+        `;
 
-await api({
+      return;
 
-action:action,
-
-telegram_id:
-telegramId,
-
-id:id
-
-});
+    }
 
 
-await showPending();
+    box.innerHTML =
+      list
+        .map(
+          place=>`
 
-await loadPlaces();
+            <div class="pending">
 
-}catch(e){
+              <div class="pending-name">
+                ${escapeHtml(
+                  place.name ||
+                  "Без назви"
+                )}
+              </div>
 
-alert(
-"❌ "+
-e.message
-);
+              <div class="pending-info">
 
-}
+                ${escapeHtml(
+                  place.category_name ||
+                  place.category ||
+                  ""
+                )}
+
+                <br>
+
+                📍
+                ${escapeHtml(
+                  place.address ||
+                  ""
+                )}
+
+                <br>
+
+                ☎
+                ${escapeHtml(
+                  place.phone ||
+                  ""
+                )}
+
+              </div>
+
+              <div class="pending-actions">
+
+                <button
+                  class="modal-button"
+                  onclick="approvePlace('${escapeAttribute(place.id)}')">
+                  ✅ Одобрити
+                </button>
+
+                <button
+                  class="modal-button red"
+                  onclick="rejectPlace('${escapeAttribute(place.id)}')">
+                  ❌ Відхилити
+                </button>
+
+              </div>
+
+            </div>
+
+          `
+        )
+        .join("");
+
+
+  }catch(error){
+
+    box.innerHTML =
+      `
+        <div style="color:#ff7272">
+          ❌ ${escapeHtml(
+            error.message
+          )}
+        </div>
+      `;
+
+  }
 
 }
 
 
-/* ================================
-ADMINS
-================================ */
+/* =====================================================
+   APPROVE / REJECT
+===================================================== */
+
+async function approvePlace(id){
+
+  await moderatePlace(
+    "approve",
+    id
+  );
+
+}
+
+
+async function rejectPlace(id){
+
+  await moderatePlace(
+    "reject",
+    id
+  );
+
+}
+
+
+async function moderatePlace(
+  action,
+  id
+){
+
+  try{
+
+    await api(
+      {
+        action,
+
+        telegram_id:
+          telegramId,
+
+        id
+      }
+    );
+
+
+    await showPending();
+
+    await loadPlaces();
+
+
+  }catch(error){
+
+    alert(
+      "❌ " +
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   ADMINS
+===================================================== */
 
 async function showAdmins(){
 
-if(
-!currentAdmin||
-currentAdmin.role!=="owner"
-){
+  if(
+    !currentAdmin ||
+    currentAdmin.role !==
+      "owner"
+  ){
 
-return;
+    return;
+
+  }
+
+
+  const box =
+    document.getElementById(
+      "adminsBox"
+    );
+
+
+  box.innerHTML =
+    "⏳ Завантаження...";
+
+
+  try{
+
+    const data =
+      await api(
+        {
+          action:"admins",
+
+          telegram_id:
+            telegramId
+        }
+      );
+
+
+    const list =
+      Array.isArray(data)
+        ? data
+        : (
+            Array.isArray(data.admins)
+              ? data.admins
+              : []
+          );
+
+
+    box.innerHTML =
+      `
+        <button
+          class="modal-button"
+          onclick="openAddAdmin()">
+          ➕ Додати адміністратора
+        </button>
+
+        <div style="margin-top:12px">
+          ${
+            list
+              .map(
+                admin=>`
+
+                  <div class="admin-item">
+
+                    <div class="admin-name">
+                      ${escapeHtml(
+                        admin.name ||
+                        "Без імені"
+                      )}
+                    </div>
+
+                    <div class="admin-meta">
+
+                      Telegram ID:
+                      ${escapeHtml(
+                        admin.telegram_id
+                      )}
+
+                      <br>
+
+                      ${
+                        admin.role ===
+                        "owner"
+                        ? "👑 Власник"
+                        : "🛠 Модератор"
+                      }
+
+                      <br>
+
+                      ${
+                        admin.active === false
+                        ? "⛔ Вимкнений"
+                        : "✅ Активний"
+                      }
+
+                    </div>
+
+                    ${
+                      String(
+                        admin.telegram_id
+                      ) !==
+                      String(
+                        telegramId
+                      )
+                      &&
+                      admin.active !== false
+                      ?
+                      `
+                        <button
+                          class="modal-button red"
+                          onclick="removeAdmin('${escapeAttribute(admin.id)}')">
+                          Видалити доступ
+                        </button>
+                      `
+                      :
+                      ""
+                    }
+
+                  </div>
+
+                `
+              )
+              .join("")
+          }
+        </div>
+      `;
+
+
+  }catch(error){
+
+    box.innerHTML =
+      `
+        <div style="color:#ff7272">
+          ❌ ${escapeHtml(
+            error.message
+          )}
+        </div>
+      `;
+
+  }
 
 }
 
 
-try{
-
-const list=
-await api({
-
-action:"admins",
-
-telegram_id:
-telegramId
-
-});
-
-
-const box=
-document
-.getElementById(
-"adminsBox"
-);
-
-
-box.innerHTML=
-`
-<button
-class="modalbutton"
-onclick="openAddAdmin()">
-➕ Додати адміністратора
-</button>
-<br>
-`+
-list.map(
-a=>
-`
-<div class="adminitem">
-
-<div class="adminname">
-${esc(a.name||"Без імені")}
-</div>
-
-<div class="adminmeta">
-Telegram ID: ${esc(a.telegram_id)}<br>
-Роль:
-${
-a.role==="owner"
-?
-"👑 Власник"
-:
-"🛠 Модератор"
-}
-<br>
-Статус:
-${a.active?"✅ Активний":"⛔ Вимкнений"}
-</div>
-
-${
-String(a.telegram_id)!==
-telegramId
-&&
-a.active
-?
-`
-<button
-class="modalbutton red"
-onclick="removeAdmin('${a.id}')">
-Видалити доступ
-</button>
-`
-:
-""
-}
-
-</div>
-`
-).join("");
-
-}catch(e){
-
-alert(
-"❌ "+
-e.message
-);
-
-}
-
-}
-
+/* =====================================================
+   ADD ADMIN
+===================================================== */
 
 function openAddAdmin(){
 
-document
-.getElementById(
-"addAdminModal"
-)
-.style.display=
-"flex";
+  document
+    .getElementById(
+      "addAdminModal"
+    )
+    .style.display =
+      "flex";
 
 }
 
 
 function closeAddAdmin(){
 
-document
-.getElementById(
-"addAdminModal"
-)
-.style.display=
-"none";
+  document
+    .getElementById(
+      "addAdminModal"
+    )
+    .style.display =
+      "none";
 
 }
 
 
 async function addAdmin(){
 
-const id=
-document
-.getElementById(
-"adminTelegramId"
-)
-.value
-.trim();
+  const newId =
+    document
+      .getElementById(
+        "adminTelegramId"
+      )
+      .value
+      .trim();
 
 
-const name=
-document
-.getElementById(
-"adminName"
-)
-.value
-.trim();
+  const name =
+    document
+      .getElementById(
+        "adminName"
+      )
+      .value
+      .trim();
 
 
-const role=
-document
-.getElementById(
-"adminRole"
-)
-.value;
+  const role =
+    document
+      .getElementById(
+        "adminRole"
+      )
+      .value;
 
 
-if(!id){
+  if(!newId){
 
-alert(
-"Вкажіть Telegram ID."
-);
+    alert(
+      "Вкажіть Telegram ID."
+    );
 
-return;
+    return;
+
+  }
+
+
+  try{
+
+    await api(
+      {
+        action:"add_admin",
+
+        telegram_id:
+          telegramId,
+
+        new_telegram_id:
+          newId,
+
+        name,
+
+        role
+      }
+    );
+
+
+    document
+      .getElementById(
+        "adminTelegramId"
+      )
+      .value = "";
+
+
+    document
+      .getElementById(
+        "adminName"
+      )
+      .value = "";
+
+
+    closeAddAdmin();
+
+
+    await showAdmins();
+
+
+    alert(
+      "Адміністратора додано."
+    );
+
+
+  }catch(error){
+
+    alert(
+      "❌ " +
+      error.message
+    );
+
+  }
 
 }
 
 
-try{
-
-await api({
-
-action:"add_admin",
-
-telegram_id:
-telegramId,
-
-new_telegram_id:
-id,
-
-name:name,
-
-role:role
-
-});
-
-
-closeAddAdmin();
-
-await showAdmins();
-
-alert(
-"Адміністратора додано."
-);
-
-}catch(e){
-
-alert(
-"❌ "+
-e.message
-);
-
-}
-
-}
-
+/* =====================================================
+   REMOVE ADMIN
+===================================================== */
 
 async function removeAdmin(id){
 
-if(
-!confirm(
-"Забрати доступ адміністратора?"
-)
-){
+  if(
+    !confirm(
+      "Забрати доступ адміністратора?"
+    )
+  ){
 
-return;
+    return;
 
-}
-
-
-try{
-
-await api({
-
-action:"remove_admin",
-
-telegram_id:
-telegramId,
-
-id:id
-
-});
+  }
 
 
-await showAdmins();
+  try{
 
-}catch(e){
+    await api(
+      {
+        action:"remove_admin",
 
-alert(
-"❌ "+
-e.message
-);
+        telegram_id:
+          telegramId,
 
-}
-
-}
+        id
+      }
+    );
 
 
-/* ================================
-UTILITIES
-================================ */
+    await showAdmins();
 
-function stars(rating){
 
-let result="";
+  }catch(error){
 
-for(let i=1;i<=5;i++){
+    alert(
+      "❌ " +
+      error.message
+    );
 
-result+=
-i<=Math.round(rating)
-?
-"★"
-:
-"☆";
-
-}
-
-return result;
+  }
 
 }
 
 
-function formatDate(date){
-
-return new Date(date)
-.toLocaleDateString(
-"uk-UA",
-{
-day:"numeric",
-month:"long",
-year:"numeric"
-}
-);
-
-}
-
-
-function safeUrl(url){
-
-if(
-!/^https?:\/\//i.test(url)
-){
-
-return "https://"+
-url;
-
-}
-
-return url;
-
-}
-
-
-function esc(value){
-
-return String(value||"")
-.replaceAll("&","&amp;")
-.replaceAll("<","&lt;")
-.replaceAll(">","&gt;")
-.replaceAll('"',"&quot;")
-.replaceAll("'","&#039;");
-
-}
-
-
-function fileToBase64(file){
-
-return new Promise(
-(resolve,reject)=>{
-
-const reader=
-new FileReader();
-
-reader.onload=
-()=>resolve(
-reader.result
-);
-
-reader.onerror=
-reject;
-
-reader.readAsDataURL(file);
-
-}
-}
-
+/* =====================================================
+   MAP CONTROLS
+===================================================== */
 
 function zoomIn(){
 
-map.setZoom(
-map.getZoom()+1
-);
+  if(map){
+
+    map.zoomIn();
+
+  }
 
 }
 
 
 function zoomOut(){
 
-map.setZoom(
-map.getZoom()-1
-);
+  if(map){
+
+    map.zoomOut();
+
+  }
 
 }
 
 
 function findMe(){
 
-if(!navigator.geolocation){
+  if(
+    !navigator.geolocation
+  ){
 
-return;
+    alert(
+      "Геолокація не підтримується."
+    );
+
+    return;
+
+  }
+
+
+  navigator.geolocation.getCurrentPosition(
+
+    function(position){
+
+      const lat =
+        position.coords.latitude;
+
+      const lng =
+        position.coords.longitude;
+
+
+      map.setView(
+        [lat,lng],
+        15
+      );
+
+
+      L.circleMarker(
+        [lat,lng],
+        {
+          radius:8,
+          color:"#fff",
+          weight:3,
+          fillColor:"#087cf5",
+          fillOpacity:1
+        }
+      )
+      .addTo(map);
+
+    },
+
+    function(){
+
+      alert(
+        "Не вдалося отримати ваше місцезнаходження."
+      );
+
+    },
+
+    {
+      enableHighAccuracy:true,
+      timeout:10000
+    }
+
+  );
 
 }
 
-navigator.geolocation.getCurrentPosition(
-position=>{
 
-const p={
-lat:position.coords.latitude,
-lng:position.coords.longitude
-};
-
-map.setCenter(p);
-map.setZoom(14);
-
-new google.maps.Marker({
-map:map,
-position:p,
-title:"Моє місцезнаходження"
-});
-
-},
-()=>{
-alert(
-"Не вдалося отримати місцезнаходження."
-);
-}
-);
-
-
-}
-
+/* =====================================================
+   CATEGORY FILTER
+===================================================== */
 
 function toggleCategories(){
 
-const el=
-document.getElementById(
-"categories"
-);
+  const categories =
+    document.getElementById(
+      "categories"
+    );
 
-el.style.display=
-el.style.display==="none"
-?
-"flex"
-:
-"none";
+
+  categories.style.display =
+    categories.style.display ===
+    "none"
+      ? "flex"
+      : "none";
 
 }
 
-</script>
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function makeStars(rating){
+
+  let result = "";
+
+  const rounded =
+    Math.round(
+      Number(rating || 0)
+    );
 
 
-<script
-async
-src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD8juKXcYCwBIqfLzQFW4qVApkKxosmQFw&callback=initMap">
+  for(
+    let i=1;
+    i<=5;
+    i++
+  ){
+
+    result +=
+      i <= rounded
+        ? "★"
+        : "☆";
+
+  }
+
+
+  return result;
+
+}
+
+
+function formatDate(date){
+
+  if(!date){
+
+    return "";
+
+  }
+
+
+  try{
+
+    return new Date(date)
+      .toLocaleDateString(
+        "uk-UA",
+        {
+          day:"numeric",
+          month:"long",
+          year:"numeric"
+        }
+      );
+
+  }catch(e){
+
+    return "";
+
+  }
+
+}
+
+
+function safeUrl(url){
+
+  if(
+    !url
+  ){
+
+    return "#";
+
+  }
+
+
+  if(
+    /^https?:\/\//i.test(
+      url
+    )
+  ){
+
+    return url;
+
+  }
+
+
+  return "https://" + url;
+
+}
+
+
+function telegramUrl(value){
+
+  const text =
+    String(
+      value || ""
+    )
+    .trim();
+
+
+  if(
+    /^https?:\/\//i.test(
+      text
+    )
+  ){
+
+    return text;
+
+  }
+
+
+  return (
+    "https://t.me/" +
+    text.replace(
+      /^@/,
+      ""
+    )
+  );
+
+}
+
+
+function openExternal(url){
+
+  if(!url){
+
+    return;
+
+  }
+
+
+  if(
+    tg &&
+    typeof tg.openLink ===
+      "function"
+  ){
+
+    try{
+
+      tg.openLink(url);
+
+      return;
+
+    }catch(e){}
+
+  }
+
+
+  window.open(
+    url,
+    "_blank"
+  );
+
+}
+
+
+function escapeHtml(value){
+
+  return String(
+    value ?? ""
+  )
+  .replaceAll(
+    "&",
+    "&amp;"
+  )
+  .replaceAll(
+    "<",
+    "&lt;"
+  )
+  .replaceAll(
+    ">",
+    "&gt;"
+  )
+  .replaceAll(
+    '"',
+    "&quot;"
+  )
+  .replaceAll(
+    "'",
+    "&#039;"
+  );
+
+}
+
+
+function escapeAttribute(value){
+
+  return escapeHtml(
+    value
+  );
+
+}
+
+
+function fileToBase64(file){
+
+  return new Promise(
+    function(resolve,reject){
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload =
+        function(){
+
+          resolve(
+            reader.result
+          );
+
+        };
+
+
+      reader.onerror =
+        reject;
+
+
+      reader.readAsDataURL(
+        file
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+window.addEventListener(
+  "load",
+  function(){
+
+    init();
+
+  }
+);
+
 </script>
 
 </body>
