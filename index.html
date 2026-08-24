@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 
 <title>Карта натяжних стель України</title>
 
@@ -17,14 +17,18 @@ padding:0;
 width:100%;
 height:100%;
 overflow:hidden;
-font-family:Arial,sans-serif;
-background:#f5f5f5;
+font-family:Arial,Helvetica,sans-serif;
+background:#0b1118;
+color:#fff
 }
+
+button,input,textarea,select{font-family:inherit}
+button{cursor:pointer}
 
 #app{
 width:100%;
 height:100%;
-position:relative;
+position:relative
 }
 
 .top{
@@ -32,317 +36,608 @@ position:absolute;
 top:0;
 left:0;
 right:0;
-z-index:10;
-background:rgba(255,255,255,.97);
+z-index:20;
 padding:10px;
-box-shadow:0 2px 8px rgba(0,0,0,.15);
+background:rgba(10,16,23,.96);
+backdrop-filter:blur(15px);
+box-shadow:0 2px 15px rgba(0,0,0,.35)
+}
+
+.header{
+display:flex;
+align-items:center;
+gap:8px;
+margin-bottom:9px
 }
 
 .title{
 font-size:18px;
-font-weight:700;
-margin:2px 4px 8px;
+font-weight:800;
+flex:1
+}
+
+.topbtn{
+height:40px;
+padding:0 13px;
+border:1px solid rgba(255,255,255,.15);
+border-radius:11px;
+background:#151f2a;
+color:#fff;
+font-weight:700
+}
+
+.topbtn.blue{
+background:#087cf5;
+border-color:#087cf5
+}
+
+.searchrow{
+display:flex;
+gap:8px
 }
 
 .search{
-width:100%;
-height:42px;
-border:1px solid #ddd;
+height:44px;
+flex:1;
+border:1px solid rgba(255,255,255,.12);
 border-radius:12px;
+background:#131c26;
+color:#fff;
 padding:0 14px;
-font-size:16px;
-outline:none;
+font-size:15px;
+outline:none
+}
+
+.search::placeholder{color:#7e8b98}
+
+.filterbtn{
+width:45px;
+border:1px solid rgba(255,255,255,.12);
+border-radius:12px;
+background:#131c26;
+color:#fff;
+font-size:19px
 }
 
 .categories{
 display:flex;
 gap:7px;
 overflow-x:auto;
-padding:9px 0 2px;
-scrollbar-width:none;
+padding-top:8px;
+scrollbar-width:none
 }
 
-.categories::-webkit-scrollbar{
-display:none;
-}
+.categories::-webkit-scrollbar{display:none}
 
-.category{
+.cat{
 flex:0 0 auto;
-border:0;
+height:37px;
+padding:0 13px;
+border:1px solid rgba(255,255,255,.12);
 border-radius:20px;
-padding:9px 13px;
-background:#eee;
+background:#141e28;
+color:#fff;
 font-size:13px;
-font-weight:600;
-white-space:nowrap;
+font-weight:700
 }
 
-.category.active{
-background:#229ed9;
-color:white;
+.cat.active{
+background:#087cf5;
+border-color:#087cf5
 }
 
 #map{
 position:absolute;
-top:128px;
-bottom:0;
-left:0;
-right:0;
+inset:0
 }
 
-.map-actions{
+.mapbuttons{
 position:absolute;
-right:14px;
-bottom:76px;
+right:12px;
+bottom:115px;
 z-index:15;
 display:flex;
 flex-direction:column;
-gap:8px;
+gap:7px
 }
 
-.map-action{
-border:0;
-border-radius:14px;
-background:white;
-padding:12px 14px;
-font-size:14px;
-font-weight:700;
-box-shadow:0 3px 12px rgba(0,0,0,.22);
+.mapbtn{
+width:46px;
+height:46px;
+border:1px solid rgba(255,255,255,.15);
+border-radius:12px;
+background:#121b25;
+color:#fff;
+font-size:22px;
+box-shadow:0 4px 15px rgba(0,0,0,.3)
 }
 
-.location-button{
+.location{
 position:absolute;
-right:14px;
-bottom:18px;
+left:13px;
+bottom:115px;
 z-index:15;
 width:48px;
 height:48px;
 border:0;
 border-radius:50%;
-background:white;
-box-shadow:0 3px 12px rgba(0,0,0,.25);
-font-size:22px;
+background:#087cf5;
+color:#fff;
+font-size:24px;
+box-shadow:0 4px 18px rgba(0,0,0,.4)
 }
+
+/* MARKER */
+
+.rating-marker{
+min-width:58px;
+height:34px;
+padding:0 9px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:3px;
+border-radius:18px;
+background:#fff;
+color:#111;
+font-size:13px;
+font-weight:800;
+box-shadow:0 3px 12px rgba(0,0,0,.35);
+border:2px solid rgba(0,0,0,.15);
+white-space:nowrap
+}
+
+.rating-marker .star{
+color:#f5b900;
+font-size:15px
+}
+
+/* CARD */
 
 .card{
 position:absolute;
-left:10px;
-right:10px;
-bottom:10px;
+left:8px;
+right:8px;
+bottom:8px;
 z-index:30;
-background:white;
-border-radius:18px;
-padding:16px;
-box-shadow:0 4px 25px rgba(0,0,0,.3);
 display:none;
-max-height:72%;
+max-height:82%;
 overflow-y:auto;
+background:#0d151e;
+border:1px solid rgba(255,255,255,.14);
+border-radius:22px;
+box-shadow:0 -10px 40px rgba(0,0,0,.5)
 }
 
-.card-logo{
-width:70px;
-height:70px;
-border-radius:14px;
-object-fit:contain;
-background:#f3f3f3;
-margin-bottom:10px;
+.handle{
+width:40px;
+height:5px;
+margin:9px auto;
+background:#718090;
+border-radius:5px
 }
 
-.card-title{
-font-size:20px;
-font-weight:700;
-margin-bottom:8px;
+.closecard{
+position:absolute;
+right:12px;
+top:10px;
+z-index:5;
+width:38px;
+height:38px;
+border-radius:50%;
+border:1px solid rgba(255,255,255,.15);
+background:rgba(0,0,0,.45);
+color:#fff;
+font-size:22px
 }
 
-.card-info{
-font-size:14px;
-line-height:1.55;
-color:#444;
-}
-
-.buttons{
+.cardhero{
 display:grid;
-gap:8px;
-margin-top:14px;
+grid-template-columns:35% 1fr;
+gap:17px;
+padding:7px 17px 0
 }
 
-.button{
+.cardimage{
 width:100%;
-border:0;
-border-radius:11px;
+height:220px;
+object-fit:cover;
+border-radius:15px;
+background:#18222d
+}
+
+.cardname{
+font-size:23px;
+font-weight:800;
+line-height:1.15;
+padding-right:35px;
+margin-bottom:9px
+}
+
+.ratingline{
+display:flex;
+align-items:center;
+gap:7px;
+flex-wrap:wrap;
+font-size:14px;
+margin-bottom:13px
+}
+
+.ratingnum{
+font-size:19px;
+font-weight:800
+}
+
+.stars{
+color:#ffc400;
+letter-spacing:1px
+}
+
+.open{
+color:#20d26f
+}
+
+.actions{
+display:flex;
+gap:7px;
+flex-wrap:wrap
+}
+
+.action{
+height:42px;
+padding:0 14px;
+border:1px solid rgba(255,255,255,.15);
+border-radius:21px;
+background:#141f29;
+color:#fff;
+font-weight:700
+}
+
+.action.primary{
+background:#087cf5;
+border-color:#087cf5
+}
+
+.action.danger{
+background:#d9343a;
+border-color:#d9343a
+}
+
+.info{
+margin:15px 17px 0;
+border:1px solid rgba(255,255,255,.12);
+border-radius:14px;
+overflow:hidden
+}
+
+.inforow{
+display:flex;
+gap:10px;
+padding:12px;
+border-bottom:1px solid rgba(255,255,255,.07);
+font-size:14px
+}
+
+.inforow:last-child{border-bottom:0}
+
+.infoicon{width:22px}
+
+.infovalue{
+flex:1;
+word-break:break-word;
+color:#d4dbe3
+}
+
+.infovalue a{
+color:#4db1ff;
+text-decoration:none
+}
+
+.description{
+padding:15px 17px;
+font-size:14px;
+line-height:1.5;
+color:#cbd3dc
+}
+
+.reviewtitle{
+padding:2px 17px 10px;
+font-size:19px;
+font-weight:800
+}
+
+.reviews{
+display:flex;
+gap:9px;
+overflow-x:auto;
+padding:0 17px 15px;
+scrollbar-width:none
+}
+
+.review{
+flex:0 0 270px;
 padding:13px;
-font-size:15px;
-font-weight:700;
-background:#229ed9;
-color:white;
-cursor:pointer;
+background:#121c26;
+border:1px solid rgba(255,255,255,.1);
+border-radius:14px
 }
 
-.button.close{
-background:#eee;
-color:#222;
+.reviewauthor{
+font-weight:800
 }
 
-.button.red{
-background:#d93025;
+.reviewdate{
+font-size:11px;
+color:#758290;
+margin-top:3px
 }
 
-.button.gray{
-background:#666;
+.reviewstars{
+color:#ffc400;
+margin:8px 0
 }
+
+.reviewtext{
+font-size:13px;
+line-height:1.45;
+color:#cbd3dc
+}
+
+.reviewform{
+margin:0 17px 17px;
+padding:14px;
+background:#121c26;
+border:1px solid rgba(255,255,255,.1);
+border-radius:14px
+}
+
+.reviewformtitle{
+font-weight:800;
+font-size:17px;
+margin-bottom:9px
+}
+
+.starselect{
+display:flex;
+gap:4px;
+margin-bottom:10px
+}
+
+.starselect button{
+border:0;
+background:none;
+color:#687482;
+font-size:30px;
+padding:0
+}
+
+.starselect button.active{color:#ffc400}
+
+/* MODALS */
 
 .modal{
 position:absolute;
 inset:0;
-z-index:50;
-background:rgba(0,0,0,.45);
+z-index:60;
 display:none;
 align-items:flex-end;
+background:rgba(0,0,0,.7)
 }
 
-.modal-content{
+.modalbox{
 width:100%;
 max-height:94%;
 overflow-y:auto;
-background:white;
-border-radius:22px 22px 0 0;
 padding:18px;
+background:#0d151e;
+border-radius:22px 22px 0 0
 }
 
-.modal-title{
-font-size:20px;
-font-weight:700;
-margin-bottom:14px;
+.modaltitle{
+font-size:21px;
+font-weight:800;
+margin-bottom:15px
 }
 
-.form-group{
-margin-bottom:11px;
+.group{
+margin-bottom:11px
 }
 
-.form-label{
+.label{
 display:block;
 font-size:13px;
 font-weight:700;
-margin-bottom:5px;
+color:#aeb8c2;
+margin-bottom:5px
 }
 
-.form-input,
-.form-select{
+.input,
+.select,
+.textarea{
 width:100%;
-border:1px solid #ddd;
-border-radius:11px;
+border:1px solid rgba(255,255,255,.13);
+border-radius:10px;
+background:#101923;
+color:#fff;
 padding:12px;
 font-size:15px;
-outline:none;
-background:white;
+outline:none
 }
 
-.logo-preview{
-width:80px;
-height:80px;
-border-radius:14px;
-object-fit:contain;
-background:#f1f1f1;
-display:none;
-margin-top:8px;
+.textarea{
+min-height:85px;
+resize:vertical
 }
 
-.pick-location{
+.modalbutton{
 width:100%;
+height:45px;
 border:0;
 border-radius:11px;
-padding:13px;
-background:#eee;
-font-weight:700;
-margin-bottom:8px;
-cursor:pointer;
+background:#087cf5;
+color:#fff;
+font-size:15px;
+font-weight:800;
+margin-top:7px
 }
 
-.selected-location{
-font-size:13px;
-color:#555;
-margin-bottom:10px;
-line-height:1.4;
+.modalbutton.gray{background:#28333e}
+.modalbutton.red{background:#d9343a}
+
+.address-results{
+margin-top:6px
 }
 
 .address-result{
 width:100%;
 text-align:left;
-border:1px solid #ddd;
-border-radius:10px;
-background:white;
-padding:11px;
-margin-bottom:6px;
-font-size:14px;
-cursor:pointer;
-}
-
-.address-loading{
 padding:10px;
-border-radius:10px;
-background:#f1f1f1;
-font-size:14px;
+margin-bottom:5px;
+border:1px solid rgba(255,255,255,.1);
+border-radius:9px;
+background:#151f29;
+color:#fff;
+font-size:13px
 }
 
-.address-error{
-padding:10px;
-border-radius:10px;
-background:#fff0f0;
-color:#a00000;
-font-size:14px;
+.coords{
+font-size:12px;
+color:#8c99a6;
+padding:6px 0
 }
 
-.pick-mode{
-position:absolute;
-top:140px;
-left:15px;
-right:15px;
-z-index:40;
-background:white;
-border-radius:14px;
-padding:14px;
-text-align:center;
-box-shadow:0 3px 15px rgba(0,0,0,.25);
-display:none;
+.pending{
+padding:12px;
+margin-bottom:9px;
+border:1px solid rgba(255,255,255,.12);
+border-radius:12px;
+background:#121c26
+}
+
+.pendingname{
+font-size:17px;
+font-weight:800;
+margin-bottom:5px
+}
+
+.pendinginfo{
+font-size:13px;
+line-height:1.45;
+color:#aeb8c2
+}
+
+.pendingactions{
+display:flex;
+gap:7px;
+margin-top:9px
+}
+
+.pendingactions button{flex:1}
+
+.adminitem{
+padding:12px;
+margin-bottom:8px;
+border-radius:11px;
+background:#121c26;
+border:1px solid rgba(255,255,255,.1)
+}
+
+.adminname{
+font-weight:800
+}
+
+.adminmeta{
+font-size:12px;
+color:#9da9b5;
+margin-top:4px
 }
 
 .empty{
-display:none;
 position:absolute;
-top:145px;
-left:20px;
-right:20px;
-z-index:8;
-background:white;
-border-radius:14px;
-padding:18px;
-text-align:center;
-box-shadow:0 3px 15px rgba(0,0,0,.15);
-}
-
-.pending-item{
-border:1px solid #ddd;
+top:160px;
+left:15px;
+right:15px;
+z-index:10;
+display:none;
+padding:13px;
 border-radius:12px;
-padding:12px;
-margin-bottom:10px;
+background:#121c26;
+text-align:center
 }
 
-.pending-name{
-font-size:17px;
-font-weight:700;
-margin-bottom:6px;
+@media(max-width:700px){
+
+.top{padding:8px}
+
+.title{font-size:16px}
+
+.topbtn{
+height:36px;
+padding:0 9px;
+font-size:12px
 }
 
-.pending-info{
-font-size:13px;
-line-height:1.5;
-color:#555;
+.card{
+left:0;
+right:0;
+bottom:0;
+max-height:89%;
+border-radius:21px 21px 0 0
 }
 
-.loading{
-padding:20px;
-text-align:center;
-color:#666;
+.cardhero{
+display:block;
+padding:5px 12px 0
+}
+
+.cardimage{
+height:205px
+}
+
+.cardname{
+font-size:21px;
+margin-top:12px
+}
+
+.actions{
+display:grid;
+grid-template-columns:1fr 1fr 1fr
+}
+
+.action{
+padding:0 7px;
+font-size:11px
+}
+
+.info{
+margin:13px 12px 0
+}
+
+.description{
+padding:13px 12px
+}
+
+.reviewtitle{
+padding-left:12px
+}
+
+.reviews{
+padding-left:12px
+}
+
+.reviewform{
+margin-left:12px;
+margin-right:12px
+}
+
+.mapbuttons{
+bottom:125px
+}
+
+.location{
+bottom:125px
+}
+
 }
 </style>
 </head>
@@ -353,390 +648,597 @@ color:#666;
 
 <div class="top">
 
+<div class="header">
+
 <div class="title">
-🗺 Карта натяжних стель України
+🗺 Карта натяжних стель
 </div>
-
-<input
-id="search"
-class="search"
-type="search"
-placeholder="🔍 Пошук міста, компанії..."
->
-
-<div class="categories">
-
-<button class="category active" data-category="all">
-Всі
-</button>
-
-<button class="category" data-category="manufacturer">
-🏭 Виробники
-</button>
-
-<button class="category" data-category="shop">
-🏪 Магазини
-</button>
-
-<button class="category" data-category="tools">
-🔧 Інструмент
-</button>
-
-<button class="category" data-category="gas">
-🔥 Газ
-</button>
-
-<button class="category" data-category="services">
-🛠 Послуги
-</button>
-
-</div>
-</div>
-
-<div id="map"></div>
-
-<div class="map-actions">
 
 <button
-class="map-action"
-onclick="openAddPoint()">
-➕ Додати точку
+id="addButton"
+class="topbtn blue"
+onclick="openAdd()">
+＋ Додати
 </button>
 
 <button
-class="map-action"
-onclick="adminLogin()">
+id="adminButton"
+class="topbtn"
+onclick="openAdmin()"
+style="display:none">
 👑 Адмін
 </button>
 
 </div>
 
+<div class="searchrow">
+
+<input
+id="search"
+class="search"
+placeholder="🔍 Пошук компанії, міста, адреси">
+
 <button
-class="location-button"
+class="filterbtn"
+onclick="toggleCategories()">
+☷
+</button>
+
+</div>
+
+<div
+id="categories"
+class="categories">
+
+<button
+class="cat active"
+data-cat="all">
+▦ Всі
+</button>
+
+<button
+class="cat"
+data-cat="manufacturer">
+🏭 Виробники
+</button>
+
+<button
+class="cat"
+data-cat="shop">
+🏪 Магазини
+</button>
+
+<button
+class="cat"
+data-cat="tools">
+🔧 Інструмент
+</button>
+
+<button
+class="cat"
+data-cat="gas">
+🔥 Газ
+</button>
+
+<button
+class="cat"
+data-cat="services">
+🛠 Послуги
+</button>
+
+</div>
+
+</div>
+
+
+<div id="map"></div>
+
+
+<div class="mapbuttons">
+
+<button class="mapbtn" onclick="zoomIn()">＋</button>
+<button class="mapbtn" onclick="zoomOut()">−</button>
+
+</div>
+
+
+<button
+class="location"
 onclick="findMe()">
 ◎
 </button>
 
-<div id="pickMode" class="pick-mode">
-
-📍 Натисни на потрібне місце на карті
-
-<br><br>
-
-<button
-class="button close"
-onclick="cancelPick()">
-Скасувати
-</button>
-
-</div>
 
 <div id="empty" class="empty">
 Нічого не знайдено
 </div>
 
+
+<!-- CARD -->
+
 <div id="card" class="card">
 
-<img
-id="cardLogo"
-class="card-logo"
-style="display:none">
-
-<div id="cardTitle" class="card-title"></div>
-
-<div id="cardInfo" class="card-info"></div>
-
-<div class="buttons">
+<div class="handle"></div>
 
 <button
-id="phoneButton"
-class="button">
-📞 ПОЗВОНИТЬ
-</button>
-
-<button
-id="routeButton"
-class="button">
-🧭 ПРОКЛАСТИ МАРШРУТ
-</button>
-
-<button
-id="telegramButton"
-class="button">
-✈️ TELEGRAM
-</button>
-
-<button
-id="websiteButton"
-class="button">
-🌐 САЙТ
-</button>
-
-<button
-id="shareButton"
-class="button">
-↗️ ПОДІЛИТИСЯ ТОЧКОЮ
-</button>
-
-<button
-id="editButton"
-class="button gray"
-style="display:none">
-✏️ РЕДАГУВАТИ
-</button>
-
-<button
-id="deleteButton"
-class="button red"
-style="display:none">
-🗑 ВИДАЛИТИ ТОЧКУ
-</button>
-
-<button
-class="button close"
+class="closecard"
 onclick="closeCard()">
-Закрити
+×
 </button>
 
-</div>
-</div>
+<div class="cardhero">
 
+<img
+id="cardImage"
+class="cardimage"
+style="display:none">
 
-<!-- ADD / EDIT -->
-
-<div id="addModal" class="modal">
-
-<div class="modal-content">
+<div>
 
 <div
-id="formTitle"
-class="modal-title">
-➕ Додати точку на карту
+id="cardName"
+class="cardname">
 </div>
 
-<div class="form-group">
+<div class="ratingline">
 
-<label class="form-label">
+<span
+id="cardRating"
+class="ratingnum">
+</span>
+
+<span
+id="cardStars"
+class="stars">
+</span>
+
+<span
+id="cardReviews">
+</span>
+
+</div>
+
+<div class="actions">
+
+<button
+id="routeBtn"
+class="action primary">
+➤ Маршрут
+</button>
+
+<button
+id="phoneBtn"
+class="action">
+☎ Дзвінок
+</button>
+
+<button
+id="siteBtn"
+class="action">
+🌐 Сайт
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div
+id="info"
+class="info">
+</div>
+
+
+<div
+id="description"
+class="description"
+style="display:none">
+</div>
+
+
+<div class="reviewtitle">
+Відгуки
+</div>
+
+<div
+id="reviews"
+class="reviews">
+</div>
+
+
+<div class="reviewform">
+
+<div class="reviewformtitle">
+⭐ Ваша оцінка
+</div>
+
+<div
+id="starSelect"
+class="starselect">
+
+<button data-star="1">☆</button>
+<button data-star="2">☆</button>
+<button data-star="3">☆</button>
+<button data-star="4">☆</button>
+<button data-star="5">☆</button>
+
+</div>
+
+<input
+id="reviewName"
+class="input"
+placeholder="Ваше ім'я">
+
+<textarea
+id="reviewText"
+class="textarea"
+placeholder="Ваш відгук..."></textarea>
+
+<button
+class="modalbutton"
+onclick="sendReview()">
+Надіслати відгук
+</button>
+
+</div>
+
+
+<div
+id="adminPlaceActions"
+style="display:none;padding:0 17px 17px">
+
+<div class="actions">
+
+<button
+class="action"
+onclick="editPlace()">
+✏️ Редагувати
+</button>
+
+<button
+class="action danger"
+onclick="deletePlace()">
+🗑 Видалити
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ADD MODAL -->
+
+<div
+id="addModal"
+class="modal">
+
+<div class="modalbox">
+
+<div
+id="addTitle"
+class="modaltitle">
+➕ Додати точку
+</div>
+
+<div class="group">
+
+<label class="label">
 Тип точки
 </label>
 
 <select
 id="newCategory"
-class="form-select">
+class="select">
 
-<option value="manufacturer">
-🏭 Виробник
-</option>
-
-<option value="shop">
-🏪 Магазин / постачальник
-</option>
-
-<option value="tools">
-🔧 Інструмент
-</option>
-
-<option value="gas">
-🔥 Газ
-</option>
-
-<option value="services">
-🛠 Послуги
-</option>
+<option value="manufacturer">🏭 Виробник</option>
+<option value="shop">🏪 Магазин / постачальник</option>
+<option value="tools">🔧 Інструмент</option>
+<option value="gas">🔥 Газ</option>
+<option value="services">🛠 Послуги</option>
 
 </select>
 
 </div>
 
-<div class="form-group">
 
-<label class="form-label">
+<div class="group">
+
+<label class="label">
 Назва
 </label>
 
 <input
 id="newName"
-class="form-input"
-placeholder="Наприклад: Alkor Draka">
+class="input"
+placeholder="Назва компанії">
 
 </div>
 
-<div class="form-group">
 
-<label class="form-label">
+<div class="group">
+
+<label class="label">
 Адреса
 </label>
 
 <input
 id="newAddress"
-class="form-input"
-placeholder="Місто, вулиця, номер">
+class="input"
+placeholder="Київ, вул. ...">
 
 <button
-type="button"
-class="pick-location"
-onclick="findAddress()">
-🔎 Знайти адресу на карті
+class="modalbutton"
+onclick="searchAddress()">
+🔎 Знайти адресу
 </button>
 
 <div
 id="addressResults"
-style="display:none;margin-top:8px">
+class="address-results">
 </div>
 
 </div>
 
-<div class="form-group">
 
-<label class="form-label">
+<div class="group">
+
+<label class="label">
 Телефон
 </label>
 
 <input
 id="newPhone"
-class="form-input"
+class="input"
 type="tel"
 placeholder="+380...">
 
 </div>
 
-<div class="form-group">
 
-<label class="form-label">
+<div class="group">
+
+<label class="label">
 Telegram
 </label>
 
 <input
 id="newTelegram"
-class="form-input"
-placeholder="@username або посилання">
+class="input"
+placeholder="@username">
 
 </div>
 
-<div class="form-group">
 
-<label class="form-label">
+<div class="group">
+
+<label class="label">
 Сайт
 </label>
 
 <input
 id="newWebsite"
-class="form-input"
+class="input"
 placeholder="https://...">
 
 </div>
 
-<div class="form-group">
 
-<label class="form-label">
-Логотип / фото
+<div class="group">
+
+<label class="label">
+Опис
+</label>
+
+<textarea
+id="newDescription"
+class="textarea"
+placeholder="Короткий опис..."></textarea>
+
+</div>
+
+
+<div class="group">
+
+<label class="label">
+Фото / логотип
 </label>
 
 <input
 id="newLogo"
-class="form-input"
+class="input"
 type="file"
-accept="image/*"
-onchange="previewLogo(event)">
-
-<img
-id="logoPreview"
-class="logo-preview">
+accept="image/*">
 
 </div>
 
-<button
-class="pick-location"
-onclick="startPickLocation()">
-📍 Вибрати місце на карті
-</button>
 
 <div
-id="selectedLocation"
-class="selected-location">
-Координати поки не вибрані
+id="coords"
+class="coords">
+📍 Координати не вибрані
 </div>
 
-<div class="buttons">
 
 <button
-id="saveButton"
-class="button"
-onclick="savePoint()">
-✅ Додати точку
+class="modalbutton"
+onclick="pickOnMap()">
+📍 Поставити точку на карті
 </button>
+
 
 <button
-class="button close"
-onclick="closeAddPoint()">
-Відміна
+class="modalbutton"
+onclick="savePlace()">
+✅ Зберегти
+</button>
+
+
+<button
+class="modalbutton gray"
+onclick="closeAdd()">
+Закрити
 </button>
 
 </div>
 
 </div>
-</div>
 
 
-<!-- ADMIN -->
-
-<div id="adminModal" class="modal">
-
-<div class="modal-content">
-
-<div class="modal-title">
-👑 Адміністрування
-</div>
+<!-- ADMIN MODAL -->
 
 <div
-id="adminStatus"
-class="selected-location">
+id="adminModal"
+class="modal">
+
+<div class="modalbox">
+
+<div class="modaltitle">
+👑 Адмін-панель
 </div>
 
-<div class="buttons">
 
 <button
-class="button"
-onclick="openPending()">
+class="modalbutton"
+onclick="showPending()">
 ⏳ Заявки на модерацію
 </button>
 
+
+<div
+id="ownerAdminSection"
+style="display:none">
+
 <button
-class="button close"
+class="modalbutton"
+onclick="showAdmins()">
+👥 Адміністратори
+</button>
+
+<div
+id="adminsBox"
+style="margin-top:12px">
+</div>
+
+</div>
+
+
+<div
+id="pendingBox"
+style="margin-top:12px">
+</div>
+
+
+<button
+class="modalbutton gray"
 onclick="closeAdmin()">
 Закрити
 </button>
 
 </div>
 
+</div>
+
+
+<!-- ADD ADMIN -->
+
 <div
-id="pendingList"
-style="margin-top:14px">
+id="addAdminModal"
+class="modal">
+
+<div class="modalbox">
+
+<div class="modaltitle">
+👥 Додати адміністратора
+</div>
+
+<div class="group">
+
+<label class="label">
+Telegram ID
+</label>
+
+<input
+id="adminTelegramId"
+class="input"
+placeholder="Наприклад: 123456789">
+
+</div>
+
+<div class="group">
+
+<label class="label">
+Имя
+</label>
+
+<input
+id="adminName"
+class="input"
+placeholder="Саша">
+
+</div>
+
+<div class="group">
+
+<label class="label">
+Роль
+</label>
+
+<select
+id="adminRole"
+class="select">
+
+<option value="moderator">
+🛠 Модератор
+</option>
+
+<option value="owner">
+👑 Владелец
+</option>
+
+</select>
+
+</div>
+
+<button
+class="modalbutton"
+onclick="addAdmin()">
+✅ Добавить
+</button>
+
+<button
+class="modalbutton gray"
+onclick="closeAddAdmin()">
+Закрыть
+</button>
+
 </div>
 
 </div>
-</div>
+
 
 </div>
 
 
 <script>
 
-/* =========================================
-   НАСТРОЙКИ
-========================================= */
-
-const SUPABASE_URL =
+const SUPABASE_URL=
 "https://usggjqukcqzttrilgmmo.supabase.co";
 
-const SUPABASE_KEY =
+const SUPABASE_KEY=
 "sb_publishable_g3Hi1tMxV4sV5bYXBpijBA_nHFd0zxA";
 
-const MAP_API =
-SUPABASE_URL +
+const MAP_API=
+SUPABASE_URL+
 "/functions/v1/map-api";
 
-const TELEGRAM =
+const OWNER_ID=
+"8186262020";
+
+let tg=
 window.Telegram &&
 window.Telegram.WebApp
 ?
@@ -744,100 +1246,59 @@ window.Telegram.WebApp
 :
 null;
 
-if(TELEGRAM){
-TELEGRAM.ready();
-TELEGRAM.expand();
-}
+let telegramId="";
+
+let currentAdmin=null;
+
+let places=[];
+
+let markers=[];
+
+let map=null;
+
+let currentPlace=null;
+
+let selectedLat=null;
+
+let selectedLng=null;
+
+let pickMode=false;
+
+let pickMarker=null;
+
+let editingId=null;
+
+let selectedRating=0;
+
+let activeCategory="all";
 
 
-/* =========================================
-   СОСТОЯНИЕ
-========================================= */
+/* ================================
+API
+================================ */
 
-let map = null;
+async function api(body){
 
-let markers = [];
-
-let userMarker = null;
-
-let pickMarker = null;
-
-let selectedLat = null;
-
-let selectedLng = null;
-
-let activeCategory = "all";
-
-let currentPlace = null;
-
-let editingPlaceId = null;
-
-let adminCode = "";
-
-let places = [];
-
-
-/* =========================================
-   API
-========================================= */
-
-async function apiGet(){
-
-const response =
-await fetch(
-MAP_API,
-{
-method:"GET",
-headers:{
-"apikey":SUPABASE_KEY
-}
-}
-);
-
-const data =
-await response.json();
-
-if(!response.ok){
-
-throw new Error(
-data.error ||
-"Помилка завантаження"
-);
-
-}
-
-return data;
-
-}
-
-
-async function apiPost(body){
-
-const response =
+const r=
 await fetch(
 MAP_API,
 {
 method:"POST",
 headers:{
-"Content-Type":
-"application/json",
-
-"apikey":
-SUPABASE_KEY
+"Content-Type":"application/json",
+"apikey":SUPABASE_KEY
 },
-
-body:
-JSON.stringify(body)
+body:JSON.stringify(body)
 }
 );
 
-const data =
-await response.json();
+const data=
+await r.json();
 
-if(!response.ok){
+if(!r.ok){
 
 throw new Error(
-data.error ||
+data.error||
 "Помилка сервера"
 );
 
@@ -848,13 +1309,27 @@ return data;
 }
 
 
-/* =========================================
-   MAP
-========================================= */
+/* ================================
+INIT
+================================ */
 
 async function initMap(){
 
-map =
+if(tg){
+
+tg.ready();
+tg.expand();
+
+telegramId=
+String(
+tg.initDataUnsafe?.user?.id||
+""
+);
+
+}
+
+
+map=
 new google.maps.Map(
 document.getElementById("map"),
 {
@@ -862,229 +1337,331 @@ center:{
 lat:48.5,
 lng:31.2
 },
-
 zoom:6,
-
 mapTypeControl:false,
-
 streetViewControl:false,
-
 fullscreenControl:false,
-
-gestureHandling:"greedy"
+gestureHandling:"greedy",
+styles:darkMapStyle()
 }
 );
 
 
 map.addListener(
 "click",
-event=>{
+e=>{
 
-if(
-document.getElementById(
-"pickMode"
-).style.display === "block"
-){
+if(pickMode){
 
-setManualLocation(
-event.latLng
+setCoordinates(
+e.latLng.lat(),
+e.latLng.lng()
 );
 
 }
-
-}
-);
-
-
-setupCategories();
-
-setupSearch();
-
-await loadPlaces();
-
-}
-
-
-/* =========================================
-   LOAD
-========================================= */
-
-async function loadPlaces(){
-
-try{
-
-places =
-await apiGet();
-
-createMarkers();
-
-filterPlaces();
-
-}catch(error){
-
-console.error(error);
-
-alert(
-"Не вдалося завантажити точки карти:\n" +
-error.message
-);
-
-}
-
-}
-
-
-/* =========================================
-   MARKERS
-========================================= */
-
-function createMarkers(){
-
-markers.forEach(
-item=>{
-item.marker.setMap(null);
-}
-);
-
-markers=[];
-
-
-places.forEach(
-place=>{
-
-const marker =
-new google.maps.Marker({
-
-position:{
-lat:Number(place.latitude),
-lng:Number(place.longitude)
-},
-
-map:map,
-
-title:place.name
 
 });
 
-
-marker.addListener(
-"click",
-()=>openCard(place)
-);
-
-
-markers.push({
-place:place,
-marker:marker
-});
-
-}
-);
-
-}
-
-
-/* =========================================
-   FILTER
-========================================= */
-
-function setupCategories(){
 
 document
-.querySelectorAll(".category")
+.querySelectorAll(".cat")
 .forEach(
 button=>{
 
-button.addEventListener(
-"click",
-()=>{
+button.onclick=()=>{
 
 document
-.querySelectorAll(".category")
+.querySelectorAll(".cat")
 .forEach(
-b=>
-b.classList.remove("active")
+b=>b.classList.remove("active")
 );
 
 button.classList.add("active");
 
-activeCategory =
-button.dataset.category;
+activeCategory=
+button.dataset.cat;
 
-filterPlaces();
+renderMarkers();
+
+};
 
 }
 );
 
-}
-);
-
-
-}
-
-
-function setupSearch(){
 
 document
 .getElementById("search")
 .addEventListener(
 "input",
-filterPlaces
+renderMarkers
 );
+
+
+setupStars();
+
+await loadPlaces();
+
+await detectAdmin();
 
 }
 
 
-function filterPlaces(){
+/* ================================
+DARK MAP
+================================ */
 
-const query =
+function darkMapStyle(){
+
+return [
+
+{
+elementType:"geometry",
+stylers:[
+{color:"#18212b"}
+]
+},
+
+{
+elementType:"labels.text.fill",
+stylers:[
+{color:"#b8c2cc"}
+]
+},
+
+{
+elementType:"labels.text.stroke",
+stylers:[
+{color:"#18212b"}
+]
+},
+
+{
+featureType:"road",
+elementType:"geometry",
+stylers:[
+{color:"#354250"}
+]
+},
+
+{
+featureType:"road.highway",
+elementType:"geometry",
+stylers:[
+{color:"#455463"}
+]
+},
+
+{
+featureType:"water",
+elementType:"geometry",
+stylers:[
+{color:"#071e3c"}
+]
+},
+
+{
+featureType:"poi",
+stylers:[
+{visibility:"simplified"}
+]
+}
+
+];
+
+}
+
+
+/* ================================
+ADMIN DETECTION
+================================ */
+
+async function detectAdmin(){
+
+if(!telegramId){
+
+return;
+
+}
+
+
+try{
+
+const list=
+await api({
+action:"admins",
+telegram_id:
+telegramId
+});
+
+
+currentAdmin=
+list.find(
+a=>
+String(a.telegram_id)===
+telegramId &&
+a.active
+)
+||
+null;
+
+
+if(currentAdmin){
+
+document
+.getElementById("adminButton")
+.style.display=
+"block";
+
+
+if(currentAdmin.role==="owner"){
+
+document
+.getElementById(
+"ownerAdminSection"
+)
+.style.display=
+"block";
+
+}
+
+}
+
+}catch(e){
+
+console.log(
+"Not admin"
+);
+
+}
+
+}
+
+
+/* ================================
+LOAD
+================================ */
+
+async function loadPlaces(){
+
+try{
+
+places=
+await fetch(
+MAP_API,
+{
+headers:{
+"apikey":SUPABASE_KEY
+}
+}
+)
+.then(
+r=>r.json()
+);
+
+renderMarkers();
+
+}catch(e){
+
+console.error(e);
+
+}
+
+}
+
+
+/* ================================
+MARKERS
+================================ */
+
+function renderMarkers(){
+
+markers.forEach(
+m=>m.setMap(null)
+);
+
+markers=[];
+
+
+const query=
 document
 .getElementById("search")
 .value
 .toLowerCase()
 .trim();
 
-let visible=0;
+
+places.forEach(
+place=>{
+
+const categoryOk=
+activeCategory==="all"||
+place.category===
+activeCategory;
 
 
-markers.forEach(
-item=>{
-
-const p =
-item.place;
-
-const categoryOK =
-activeCategory==="all" ||
-p.category===activeCategory;
-
-const text =
+const text=
 (
-(p.name || "") +
-" " +
-(p.address || "") +
-" " +
-(p.category_name || "")
+place.name+
+" "+
+(place.address||"")
 )
 .toLowerCase();
 
-const searchOK =
-!query ||
+
+const searchOk=
+!query||
 text.includes(query);
 
+
 if(
-categoryOK &&
-searchOK
+!categoryOk||
+!searchOk
 ){
 
-item.marker.setMap(map);
-
-visible++;
-
-}else{
-
-item.marker.setMap(null);
+return;
 
 }
+
+
+const rating=
+Number(place.rating||0);
+
+
+const marker=
+new google.maps.Marker({
+
+map:map,
+
+position:{
+lat:Number(place.latitude),
+lng:Number(place.longitude)
+},
+
+title:place.name,
+
+label:{
+text:
+rating
+?
+"★ "+rating.toFixed(1)
+:
+"★ —",
+
+color:"#111",
+fontWeight:"800",
+fontSize:"13px"
+}
+
+});
+
+
+marker.addListener(
+"click",
+()=>openPlace(place)
+);
+
+
+markers.push(marker);
 
 }
 );
@@ -1092,307 +1669,245 @@ item.marker.setMap(null);
 
 document
 .getElementById("empty")
-.style.display =
-visible===0
+.style.display=
+markers.length
+?
+"none"
+:
+"block";
+
+}
+
+
+/* ================================
+PLACE CARD
+================================ */
+
+async function openPlace(place){
+
+currentPlace=place;
+
+document
+.getElementById("card")
+.style.display=
+"block";
+
+
+document
+.getElementById("cardName")
+.textContent=
+place.name;
+
+
+const rating=
+Number(place.rating||0);
+
+
+document
+.getElementById("cardRating")
+.textContent=
+rating
+?
+rating.toFixed(1)
+:
+"—";
+
+
+document
+.getElementById("cardStars")
+.textContent=
+stars(rating);
+
+
+document
+.getElementById("cardReviews")
+.textContent=
+`(${place.reviews_count||0})`;
+
+
+const image=
+document
+.getElementById("cardImage");
+
+
+if(place.logo_url){
+
+image.src=
+place.logo_url;
+
+image.style.display=
+"block";
+
+}else{
+
+image.style.display=
+"none";
+
+}
+
+
+document
+.getElementById("info")
+.innerHTML=
+`
+<div class="inforow">
+<div class="infoicon">📍</div>
+<div class="infovalue">
+${esc(place.address||"Адреса не вказана")}
+</div>
+</div>
+
+<div class="inforow">
+<div class="infoicon">☎</div>
+<div class="infovalue">
+${place.phone?
+`<a href="tel:${esc(place.phone)}">
+${esc(place.phone)}
+</a>`
+:
+"Телефон не вказаний"}
+</div>
+</div>
+
+<div class="inforow">
+<div class="infoicon">✈️</div>
+<div class="infovalue">
+${esc(place.telegram||"")}
+</div>
+</div>
+
+<div class="inforow">
+<div class="infoicon">🌐</div>
+<div class="infovalue">
+${
+place.website
+?
+`<a href="${safeUrl(place.website)}" target="_blank">
+${esc(place.website)}
+</a>`
+:
+"Сайт не вказаний"
+}
+</div>
+</div>
+`;
+
+
+const description=
+document.getElementById(
+"description"
+);
+
+
+if(place.description){
+
+description.textContent=
+place.description;
+
+description.style.display=
+"block";
+
+}else{
+
+description.style.display=
+"none";
+
+}
+
+
+document
+.getElementById("routeBtn")
+.onclick=
+()=>{
+
+const url=
+"https://www.google.com/maps/dir/?api=1"+
+"&destination="+
+place.latitude+
+","+
+place.longitude;
+
+if(tg){
+
+tg.openLink(url);
+
+}else{
+
+window.open(url,"_blank");
+
+}
+
+};
+
+
+const phone=
+document.getElementById(
+"phoneBtn"
+);
+
+phone.style.display=
+place.phone
 ?
 "block"
 :
 "none";
 
-}
-
-
-/* =========================================
-   CARD
-========================================= */
-
-function openCard(place){
-
-currentPlace =
-place;
-
-
-document
-.getElementById(
-"cardTitle"
-)
-.textContent =
-place.name;
-
-
-document
-.getElementById(
-"cardInfo"
-)
-.innerHTML =
-
-`<b>${place.category_name || ""}</b><br>
-📍 ${escapeHtml(place.address || "")}`;
-
-
-const logo =
-document.getElementById(
-"cardLogo"
-);
-
-
-if(place.logo_url){
-
-logo.src =
-place.logo_url;
-
-logo.style.display =
-"block";
-
-}else{
-
-logo.style.display =
-"none";
-
-}
-
-
-/* PHONE */
-
-const phoneButton =
-document.getElementById(
-"phoneButton"
-);
-
-
-if(place.phone){
-
-phoneButton.style.display =
-"block";
-
-phoneButton.onclick =
+phone.onclick=
 ()=>{
-window.location.href =
-"tel:" +
+
+window.location.href=
+"tel:"+
 place.phone;
-};
-
-}else{
-
-phoneButton.style.display =
-"none";
-
-}
-
-
-/* ROUTE */
-
-document
-.getElementById(
-"routeButton"
-)
-.onclick =
-()=>{
-
-const url =
-"https://www.google.com/maps/dir/?api=1" +
-"&destination=" +
-place.latitude +
-"," +
-place.longitude;
-
-if(TELEGRAM){
-
-TELEGRAM.openLink(url);
-
-}else{
-
-window.open(
-url,
-"_blank"
-);
-
-}
 
 };
 
 
-/* TELEGRAM */
-
-const telegramButton =
+const site=
 document.getElementById(
-"telegramButton"
+"siteBtn"
 );
 
-
-if(place.telegram){
-
-telegramButton.style.display =
-"block";
-
-telegramButton.onclick =
-()=>{
-
-let link =
-place.telegram;
-
-if(
-!link.startsWith("http")
-){
-
-link =
-"https://t.me/" +
-link.replace("@","");
-}
-
-if(TELEGRAM){
-
-TELEGRAM.openLink(link);
-
-}else{
-
-window.open(
-link,
-"_blank"
-);
-
-}
-
-};
-
-}else{
-
-telegramButton.style.display =
-"none";
-
-}
-
-
-/* WEBSITE */
-
-const websiteButton =
-document.getElementById(
-"websiteButton"
-);
-
-
-if(place.website){
-
-websiteButton.style.display =
-"block";
-
-websiteButton.onclick =
-()=>{
-
-if(TELEGRAM){
-
-TELEGRAM.openLink(
+site.style.display=
 place.website
-);
+?
+"block"
+:
+"none";
+
+site.onclick=
+()=>{
+
+const url=
+safeUrl(place.website);
+
+if(tg){
+
+tg.openLink(url);
 
 }else{
 
-window.open(
-place.website,
-"_blank"
-);
+window.open(url,"_blank");
 
 }
 
 };
 
-}else{
-
-websiteButton.style.display =
-"none";
-
-}
-
-
-/* SHARE */
 
 document
 .getElementById(
-"shareButton"
+"adminPlaceActions"
 )
-.onclick =
-()=>{
-
-const text =
-"📍 " +
-place.name +
-"\n" +
-(place.address || "") +
-"\n\n" +
-"🗺 Карта натяжних стель України";
-
-const shareUrl =
-"https://t.me/share/url?url=" +
-encodeURIComponent(
-location.href
-) +
-"&text=" +
-encodeURIComponent(
-text
-);
-
-if(TELEGRAM){
-
-TELEGRAM.openTelegramLink(
-shareUrl
-);
-
-}else{
-
-window.open(
-shareUrl,
-"_blank"
-);
-
-}
-
-};
-
-
-/* ADMIN BUTTONS */
-
-const editButton =
-document.getElementById(
-"editButton"
-);
-
-const deleteButton =
-document.getElementById(
-"deleteButton"
-);
-
-
-if(adminCode){
-
-editButton.style.display =
-"block";
-
-deleteButton.style.display =
-"block";
-
-}else{
-
-editButton.style.display =
+.style.display=
+currentAdmin
+?
+"block"
+:
 "none";
 
-deleteButton.style.display =
-"none";
 
-}
-
-
-editButton.onclick =
-()=>editPlace(place);
-
-
-deleteButton.onclick =
-()=>deletePlace(place);
-
-
-document
-.getElementById("card")
-.style.display =
-"block";
+await loadReviews(
+place.id
+);
 
 }
 
@@ -1401,300 +1916,373 @@ function closeCard(){
 
 document
 .getElementById("card")
-.style.display =
+.style.display=
 "none";
 
-}
-
-
-function escapeHtml(value){
-
-return String(value)
-.replaceAll("&","&amp;")
-.replaceAll("<","&lt;")
-.replaceAll(">","&gt;")
-.replaceAll('"',"&quot;")
-.replaceAll("'","&#039;");
+currentPlace=null;
 
 }
 
 
-/* =========================================
-   ADD
-========================================= */
+/* ================================
+REVIEWS
+================================ */
 
-function openAddPoint(){
+async function loadReviews(placeId){
 
-editingPlaceId =
-null;
+try{
+
+const list=
+await api({
+action:"reviews",
+place_id:
+placeId
+});
+
+
+const box=
+document
+.getElementById("reviews");
+
+
+if(!list.length){
+
+box.innerHTML=
+`
+<div class="review">
+<div class="reviewauthor">
+Поки немає відгуків
+</div>
+<div class="reviewtext">
+Будьте першим!
+</div>
+</div>
+`;
+
+return;
+
+}
+
+
+box.innerHTML=
+list.map(
+r=>
+`
+<div class="review">
+
+<div class="reviewauthor">
+${esc(r.author_name)}
+</div>
+
+<div class="reviewdate">
+${formatDate(r.created_at)}
+</div>
+
+<div class="reviewstars">
+${stars(Number(r.rating))}
+</div>
+
+<div class="reviewtext">
+${esc(r.review_text)}
+</div>
+
+</div>
+`
+).join("");
+
+}catch(e){
+
+console.error(e);
+
+}
+
+}
+
+
+function setupStars(){
+
+document
+.querySelectorAll(
+"#starSelect button"
+)
+.forEach(
+button=>{
+
+button.onclick=
+()=>{
+
+selectedRating=
+Number(
+button.dataset.star
+);
+
+document
+.querySelectorAll(
+"#starSelect button"
+)
+.forEach(
+b=>{
+
+const n=
+Number(
+b.dataset.star
+);
+
+b.textContent=
+n<=selectedRating
+?
+"★"
+:
+"☆";
+
+b.classList.toggle(
+"active",
+n<=selectedRating
+);
+
+}
+
+);
+
+};
+
+}
+);
+
+}
+
+
+async function sendReview(){
+
+if(!currentPlace){
+
+return;
+
+}
+
+
+if(!selectedRating){
+
+alert(
+"Оберіть оцінку."
+);
+
+return;
+
+}
+
+
+const text=
+document
+.getElementById(
+"reviewText"
+)
+.value
+.trim();
+
+
+if(!text){
+
+alert(
+"Напишіть відгук."
+);
+
+return;
+
+}
+
+
+const name=
+document
+.getElementById(
+"reviewName"
+)
+.value
+.trim()
+||
+"Анонім";
+
+
+try{
+
+await api({
+
+action:"add_review",
+
+place_id:
+currentPlace.id,
+
+author_name:
+name,
+
+rating:
+selectedRating,
+
+review_text:
+text
+
+});
+
 
 document
 .getElementById(
-"formTitle"
+"reviewName"
 )
-.textContent =
-"➕ Додати точку на карту";
+.value="";
+
 
 document
 .getElementById(
-"saveButton"
+"reviewText"
 )
-.textContent =
-"✅ Додати точку";
+.value="";
+
+
+selectedRating=0;
+
+
+document
+.querySelectorAll(
+"#starSelect button"
+)
+.forEach(
+b=>{
+b.textContent="☆";
+b.classList.remove("active");
+}
+);
+
+
+alert(
+"Дякуємо за відгук!"
+);
+
+
+await loadPlaces();
+
+
+const updated=
+places.find(
+p=>
+p.id===
+currentPlace.id
+);
+
+
+if(updated){
+
+currentPlace=
+updated;
+
+await openPlace(
+updated
+);
+
+}
+
+}catch(e){
+
+alert(
+"❌ "+
+e.message
+);
+
+}
+
+}
+
+
+/* ================================
+ADD
+================================ */
+
+function openAdd(){
+
+editingId=null;
+
+document
+.getElementById("addTitle")
+.textContent=
+"➕ Додати точку";
 
 clearForm();
 
 document
-.getElementById(
-"addModal"
-)
-.style.display =
+.getElementById("addModal")
+.style.display=
 "flex";
 
 }
 
 
-function closeAddPoint(){
+function closeAdd(){
 
 document
-.getElementById(
-"addModal"
-)
-.style.display =
+.getElementById("addModal")
+.style.display=
 "none";
 
-cancelPick();
+pickMode=false;
 
 }
 
 
 function clearForm(){
 
+[
+"newName",
+"newAddress",
+"newPhone",
+"newTelegram",
+"newWebsite",
+"newDescription"
+]
+.forEach(
+id=>{
 document
-.getElementById(
-"newName"
-)
-.value =
-"";
+.getElementById(id)
+.value="";
+}
+);
+
 
 document
-.getElementById(
-"newAddress"
-)
-.value =
-"";
+.getElementById("newLogo")
+.value="";
 
-document
-.getElementById(
-"newPhone"
-)
-.value =
-"";
-
-document
-.getElementById(
-"newTelegram"
-)
-.value =
-"";
-
-document
-.getElementById(
-"newWebsite"
-)
-.value =
-"";
-
-document
-.getElementById(
-"newLogo"
-)
-.value =
-"";
 
 document
 .getElementById(
 "addressResults"
 )
-.style.display =
-"none";
+.innerHTML="";
+
+
+selectedLat=null;
+selectedLng=null;
 
 document
-.getElementById(
-"logoPreview"
-)
-.style.display =
-"none";
-
-selectedLat =
-null;
-
-selectedLng =
-null;
-
-document
-.getElementById(
-"selectedLocation"
-)
-.textContent =
-"Координати поки не вибрані";
+.getElementById("coords")
+.textContent=
+"📍 Координати не вибрані";
 
 }
 
 
-/* =========================================
-   PICK LOCATION
-========================================= */
+/* ================================
+ADDRESS SEARCH
+================================ */
 
-function startPickLocation(){
+async function searchAddress(){
 
+const q=
 document
-.getElementById(
-"addModal"
-)
-.style.display =
-"none";
-
-document
-.getElementById(
-"pickMode"
-)
-.style.display =
-"block";
-
-}
-
-
-function cancelPick(){
-
-document
-.getElementById(
-"pickMode"
-)
-.style.display =
-"none";
-
-}
-
-
-function setManualLocation(
-latLng
-){
-
-selectedLat =
-latLng.lat();
-
-selectedLng =
-latLng.lng();
-
-
-if(pickMarker){
-
-pickMarker.setMap(
-null
-);
-
-}
-
-
-pickMarker =
-new google.maps.Marker({
-
-position:latLng,
-
-map:map,
-
-title:"Нова точка",
-
-draggable:true
-
-});
-
-
-pickMarker.addListener(
-"dragend",
-()=>{
-const p =
-pickMarker.getPosition();
-
-selectedLat =
-p.lat();
-
-selectedLng =
-p.lng();
-
-updateSelectedLocation();
-
-}
-);
-
-
-updateSelectedLocation();
-
-map.setCenter(
-latLng
-);
-
-map.setZoom(
-17
-);
-
-cancelPick();
-
-openAddPointAfterPick();
-
-}
-
-
-function openAddPointAfterPick(){
-
-document
-.getElementById(
-"addModal"
-)
-.style.display =
-"flex";
-
-}
-
-
-function updateSelectedLocation(){
-
-document
-.getElementById(
-"selectedLocation"
-)
-.textContent =
-"📍 " +
-selectedLat.toFixed(6) +
-", " +
-selectedLng.toFixed(6);
-
-}
-
-
-/* =========================================
-   ADDRESS SEARCH
-========================================= */
-
-async function findAddress(){
-
-const address =
-document
-.getElementById(
-"newAddress"
-)
+.getElementById("newAddress")
 .value
 .trim();
 
-const box =
-document
-.getElementById(
-"addressResults"
-);
 
-
-if(!address){
+if(!q){
 
 alert(
 "Введіть адресу."
@@ -1705,86 +2293,82 @@ return;
 }
 
 
-box.style.display =
-"block";
+const box=
+document
+.getElementById(
+"addressResults"
+);
 
-box.innerHTML =
-'<div class="address-loading">🔎 Шукаємо адресу...</div>';
+
+box.innerHTML=
+"🔎 Шукаємо адресу...";
 
 
 try{
 
-const url =
-"https://nominatim.openstreetmap.org/search" +
-"?format=jsonv2" +
-"&addressdetails=1" +
-"&limit=5" +
-"&countrycodes=ua" +
-"&accept-language=uk" +
-"&q=" +
-encodeURIComponent(address);
+const url=
+"https://nominatim.openstreetmap.org/search"+
+"?format=jsonv2"+
+"&countrycodes=ua"+
+"&limit=5"+
+"&accept-language=uk"+
+"&q="+
+encodeURIComponent(q);
 
 
-const response =
+const r=
 await fetch(url);
 
 
-if(!response.ok){
-
-throw new Error(
-"HTTP " +
-response.status
-);
-
-}
+const data=
+await r.json();
 
 
-const results =
-await response.json();
+if(!data.length){
 
-
-if(
-!results.length
-){
-
-box.innerHTML =
-'<div class="address-error">' +
-"❌ Адресу не знайдено.<br><br>" +
-"Спробуйте: Київ, Хрещатик 1" +
-"</div>";
+box.innerHTML=
+"❌ Адресу не знайдено.";
 
 return;
 
 }
 
 
-box.innerHTML =
-"";
+box.innerHTML="";
 
 
-results.forEach(
-result=>{
+data.forEach(
+item=>{
 
-const button =
+const button=
 document.createElement(
 "button"
 );
 
-button.className =
+button.className=
 "address-result";
 
-button.type =
-"button";
+button.textContent=
+"📍 "+
+item.display_name;
 
-button.textContent =
-"📍 " +
-result.display_name;
-
-button.onclick =
+button.onclick=
 ()=>{
-selectAddressResult(
-result
+
+setCoordinates(
+Number(item.lat),
+Number(item.lon)
 );
+
+document
+.getElementById(
+"newAddress"
+)
+.value=
+item.display_name;
+
+box.innerHTML="";
+
 };
 
 box.appendChild(
@@ -1794,57 +2378,55 @@ button
 }
 );
 
-}catch(error){
+}catch(e){
 
-console.error(error);
-
-box.innerHTML =
-'<div class="address-error">' +
-"❌ Помилка пошуку адреси.<br><br>" +
-"Спробуйте вибрати місце на карті." +
-"</div>";
+box.innerHTML=
+"❌ Помилка пошуку.";
 
 }
 
 }
 
 
-function selectAddressResult(
-result
-){
+/* ================================
+PICK MAP
+================================ */
 
-selectedLat =
-parseFloat(
-result.lat
+function pickOnMap(){
+
+closeAdd();
+
+pickMode=true;
+
+alert(
+"Натисніть потрібне місце на карті."
 );
 
-selectedLng =
-parseFloat(
-result.lon
-);
+}
+
+
+function setCoordinates(lat,lng){
+
+selectedLat=lat;
+selectedLng=lng;
 
 
 if(pickMarker){
 
-pickMarker.setMap(
-null
-);
+pickMarker.setMap(null);
 
 }
 
 
-pickMarker =
+pickMarker=
 new google.maps.Marker({
-
-position:{
-lat:selectedLat,
-lng:selectedLng
-},
 
 map:map,
 
-title:
-result.display_name,
+position:{
+lat:lat,
+lng:lng
+},
 
 draggable:true
 
@@ -1854,138 +2436,63 @@ draggable:true
 pickMarker.addListener(
 "dragend",
 ()=>{
-const p =
+
+const p=
 pickMarker.getPosition();
 
-selectedLat =
+selectedLat=
 p.lat();
 
-selectedLng =
+selectedLng=
 p.lng();
 
-updateSelectedLocation();
+updateCoords();
 
 }
 );
-
-
-document
-.getElementById(
-"newAddress"
-)
-.value =
-result.display_name;
-
-
-document
-.getElementById(
-"selectedLocation"
-)
-.textContent =
-"📍 " +
-result.display_name;
-
-
-document
-.getElementById(
-"addressResults"
-)
-.style.display =
-"none";
 
 
 map.setCenter({
-lat:selectedLat,
-lng:selectedLng
+lat:lat,
+lng:lng
 });
 
-map.setZoom(
-17
-);
+map.setZoom(16);
 
-}
+updateCoords();
 
+pickMode=false;
 
-/* =========================================
-   LOGO
-========================================= */
-
-function previewLogo(event){
-
-const file =
-event.target.files[0];
-
-if(!file)return;
-
-const reader =
-new FileReader();
-
-reader.onload =
-e=>{
-
-const preview =
-document.getElementById(
-"logoPreview"
-);
-
-preview.src =
-e.target.result;
-
-preview.style.display =
-"block";
-
-};
-
-reader.readAsDataURL(file);
-
-}
-
-
-/* =========================================
-   FILE -> BASE64
-========================================= */
-
-function fileToBase64(
-file
-){
-
-return new Promise(
-(resolve,reject)=>{
-
-const reader =
-new FileReader();
-
-reader.onload =
-()=>{
-resolve(
-reader.result
-);
-};
-
-reader.onerror =
-reject;
-
-reader.readAsDataURL(
-file
-);
-
-}
-);
-
-}
-
-
-/* =========================================
-   SAVE / UPDATE
-========================================= */
-
-async function savePoint(){
-
-const name =
 document
-.getElementById(
-"newName"
-)
+.getElementById("addModal")
+.style.display=
+"flex";
+
+}
+
+
+function updateCoords(){
+
+document
+.getElementById("coords")
+.textContent=
+"📍 "+
+selectedLat.toFixed(6)+
+", "+
+selectedLng.toFixed(6);
+
+}
+
+
+/* ================================
+SAVE
+================================ */
+
+async function savePlace(){
+
+const name=
+document
+.getElementById("newName")
 .value
 .trim();
 
@@ -1993,7 +2500,7 @@ document
 if(!name){
 
 alert(
-"Вкажіть назву точки."
+"Вкажіть назву."
 );
 
 return;
@@ -2002,12 +2509,12 @@ return;
 
 
 if(
-selectedLat === null ||
-selectedLng === null
+selectedLat===null||
+selectedLng===null
 ){
 
 alert(
-"Спочатку знайдіть адресу або виберіть місце на карті."
+"Знайдіть адресу або поставте точку на карті."
 );
 
 return;
@@ -2015,96 +2522,82 @@ return;
 }
 
 
-const category =
-document
-.getElementById(
-"newCategory"
-)
-.value;
+const categories={
 
-
-const names = {
-
-manufacturer:
-"🏭 Виробник",
-
-shop:
-"🏪 Магазин / постачальник",
-
-tools:
-"🔧 Інструмент",
-
-gas:
-"🔥 Газ",
-
-services:
-"🛠 Послуги"
+manufacturer:"🏭 Виробник",
+shop:"🏪 Магазин / постачальник",
+tools:"🔧 Інструмент",
+gas:"🔥 Газ",
+services:"🛠 Послуги"
 
 };
 
 
-const file =
+const file=
 document
-.getElementById(
-"newLogo"
-)
+.getElementById("newLogo")
 .files[0];
 
 
-let logoData = "";
+let logoData=null;
 
-let logoType = "";
+let logoType=null;
 
 
 if(file){
 
-logoData =
+logoData=
 await fileToBase64(file);
 
-logoType =
+logoType=
 file.type;
 
 }
 
 
-const place = {
+const place={
 
 name:name,
 
-category:category,
+category:
+document
+.getElementById("newCategory")
+.value,
 
 category_name:
-names[category],
+categories[
+document
+.getElementById("newCategory")
+.value
+],
 
 address:
 document
-.getElementById(
-"newAddress"
-)
+.getElementById("newAddress")
 .value
 .trim(),
 
 phone:
 document
-.getElementById(
-"newPhone"
-)
+.getElementById("newPhone")
 .value
 .trim(),
 
 telegram:
 document
-.getElementById(
-"newTelegram"
-)
+.getElementById("newTelegram")
 .value
 .trim(),
 
 website:
 document
-.getElementById(
-"newWebsite"
-)
+.getElementById("newWebsite")
+.value
+.trim(),
+
+description:
+document
+.getElementById("newDescription")
 .value
 .trim(),
 
@@ -2117,99 +2610,61 @@ selectedLng
 };
 
 
+if(logoData){
+
+place.logo_data=
+logoData;
+
+place.logo_type=
+logoType;
+
+}
+
+
 try{
 
-if(editingPlaceId){
+await api({
 
-await apiPost({
-
-action:"update",
-
-code:adminCode,
-
-id:editingPlaceId,
-
-place:{
-...place,
-
-...(logoData
+action:
+editingId
 ?
-{
-logo_data:logoData,
-logo_type:logoType
-}
+"update"
 :
-{})
-}
+"submit",
+
+id:
+editingId,
+
+telegram_id:
+telegramId,
+
+place:place
 
 });
 
 
 alert(
+editingId
+?
 "Точку оновлено."
-);
-
-}else{
-
-await apiPost({
-
-action:"submit",
-
-place:{
-...place,
-
-...(logoData
-?
-{
-logo_data:logoData,
-logo_type:logoType
-}
 :
-{}),
-
-created_by:
-TELEGRAM?.initDataUnsafe?.user?.id
-?
-String(
-TELEGRAM
-.initDataUnsafe
-.user.id
-)
-:
-"",
-
-created_by_name:
-TELEGRAM?.initDataUnsafe?.user?.first_name
-||
-""
-
-}
-
-});
-
-
-alert(
-adminCode
+currentAdmin
 ?
 "Точку додано на карту."
 :
-"Дякуємо! Точка відправлена на модерацію. Після схвалення вона з'явиться на карті."
+"Точку відправлено на модерацію."
 );
 
-}
 
-
-closeAddPoint();
+closeAdd();
 
 await loadPlaces();
 
-}catch(error){
-
-console.error(error);
+}catch(e){
 
 alert(
-"❌ " +
-error.message
+"❌ "+
+e.message
 );
 
 }
@@ -2217,136 +2672,106 @@ error.message
 }
 
 
-/* =========================================
-   EDIT
-========================================= */
+/* ================================
+EDIT
+================================ */
 
-function editPlace(place){
+function editPlace(){
 
-closeCard();
+if(!currentPlace){
 
-editingPlaceId =
-place.id;
+return;
+
+}
+
+
+editingId=
+currentPlace.id;
 
 
 document
-.getElementById(
-"formTitle"
-)
-.textContent =
+.getElementById("addTitle")
+.textContent=
 "✏️ Редагувати точку";
 
 
 document
-.getElementById(
-"saveButton"
-)
-.textContent =
-"💾 Зберегти зміни";
+.getElementById("newCategory")
+.value=
+currentPlace.category;
 
 
 document
-.getElementById(
-"newCategory"
-)
-.value =
-place.category;
+.getElementById("newName")
+.value=
+currentPlace.name;
 
 
 document
-.getElementById(
-"newName"
-)
-.value =
-place.name;
+.getElementById("newAddress")
+.value=
+currentPlace.address||"";
 
 
 document
-.getElementById(
-"newAddress"
-)
-.value =
-place.address || "";
+.getElementById("newPhone")
+.value=
+currentPlace.phone||"";
 
 
 document
-.getElementById(
-"newPhone"
-)
-.value =
-place.phone || "";
+.getElementById("newTelegram")
+.value=
+currentPlace.telegram||"";
 
 
 document
-.getElementById(
-"newTelegram"
-)
-.value =
-place.telegram || "";
+.getElementById("newWebsite")
+.value=
+currentPlace.website||"";
 
 
 document
-.getElementById(
-"newWebsite"
-)
-.value =
-place.website || "";
+.getElementById("newDescription")
+.value=
+currentPlace.description||"";
 
 
-selectedLat =
-Number(place.latitude);
+selectedLat=
+Number(currentPlace.latitude);
 
-selectedLng =
-Number(place.longitude);
+selectedLng=
+Number(currentPlace.longitude);
 
+updateCoords();
 
-document
-.getElementById(
-"selectedLocation"
-)
-.textContent =
-"📍 " +
-selectedLat.toFixed(6) +
-", " +
-selectedLng.toFixed(6);
-
-
-if(place.logo_url){
-
-const preview =
-document.getElementById(
-"logoPreview"
-);
-
-preview.src =
-place.logo_url;
-
-preview.style.display =
-"block";
-
-}
-
+closeCard();
 
 document
-.getElementById(
-"addModal"
-)
-.style.display =
+.getElementById("addModal")
+.style.display=
 "flex";
 
 }
 
 
-/* =========================================
-   DELETE
-========================================= */
+/* ================================
+DELETE
+================================ */
 
-async function deletePlace(place){
+async function deletePlace(){
+
+if(!currentPlace){
+
+return;
+
+}
+
 
 if(
 !confirm(
-"Видалити точку «" +
-place.name +
+"Видалити «"+
+currentPlace.name+
 "»?"
 )
 ){
@@ -2358,30 +2783,32 @@ return;
 
 try{
 
-await apiPost({
+await api({
 
 action:"delete",
 
-code:adminCode,
+telegram_id:
+telegramId,
 
-id:place.id
+id:
+currentPlace.id
 
 });
 
-
-alert(
-"Точку видалено."
-);
 
 closeCard();
 
 await loadPlaces();
 
-}catch(error){
+alert(
+"Точку видалено."
+);
+
+}catch(e){
 
 alert(
-"❌ " +
-error.message
+"❌ "+
+e.message
 );
 
 }
@@ -2389,278 +2816,165 @@ error.message
 }
 
 
-/* =========================================
-   ADMIN LOGIN
-========================================= */
+/* ================================
+ADMIN
+================================ */
 
-async function adminLogin(){
+async function openAdmin(){
 
-const code =
-prompt(
-"Введіть код адміністратора:"
-);
-
-
-if(!code){
+if(!currentAdmin){
 
 return;
 
 }
 
-
-try{
-
-const result =
-await apiPost({
-
-action:"pending",
-
-code:code
-
-});
-
-
-adminCode =
-code;
-
-
 document
-.getElementById(
-"adminStatus"
-)
-.textContent =
-"✅ Ви увійшли як адміністратор";
-
-
-document
-.getElementById(
-"adminModal"
-)
-.style.display =
+.getElementById("adminModal")
+.style.display=
 "flex";
 
-
-renderPending(
-result
-);
-
-
-await loadPlaces();
-
-}catch(error){
-
-alert(
-"❌ Невірний код адміністратора."
-);
+await showPending();
 
 }
 
-}
-
-
-/* =========================================
-   ADMIN
-========================================= */
 
 function closeAdmin(){
 
 document
-.getElementById(
-"adminModal"
-)
-.style.display =
+.getElementById("adminModal")
+.style.display=
 "none";
 
 }
 
 
-async function openPending(){
-
-if(!adminCode){
-
-adminLogin();
-
-return;
-
-}
-
+async function showPending(){
 
 try{
 
-const result =
-await apiPost({
+const list=
+await api({
 
 action:"pending",
 
-code:adminCode
+telegram_id:
+telegramId
 
 });
 
-renderPending(
-result
-);
 
-}catch(error){
-
-alert(
-"❌ " +
-error.message
-);
-
-}
-
-}
-
-
-function renderPending(list){
-
-const container =
-document.getElementById(
-"pendingList"
-);
+const box=
+document
+.getElementById("pendingBox");
 
 
 if(!list.length){
 
-container.innerHTML =
-'<div class="selected-location">' +
-"Заявок на модерацію немає." +
-"</div>";
+box.innerHTML=
+`
+<div style="padding:12px;color:#8996a3">
+Заявок немає.
+</div>
+`;
 
 return;
 
 }
 
 
-container.innerHTML =
-"";
+box.innerHTML=
+list.map(
+p=>
+`
+<div class="pending">
 
-
-list.forEach(
-place=>{
-
-const item =
-document.createElement(
-"div"
-);
-
-item.className =
-"pending-item";
-
-
-item.innerHTML =
-
-`<div class="pending-name">
-${escapeHtml(place.name)}
+<div class="pendingname">
+${esc(p.name)}
 </div>
 
-<div class="pending-info">
-${escapeHtml(place.category_name || "")}<br>
-📍 ${escapeHtml(place.address || "")}<br>
-📞 ${escapeHtml(place.phone || "")}
-</div>`;
+<div class="pendinginfo">
+${esc(p.category_name||"")}<br>
+📍 ${esc(p.address||"")}<br>
+☎ ${esc(p.phone||"")}
+</div>
 
+<div class="pendingactions">
 
-const buttons =
-document.createElement(
-"div"
+<button
+class="modalbutton"
+onclick="approve('${p.id}')">
+✅ Одобрити
+</button>
+
+<button
+class="modalbutton red"
+onclick="reject('${p.id}')">
+❌ Відхилити
+</button>
+
+</div>
+
+</div>
+`
+).join("");
+
+}catch(e){
+
+alert(
+"❌ "+
+e.message
 );
 
-buttons.className =
-"buttons";
+}
+
+}
 
 
-const approve =
-document.createElement(
-"button"
-);
+async function approve(id){
 
-approve.className =
-"button";
-
-approve.textContent =
-"✅ Одобрити";
-
-
-approve.onclick =
-async()=>{
 await moderate(
 "approve",
-place.id
-);
-};
-
-
-const reject =
-document.createElement(
-"button"
+id
 );
 
-reject.className =
-"button red";
-
-reject.textContent =
-"❌ Відхилити";
+}
 
 
-reject.onclick =
-async()=>{
+async function reject(id){
+
 await moderate(
 "reject",
-place.id
-);
-};
-
-
-buttons.appendChild(
-approve
-);
-
-buttons.appendChild(
-reject
-);
-
-item.appendChild(
-buttons
-);
-
-container.appendChild(
-item
-);
-
-}
-);
-
-}
-
-
-async function moderate(
-action,
 id
-){
+);
+
+}
+
+
+async function moderate(action,id){
 
 try{
 
-await apiPost({
+await api({
 
 action:action,
 
-code:adminCode,
+telegram_id:
+telegramId,
 
 id:id
 
 });
 
 
-await openPending();
+await showPending();
 
 await loadPlaces();
 
-}catch(error){
+}catch(e){
 
 alert(
-"❌ " +
-error.message
+"❌ "+
+e.message
 );
 
 }
@@ -2668,18 +2982,164 @@ error.message
 }
 
 
-/* =========================================
-   LOCATION
-========================================= */
+/* ================================
+ADMINS
+================================ */
 
-function findMe(){
+async function showAdmins(){
 
 if(
-!navigator.geolocation
+!currentAdmin||
+currentAdmin.role!=="owner"
 ){
 
+return;
+
+}
+
+
+try{
+
+const list=
+await api({
+
+action:"admins",
+
+telegram_id:
+telegramId
+
+});
+
+
+const box=
+document
+.getElementById(
+"adminsBox"
+);
+
+
+box.innerHTML=
+`
+<button
+class="modalbutton"
+onclick="openAddAdmin()">
+➕ Додати адміністратора
+</button>
+<br>
+`+
+list.map(
+a=>
+`
+<div class="adminitem">
+
+<div class="adminname">
+${esc(a.name||"Без імені")}
+</div>
+
+<div class="adminmeta">
+Telegram ID: ${esc(a.telegram_id)}<br>
+Роль:
+${
+a.role==="owner"
+?
+"👑 Власник"
+:
+"🛠 Модератор"
+}
+<br>
+Статус:
+${a.active?"✅ Активний":"⛔ Вимкнений"}
+</div>
+
+${
+String(a.telegram_id)!==
+telegramId
+&&
+a.active
+?
+`
+<button
+class="modalbutton red"
+onclick="removeAdmin('${a.id}')">
+Видалити доступ
+</button>
+`
+:
+""
+}
+
+</div>
+`
+).join("");
+
+}catch(e){
+
 alert(
-"Геолокація не підтримується."
+"❌ "+
+e.message
+);
+
+}
+
+}
+
+
+function openAddAdmin(){
+
+document
+.getElementById(
+"addAdminModal"
+)
+.style.display=
+"flex";
+
+}
+
+
+function closeAddAdmin(){
+
+document
+.getElementById(
+"addAdminModal"
+)
+.style.display=
+"none";
+
+}
+
+
+async function addAdmin(){
+
+const id=
+document
+.getElementById(
+"adminTelegramId"
+)
+.value
+.trim();
+
+
+const name=
+document
+.getElementById(
+"adminName"
+)
+.value
+.trim();
+
+
+const role=
+document
+.getElementById(
+"adminRole"
+)
+.value;
+
+
+if(!id){
+
+alert(
+"Вкажіть Telegram ID."
 );
 
 return;
@@ -2687,61 +3147,243 @@ return;
 }
 
 
-navigator.geolocation.getCurrentPosition(
+try{
 
-position=>{
+await api({
 
-const location = {
+action:"add_admin",
 
-lat:
-position.coords.latitude,
+telegram_id:
+telegramId,
 
-lng:
-position.coords.longitude
+new_telegram_id:
+id,
 
-};
+name:name,
 
-
-map.setCenter(
-location
-);
-
-map.setZoom(
-14
-);
-
-
-if(userMarker){
-
-userMarker.setMap(
-null
-);
-
-}
-
-
-userMarker =
-new google.maps.Marker({
-
-position:location,
-
-map:map,
-
-title:"Моє місцезнаходження"
+role:role
 
 });
 
-},
 
-()=>{
+closeAddAdmin();
+
+await showAdmins();
 
 alert(
-"Не вдалося отримати місцезнаходження."
+"Адміністратора додано."
+);
+
+}catch(e){
+
+alert(
+"❌ "+
+e.message
 );
 
 }
 
+}
+
+
+async function removeAdmin(id){
+
+if(
+!confirm(
+"Забрати доступ адміністратора?"
+)
+){
+
+return;
+
+}
+
+
+try{
+
+await api({
+
+action:"remove_admin",
+
+telegram_id:
+telegramId,
+
+id:id
+
+});
+
+
+await showAdmins();
+
+}catch(e){
+
+alert(
+"❌ "+
+e.message
 );
+
+}
+
+}
+
+
+/* ================================
+UTILITIES
+================================ */
+
+function stars(rating){
+
+let result="";
+
+for(let i=1;i<=5;i++){
+
+result+=
+i<=Math.round(rating)
+?
+"★"
+:
+"☆";
+
+}
+
+return result;
+
+}
+
+
+function formatDate(date){
+
+return new Date(date)
+.toLocaleDateString(
+"uk-UA",
+{
+day:"numeric",
+month:"long",
+year:"numeric"
+}
+);
+
+}
+
+
+function safeUrl(url){
+
+if(
+!/^https?:\/\//i.test(url)
+){
+
+return "https://"+
+url;
+
+}
+
+return url;
+
+}
+
+
+function esc(value){
+
+return String(value||"")
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+
+}
+
+
+function fileToBase64(file){
+
+return new Promise(
+(resolve,reject)=>{
+
+const reader=
+new FileReader();
+
+reader.onload=
+()=>resolve(
+reader.result
+);
+
+reader.onerror=
+reject;
+
+reader.readAsDataURL(file);
+
+}
+}
+
+
+function zoomIn(){
+
+map.setZoom(
+map.getZoom()+1
+);
+
+}
+
+
+function zoomOut(){
+
+map.setZoom(
+map.getZoom()-1
+);
+
+}
+
+
+function findMe(){
+
+if(!navigator.geolocation){
+
+return;
+
+}
+
+navigator.geolocation.getCurrentPosition(
+position=>{
+
+const p={
+lat:position.coords.latitude,
+lng:position.coords.longitude
+};
+
+map.setCenter(p);
+map.setZoom(14);
+
+new google.maps.Marker({
+map:map,
+position:p,
+title:"Моє місцезнаходження"
+});
+
+},
+()=>{
+alert(
+"Не вдалося отримати місцезнаходження."
+);
+}
+);
+
+
+}
+
+
+function toggleCategories(){
+
+const el=
+document.getElementById(
+"categories"
+);
+
+el.style.display=
+el.style.display==="none"
+?
+"flex"
+:
+"none";
 
 }
 
