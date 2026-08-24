@@ -12,15 +12,6 @@
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
-
-<script
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-</script>
-
 <style>
 
 *{
@@ -57,7 +48,7 @@ button{
 }
 
 /* =========================
-   MAP
+   GOOGLE MAP
 ========================= */
 
 #map{
@@ -65,25 +56,6 @@ button{
   inset:0;
   z-index:1;
   background:#15202b;
-}
-
-.leaflet-container{
-  background:#15202b;
-  font-family:Arial,Helvetica,sans-serif;
-}
-
-.leaflet-control-zoom{
-  display:none;
-}
-
-.leaflet-control-attribution{
-  background:rgba(7,12,17,.65)!important;
-  color:#8795a3!important;
-  font-size:9px!important;
-}
-
-.leaflet-control-attribution a{
-  color:#9eabb8!important;
 }
 
 .marker-rating{
@@ -116,10 +88,6 @@ button{
   font-size:15px;
 }
 
-.marker-rating.empty{
-  min-width:46px;
-}
-
 /* =========================
    TOP
 ========================= */
@@ -138,28 +106,24 @@ button{
 
   backdrop-filter:blur(18px);
 
-  box-shadow:
-    0 2px 18px rgba(0,0,0,.4);
+  box-shadow:0 2px 18px rgba(0,0,0,.4);
 }
 
 .header{
   display:flex;
   align-items:center;
   gap:8px;
-
   margin-bottom:8px;
 }
 
 .title{
   flex:1;
-
   font-size:17px;
   font-weight:800;
 }
 
 .top-btn{
   height:39px;
-
   padding:0 12px;
 
   border:1px solid rgba(255,255,255,.13);
@@ -222,13 +186,10 @@ button{
 
 .categories{
   display:flex;
-
   gap:7px;
-
   padding-top:8px;
 
   overflow-x:auto;
-
   scrollbar-width:none;
 }
 
@@ -240,7 +201,6 @@ button{
   flex:0 0 auto;
 
   height:36px;
-
   padding:0 13px;
 
   border:1px solid rgba(255,255,255,.12);
@@ -272,7 +232,6 @@ button{
 
   display:flex;
   flex-direction:column;
-
   gap:8px;
 }
 
@@ -287,6 +246,23 @@ button{
   color:#fff;
 
   font-size:23px;
+
+  box-shadow:0 4px 16px rgba(0,0,0,.35);
+}
+
+/* НОВАЯ КНОПКА КАРТА / СПУТНИК */
+
+.map-type-button{
+  width:47px;
+  height:47px;
+
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:13px;
+
+  background:#121c26;
+  color:#fff;
+
+  font-size:20px;
 
   box-shadow:0 4px 16px rgba(0,0,0,.35);
 }
@@ -329,7 +305,6 @@ button{
   display:none;
 
   max-height:82%;
-
   overflow-y:auto;
 
   background:#0d151e;
@@ -337,8 +312,7 @@ button{
   border:1px solid rgba(255,255,255,.14);
   border-radius:22px;
 
-  box-shadow:
-    0 -10px 40px rgba(0,0,0,.55);
+  box-shadow:0 -10px 40px rgba(0,0,0,.55);
 }
 
 .card-handle{
@@ -433,7 +407,6 @@ button{
 
 .action{
   height:41px;
-
   padding:0 14px;
 
   border:1px solid rgba(255,255,255,.13);
@@ -486,9 +459,7 @@ button{
 
 .info-value{
   flex:1;
-
   word-break:break-word;
-
   color:#d5dce3;
 }
 
@@ -524,7 +495,6 @@ button{
   padding:0 17px 15px;
 
   overflow-x:auto;
-
   scrollbar-width:none;
 }
 
@@ -551,13 +521,11 @@ button{
   margin-top:3px;
 
   color:#788592;
-
   font-size:11px;
 }
 
 .review-stars{
   margin:8px 0;
-
   color:#ffc400;
 }
 
@@ -588,7 +556,6 @@ button{
 .star-select{
   display:flex;
   gap:3px;
-
   margin-bottom:9px;
 }
 
@@ -713,7 +680,6 @@ button{
   width:100%;
 
   padding:10px;
-
   margin-bottom:5px;
 
   text-align:left;
@@ -731,7 +697,6 @@ button{
   padding:7px 0;
 
   color:#8c99a6;
-
   font-size:12px;
 }
 
@@ -766,7 +731,6 @@ button{
 .pending-actions{
   display:flex;
   gap:7px;
-
   margin-top:9px;
 }
 
@@ -792,7 +756,6 @@ button{
   margin-top:4px;
 
   color:#9da9b5;
-
   font-size:12px;
 }
 
@@ -833,7 +796,6 @@ button{
   .top-btn{
     height:36px;
     padding:0 9px;
-
     font-size:12px;
   }
 
@@ -857,7 +819,6 @@ button{
 
   .card-name{
     margin-top:9px;
-
     font-size:21px;
   }
 
@@ -1004,6 +965,14 @@ button{
       −
     </button>
 
+    <button
+      id="mapTypeButton"
+      class="map-type-button"
+      onclick="toggleMapType()"
+      title="Карта / Спутник">
+      🛰
+    </button>
+
   </div>
 
 
@@ -1020,8 +989,6 @@ button{
     Нічого не знайдено
   </div>
 
-
-  <!-- PLACE CARD -->
 
   <div
     id="card"
@@ -1183,9 +1150,9 @@ button{
     </div>
 
   </div>
-
-
-  <!-- ADD PLACE -->
+    <!-- =========================
+       ADD PLACE MODAL
+  ========================== -->
 
   <div
     id="addModal"
@@ -1244,8 +1211,7 @@ button{
         <input
           id="newName"
           class="input"
-          placeholder="Назва компанії"
-        >
+          placeholder="Назва компанії">
 
       </div>
 
@@ -1259,8 +1225,7 @@ button{
         <input
           id="newAddress"
           class="input"
-          placeholder="Київ, вул. ..."
-        >
+          placeholder="Київ, вул. ...">
 
         <button
           class="modal-button"
@@ -1286,8 +1251,7 @@ button{
           id="newPhone"
           class="input"
           type="tel"
-          placeholder="+380..."
-        >
+          placeholder="+380...">
 
       </div>
 
@@ -1301,8 +1265,7 @@ button{
         <input
           id="newTelegram"
           class="input"
-          placeholder="@username або посилання"
-        >
+          placeholder="@username або посилання">
 
       </div>
 
@@ -1316,8 +1279,7 @@ button{
         <input
           id="newWebsite"
           class="input"
-          placeholder="https://..."
-        >
+          placeholder="https://...">
 
       </div>
 
@@ -1331,8 +1293,7 @@ button{
         <textarea
           id="newDescription"
           class="textarea"
-          placeholder="Короткий опис компанії...">
-        </textarea>
+          placeholder="Короткий опис компанії..."></textarea>
 
       </div>
 
@@ -1347,8 +1308,7 @@ button{
           id="newLogo"
           class="input"
           type="file"
-          accept="image/*"
-        >
+          accept="image/*">
 
       </div>
 
@@ -1385,7 +1345,9 @@ button{
   </div>
 
 
-  <!-- ADMIN -->
+  <!-- =========================
+       ADMIN MODAL
+  ========================== -->
 
   <div
     id="adminModal"
@@ -1440,7 +1402,9 @@ button{
   </div>
 
 
-  <!-- ADD ADMIN -->
+  <!-- =========================
+       ADD ADMIN MODAL
+  ========================== -->
 
   <div
     id="addAdminModal"
@@ -1462,8 +1426,7 @@ button{
         <input
           id="adminTelegramId"
           class="input"
-          placeholder="Наприклад: 123456789"
-        >
+          placeholder="Наприклад: 123456789">
 
       </div>
 
@@ -1477,8 +1440,7 @@ button{
         <input
           id="adminName"
           class="input"
-          placeholder="Ім'я адміністратора"
-        >
+          placeholder="Ім'я адміністратора">
 
       </div>
 
@@ -1522,6 +1484,7 @@ button{
     </div>
 
   </div>
+
 
 </div>
 
@@ -1596,9 +1559,9 @@ let activeCategory = "all";
 
 let map = null;
 
-let markerLayer = null;
-
 let temporaryMarker = null;
+
+let mapType = "roadmap";
 
 
 /* =====================================================
@@ -1623,12 +1586,17 @@ async function api(body){
     );
 
 
-  let data = null;
+  let data = {};
 
   try{
-    data = await response.json();
-  }catch(e){
+
+    data =
+      await response.json();
+
+  }catch(error){
+
     data = {};
+
   }
 
 
@@ -1649,10 +1617,237 @@ async function api(body){
 
 
 /* =====================================================
-   INIT
+   GOOGLE MAP INIT
 ===================================================== */
 
-async function init(){
+function initMap(){
+
+  map =
+    new google.maps.Map(
+      document.getElementById("map"),
+      {
+
+        center:{
+          lat:48.5,
+          lng:31.2
+        },
+
+        zoom:6,
+
+        mapTypeId:
+          google.maps.MapTypeId.ROADMAP,
+
+        mapTypeControl:true,
+
+        mapTypeControlOptions:{
+          position:
+            google.maps.ControlPosition.TOP_RIGHT,
+
+          style:
+            google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+
+          mapTypeIds:[
+            google.maps.MapTypeId.ROADMAP,
+            google.maps.MapTypeId.SATELLITE,
+            google.maps.MapTypeId.HYBRID,
+            google.maps.MapTypeId.TERRAIN
+          ]
+        },
+
+        streetViewControl:false,
+
+        fullscreenControl:true,
+
+        zoomControl:false,
+
+        gestureHandling:"greedy",
+
+        styles:darkMapStyle()
+
+      }
+    );
+
+
+  map.addListener(
+    "click",
+    function(event){
+
+      if(!pickMode){
+
+        return;
+
+      }
+
+
+      setCoordinates(
+        event.latLng.lat(),
+        event.latLng.lng()
+      );
+
+    }
+  );
+
+
+  setupInterface();
+
+  setupReviews();
+
+  detectTelegramUser();
+
+}
+
+
+/* =====================================================
+   DARK GOOGLE MAP STYLE
+===================================================== */
+
+function darkMapStyle(){
+
+  return [
+
+    {
+      elementType:"geometry",
+      stylers:[
+        {
+          color:"#18212b"
+        }
+      ]
+    },
+
+    {
+      elementType:"labels.text.fill",
+      stylers:[
+        {
+          color:"#b8c2cc"
+        }
+      ]
+    },
+
+    {
+      elementType:"labels.text.stroke",
+      stylers:[
+        {
+          color:"#18212b"
+        }
+      ]
+    },
+
+    {
+      featureType:"administrative",
+      elementType:"geometry",
+      stylers:[
+        {
+          color:"#34414d"
+        }
+      ]
+    },
+
+    {
+      featureType:"road",
+      elementType:"geometry",
+      stylers:[
+        {
+          color:"#354250"
+        }
+      ]
+    },
+
+    {
+      featureType:"road.highway",
+      elementType:"geometry",
+      stylers:[
+        {
+          color:"#455463"
+        }
+      ]
+    },
+
+    {
+      featureType:"road",
+      elementType:"labels.text.fill",
+      stylers:[
+        {
+          color:"#c6d0da"
+        }
+      ]
+    },
+
+    {
+      featureType:"water",
+      elementType:"geometry",
+      stylers:[
+        {
+          color:"#071e3c"
+        }
+      ]
+    },
+
+    {
+      featureType:"poi",
+      stylers:[
+        {
+          visibility:"simplified"
+        }
+      ]
+    }
+
+  ];
+
+}
+
+
+/* =====================================================
+   GOOGLE MAP TYPE
+===================================================== */
+
+function toggleMapType(){
+
+  if(!map){
+
+    return;
+
+  }
+
+
+  if(
+    map.getMapTypeId() ===
+    google.maps.MapTypeId.SATELLITE
+  ){
+
+    map.setMapTypeId(
+      google.maps.MapTypeId.ROADMAP
+    );
+
+    document
+      .getElementById(
+        "mapTypeButton"
+      )
+      .textContent =
+        "🛰";
+
+  }else{
+
+    map.setMapTypeId(
+      google.maps.MapTypeId.SATELLITE
+    );
+
+    document
+      .getElementById(
+        "mapTypeButton"
+      )
+      .textContent =
+        "🗺";
+
+  }
+
+}
+
+
+/* =====================================================
+   TELEGRAM USER
+===================================================== */
+
+async function detectTelegramUser(){
 
   if(tg){
 
@@ -1667,72 +1862,135 @@ async function init(){
   }
 
 
-  createMap();
+  /*
+     Для власника використовуємо
+     Telegram ID 8186262020.
+  */
 
-  setupInterface();
+  if(
+    telegramId ===
+    OWNER_ID
+  ){
 
-  setupReviews();
+    currentAdmin = {
+      telegram_id:OWNER_ID,
+      role:"owner",
+      active:true
+    };
 
-  await loadPlaces();
+
+    document
+      .getElementById(
+        "adminButton"
+      )
+      .style.display =
+        "block";
+
+
+    document
+      .getElementById(
+        "ownerSection"
+      )
+      .style.display =
+        "block";
+
+  }
+
 
   await detectAdmin();
+
+  await loadPlaces();
 
 }
 
 
 /* =====================================================
-   MAP
+   ADMIN DETECTION
 ===================================================== */
 
-function createMap(){
+async function detectAdmin(){
 
-  map =
-    L.map(
-      "map",
-      {
-        zoomControl:false,
-        attributionControl:true,
-        preferCanvas:true
-      }
-    );
+  if(!telegramId){
+
+    return;
+
+  }
 
 
-  L.tileLayer(
-    "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-    {
-      maxZoom:19,
-      attribution:
-        '&copy; OpenStreetMap &copy; CARTO'
-    }
-  ).addTo(map);
+  try{
 
+    const data =
+      await api(
+        {
+          action:"admins",
 
-  map.setView(
-    [48.5,31.2],
-    6
-  );
-
-
-  markerLayer =
-    L.layerGroup().addTo(map);
-
-
-  map.on(
-    "click",
-    function(event){
-
-      if(!pickMode){
-        return;
-      }
-
-
-      setCoordinates(
-        event.latlng.lat,
-        event.latlng.lng
+          telegram_id:
+            telegramId
+        }
       );
 
+
+    const list =
+      Array.isArray(data)
+        ? data
+        : (
+            Array.isArray(data.admins)
+              ? data.admins
+              : []
+          );
+
+
+    const found =
+      list.find(
+        admin =>
+          String(
+            admin.telegram_id
+          ) ===
+          String(
+            telegramId
+          ) &&
+          admin.active !== false
+      );
+
+
+    if(found){
+
+      currentAdmin =
+        found;
+
+
+      document
+        .getElementById(
+          "adminButton"
+        )
+        .style.display =
+          "block";
+
+
+      if(
+        found.role ===
+        "owner"
+      ){
+
+        document
+          .getElementById(
+            "ownerSection"
+          )
+          .style.display =
+            "block";
+
+      }
+
     }
-  );
+
+  }catch(error){
+
+    console.log(
+      "Admin check:",
+      error.message
+    );
+
+  }
 
 }
 
@@ -1744,7 +2002,9 @@ function createMap(){
 function setupInterface(){
 
   document
-    .getElementById("search")
+    .getElementById(
+      "search"
+    )
     .addEventListener(
       "input",
       renderMarkers
@@ -1752,7 +2012,9 @@ function setupInterface(){
 
 
   document
-    .querySelectorAll(".category")
+    .querySelectorAll(
+      ".category"
+    )
     .forEach(
       button=>{
 
@@ -1760,16 +2022,25 @@ function setupInterface(){
           function(){
 
             document
-              .querySelectorAll(".category")
+              .querySelectorAll(
+                ".category"
+              )
               .forEach(
-                b=>b.classList.remove("active")
+                item =>
+                  item.classList.remove(
+                    "active"
+                  )
               );
 
 
-            button.classList.add("active");
+            button.classList.add(
+              "active"
+            );
+
 
             activeCategory =
               button.dataset.cat;
+
 
             renderMarkers();
 
@@ -1794,7 +2065,8 @@ async function loadPlaces(){
         MAP_API,
         {
           headers:{
-            "apikey":SUPABASE_KEY
+            "apikey":
+              SUPABASE_KEY
           }
         }
       );
@@ -1804,16 +2076,21 @@ async function loadPlaces(){
       await response.json();
 
 
-    if(Array.isArray(data)){
+    if(
+      Array.isArray(data)
+    ){
 
       places = data;
 
     }else if(
       data &&
-      Array.isArray(data.places)
+      Array.isArray(
+        data.places
+      )
     ){
 
-      places = data.places;
+      places =
+        data.places;
 
     }else{
 
@@ -1826,7 +2103,11 @@ async function loadPlaces(){
 
   }catch(error){
 
-    console.error(error);
+    console.error(
+      "Load places:",
+      error
+    );
+
 
     places = [];
 
@@ -1843,12 +2124,35 @@ async function loadPlaces(){
 
 function renderMarkers(){
 
-  markerLayer.clearLayers();
+  if(!map){
+
+    return;
+
+  }
+
+
+  places.forEach(
+    place=>{
+
+      if(
+        place.__marker
+      ){
+
+        place.__marker.setMap(
+          null
+        );
+
+      }
+
+    }
+  );
 
 
   const query =
     document
-      .getElementById("search")
+      .getElementById(
+        "search"
+      )
       .value
       .trim()
       .toLowerCase();
@@ -1892,27 +2196,43 @@ function renderMarkers(){
 
 
       const categoryOK =
-        activeCategory === "all" ||
-        category === activeCategory;
+        activeCategory ===
+          "all" ||
+        category ===
+          activeCategory;
 
 
       const searchable =
         (
-          String(place.name || "") +
+          String(
+            place.name ||
+            ""
+          ) +
           " " +
-          String(place.address || "") +
+          String(
+            place.address ||
+            ""
+          ) +
           " " +
-          String(place.city || "")
+          String(
+            place.city ||
+            ""
+          )
         )
         .toLowerCase();
 
 
       const searchOK =
         !query ||
-        searchable.includes(query);
+        searchable.includes(
+          query
+        );
 
 
-      if(!categoryOK || !searchOK){
+      if(
+        !categoryOK ||
+        !searchOK
+      ){
 
         return;
 
@@ -1924,67 +2244,68 @@ function renderMarkers(){
 
       const rating =
         Number(
-          place.rating || 0
+          place.rating ||
+          0
         );
 
 
-      const label =
+      const labelText =
         rating > 0
           ? `★ ${rating.toFixed(1)}`
           : "★ —";
 
 
-      const icon =
-        L.divIcon(
-          {
-            className:"custom-marker",
-
-            html:
-              `
-              <div class="marker-rating">
-                <span class="star">★</span>
-                <span>${escapeHtml(
-                  label.replace("★ ","")
-                )}</span>
-              </div>
-              `,
-
-            iconSize:[64,36],
-
-            iconAnchor:[32,18]
-          }
-        );
-
-
       const marker =
-        L.marker(
-          [lat,lng],
+        new google.maps.Marker(
           {
-            icon
+            position:{
+              lat,
+              lng
+            },
+
+            map,
+
+            title:
+              place.name ||
+              "",
+
+            label:{
+              text:
+                labelText,
+
+              color:"#111",
+
+              fontWeight:"800",
+
+              fontSize:"13px"
+            }
           }
         );
 
 
-      marker.on(
+      marker.addListener(
         "click",
         function(){
 
-          openPlace(place);
+          openPlace(
+            place
+          );
 
         }
       );
 
 
-      marker.addTo(
-        markerLayer
-      );
+      place.__marker =
+        marker;
 
     }
   );
 
 
   document
-    .getElementById("empty")
+    .getElementById(
+      "empty"
+    )
     .style.display =
       visible
         ? "none"
@@ -1997,38 +2318,42 @@ function renderMarkers(){
    PLACE CARD
 ===================================================== */
 
-async function openPlace(place){
+async function openPlace(
+  place
+){
 
-  currentPlace = place;
-
-
-  const card =
-    document.getElementById("card");
-
-
-  card.style.display =
-    "block";
-
-
-  const name =
-    place.name ||
-    "Без назви";
+  currentPlace =
+    place;
 
 
   document
-    .getElementById("cardName")
+    .getElementById(
+      "card"
+    )
+    .style.display =
+      "block";
+
+
+  document
+    .getElementById(
+      "cardName"
+    )
     .textContent =
-      name;
+      place.name ||
+      "Без назви";
 
 
   const rating =
     Number(
-      place.rating || 0
+      place.rating ||
+      0
     );
 
 
   document
-    .getElementById("cardRating")
+    .getElementById(
+      "cardRating"
+    )
     .textContent =
       rating
         ? rating.toFixed(1)
@@ -2036,24 +2361,33 @@ async function openPlace(place){
 
 
   document
-    .getElementById("cardStars")
+    .getElementById(
+      "cardStars"
+    )
     .textContent =
-      makeStars(rating);
+      makeStars(
+        rating
+      );
 
 
   document
-    .getElementById("cardReviews")
+    .getElementById(
+      "cardReviews"
+    )
     .textContent =
       `(${place.reviews_count || 0})`;
 
 
   const image =
-    document.getElementById(
-      "cardImage"
-    );
+    document
+      .getElementById(
+        "cardImage"
+      );
 
 
-  if(place.logo_url){
+  if(
+    place.logo_url
+  ){
 
     image.src =
       place.logo_url;
@@ -2063,7 +2397,9 @@ async function openPlace(place){
 
   }else{
 
-    image.removeAttribute("src");
+    image.removeAttribute(
+      "src"
+    );
 
     image.style.display =
       "none";
@@ -2071,65 +2407,87 @@ async function openPlace(place){
   }
 
 
-  const info =
-    document.getElementById(
+  document
+    .getElementById(
       "placeInfo"
-    );
+    )
+    .innerHTML =
 
+      infoRow(
+        "📍",
+        escapeHtml(
+          place.address ||
+          "Адреса не вказана"
+        )
+      ) +
 
-  info.innerHTML =
+      infoRow(
+        "☎",
+        place.phone
+          ?
+          `
+            <a
+              href="tel:${escapeAttribute(
+                place.phone
+              )}">
+              ${escapeHtml(
+                place.phone
+              )}
+            </a>
+          `
+          :
+          "Телефон не вказаний"
+      ) +
 
-    infoRow(
-      "📍",
-      escapeHtml(
-        place.address ||
-        "Адреса не вказана"
-      )
-    ) +
+      infoRow(
+        "✈️",
+        place.telegram
+          ?
+          `
+            <a
+              href="${telegramUrl(
+                place.telegram
+              )}"
+              target="_blank">
+              ${escapeHtml(
+                place.telegram
+              )}
+            </a>
+          `
+          :
+          "Telegram не вказаний"
+      ) +
 
-    infoRow(
-      "☎",
-      place.phone
-        ? `
-          <a href="tel:${escapeAttribute(place.phone)}">
-            ${escapeHtml(place.phone)}
-          </a>
-        `
-        : "Телефон не вказаний"
-    ) +
-
-    infoRow(
-      "✈️",
-      place.telegram
-        ? `
-          <a href="${telegramUrl(place.telegram)}"
-             target="_blank">
-            ${escapeHtml(place.telegram)}
-          </a>
-        `
-        : "Telegram не вказаний"
-    ) +
-
-    infoRow(
-      "🌐",
-      place.website
-        ? `
-          <a href="${safeUrl(place.website)}"
-             target="_blank">
-            ${escapeHtml(place.website)}
-          </a>
-        `
-        : "Сайт не вказаний"
-    );
+      infoRow(
+        "🌐",
+        place.website
+          ?
+          `
+            <a
+              href="${safeUrl(
+                place.website
+              )}"
+              target="_blank">
+              ${escapeHtml(
+                place.website
+              )}
+            </a>
+          `
+          :
+          "Сайт не вказаний"
+      );
 
 
   const description =
-    document.getElementById(
-      "placeDescription"
-    );
+    document
+      .getElementById(
+        "placeDescription"
+      );
 
 
-  if(place.description){
+  if(
+    place.description
+  ){
 
     description.textContent =
       place.description;
@@ -2168,10 +2526,13 @@ async function openPlace(place){
 
 
 /* =====================================================
-   INFO ROW
+   INFO
 ===================================================== */
 
-function infoRow(icon,value){
+function infoRow(
+  icon,
+  value
+){
 
   return `
     <div class="info-row">
@@ -2194,7 +2555,9 @@ function infoRow(icon,value){
    CARD BUTTONS
 ===================================================== */
 
-function setupCardButtons(place){
+function setupCardButtons(
+  place
+){
 
   const lat =
     Number(
@@ -2211,7 +2574,9 @@ function setupCardButtons(place){
 
 
   document
-    .getElementById("routeButton")
+    .getElementById(
+      "routeButton"
+    )
     .onclick =
       function(){
 
@@ -2231,15 +2596,19 @@ function setupCardButtons(place){
 
 
   const phoneButton =
-    document.getElementById(
-      "phoneButton"
-    );
+    document
+      .getElementById(
+        "phoneButton"
+      );
 
 
-  if(place.phone){
+  if(
+    place.phone
+  ){
 
     phoneButton.style.display =
       "block";
+
 
     phoneButton.onclick =
       function(){
@@ -2259,21 +2628,27 @@ function setupCardButtons(place){
 
 
   const siteButton =
-    document.getElementById(
-      "siteButton"
-    );
+    document
+      .getElementById(
+        "siteButton"
+      );
 
 
-  if(place.website){
+  if(
+    place.website
+  ){
 
     siteButton.style.display =
       "block";
+
 
     siteButton.onclick =
       function(){
 
         openExternal(
-          safeUrl(place.website)
+          safeUrl(
+            place.website
+          )
         );
 
       };
@@ -2287,15 +2662,19 @@ function setupCardButtons(place){
 
 
   const telegramButton =
-    document.getElementById(
-      "telegramButton"
-    );
+    document
+      .getElementById(
+        "telegramButton"
+      );
 
 
-  if(place.telegram){
+  if(
+    place.telegram
+  ){
 
     telegramButton.style.display =
       "block";
+
 
     telegramButton.onclick =
       function(){
@@ -2325,11 +2704,15 @@ function setupCardButtons(place){
 function closeCard(){
 
   document
-    .getElementById("card")
+    .getElementById(
+      "card"
+    )
     .style.display =
       "none";
 
-  currentPlace = null;
+
+  currentPlace =
+    null;
 
 }
 
@@ -2363,21 +2746,23 @@ function setupReviews(){
               .forEach(
                 item=>{
 
-                  const n =
+                  const number =
                     Number(
                       item.dataset.star
                     );
 
 
                   item.textContent =
-                    n <= selectedRating
+                    number <=
+                    selectedRating
                       ? "★"
                       : "☆";
 
 
                   item.classList.toggle(
                     "active",
-                    n <= selectedRating
+                    number <=
+                    selectedRating
                   );
 
                 }
@@ -2392,15 +2777,18 @@ function setupReviews(){
 
 
 /* =====================================================
-   LOAD REVIEWS
+   REVIEWS LOAD
 ===================================================== */
 
-async function loadReviews(placeId){
+async function loadReviews(
+  placeId
+){
 
   const box =
-    document.getElementById(
-      "reviews"
-    );
+    document
+      .getElementById(
+        "reviews"
+      );
 
 
   box.innerHTML =
@@ -2417,7 +2805,9 @@ async function loadReviews(placeId){
       await api(
         {
           action:"reviews",
-          place_id:placeId
+
+          place_id:
+            placeId
         }
       );
 
@@ -2426,13 +2816,19 @@ async function loadReviews(placeId){
       Array.isArray(data)
         ? data
         : (
-            Array.isArray(data.reviews)
-              ? data.reviews
-              : []
+            Array.isArray(
+              data.reviews
+            )
+            ?
+            data.reviews
+            :
+            []
           );
 
 
-    if(!list.length){
+    if(
+      !list.length
+    ){
 
       box.innerHTML =
         `
@@ -2478,7 +2874,8 @@ async function loadReviews(placeId){
               <div class="review-stars">
                 ${makeStars(
                   Number(
-                    review.rating || 0
+                    review.rating ||
+                    0
                   )
                 )}
               </div>
@@ -2496,6 +2893,7 @@ async function loadReviews(placeId){
           `
         )
         .join("");
+
 
   }catch(error){
 
@@ -2537,7 +2935,9 @@ async function sendReview(){
 
   const text =
     document
-      .getElementById("reviewText")
+      .getElementById(
+        "reviewText"
+      )
       .value
       .trim();
 
@@ -2555,7 +2955,9 @@ async function sendReview(){
 
   const name =
     document
-      .getElementById("reviewName")
+      .getElementById(
+        "reviewName"
+      )
       .value
       .trim()
       ||
@@ -2566,7 +2968,8 @@ async function sendReview(){
 
     await api(
       {
-        action:"add_review",
+        action:
+          "add_review",
 
         place_id:
           currentPlace.id,
@@ -2584,16 +2987,21 @@ async function sendReview(){
 
 
     document
-      .getElementById("reviewName")
+      .getElementById(
+        "reviewName"
+      )
       .value = "";
 
 
     document
-      .getElementById("reviewText")
+      .getElementById(
+        "reviewText"
+      )
       .value = "";
 
 
-    selectedRating = 0;
+    selectedRating =
+      0;
 
 
     document
@@ -2625,8 +3033,12 @@ async function sendReview(){
     const updated =
       places.find(
         item =>
-          String(item.id) ===
-          String(currentPlace.id)
+          String(
+            item.id
+          ) ===
+          String(
+            currentPlace.id
+          )
       );
 
 
@@ -2649,745 +3061,756 @@ async function sendReview(){
   }
 
 }
+  <!-- =========================
+       ADD PLACE MODAL
+  ========================== -->
+
+  <div
+    id="addModal"
+    class="modal">
+
+    <div class="modal-box">
+
+      <div
+        id="addTitle"
+        class="modal-title">
+        ➕ Додати точку
+      </div>
+
+
+      <div class="group">
+
+        <label class="label">
+          Тип точки
+        </label>
+
+        <select
+          id="newCategory"
+          class="select">
+
+          <option value="manufacturer">
+            🏭 Виробник
+          </option>
+
+          <option value="shop">
+            🏪 Магазин / постачальник
+          </option>
+
+          <option value="tools">
+            🔧 Інструмент
+          </option>
+
+          <option value="gas">
+            🔥 Газ
+          </option>
+
+          <option value="services">
+            🛠 Послуги
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="group">
+
+        <label class="label">
+          Назва
+        </label>
+
+        <input
+          id="newName"
+          class="input"
+          placeholder="Назва компанії">
+
+      </div>
+
+
+      <div class="group">
+
+        <label class="label">
+          Адреса
+        </label>
+
+        <input
+          id="newAddress"
+          class="input"
+          placeholder="Київ, вул. ...">
+
+        <button
+          class="modal-button"
+          onclick="searchAddress()">
+          🔎 Знайти адресу
+        </button>
+
+        <div
+          id="addressResults"
+          class="address-results">
+        </div>
+
+      </div>
+
+
+      <div class="group">
+
+        <label class="label">
+          Телефон
+        </label>
+
+        <input
+          id="newPhone"
+          class="input"
+          type="tel"
+          placeholder="+380...">
+
+      </div>
+
+
+      <div class="group">
+
+        <label class="label">
+          Telegram
+        </label>
+
+        <input
+          id="newTelegram"
+          class="input"
+          placeholder="@username або посилання">
+
+      </div>
+
+
+      <div class="group">
+
+        <label class="label">
+          Сайт
+        </label>
+
+        <input
+          id="newWebsite"
+          class="input"
+          placeholder="https://...">
+
+      </div>
+
+
+      <div class="group">
+
+        <label class="label">
+          Опис
+        </label>
+
+        <textarea
+          id="newDescription"
+          class="textarea"
+          placeholder="Короткий опис компанії..."></textarea>
+
+      </div>
+
+
+      <div class="group">
+
+        <label class="label">
+          Фото / логотип
+        </label>
+
+        <input
+          id="newLogo"
+          class="input"
+          type="file"
+          accept="image/*">
+
+      </div>
+
+
+      <div
+        id="coords"
+        class="coords">
+        📍 Координати не вибрані
+      </div>
+
+
+      <button
+        class="modal-button"
+        onclick="startMapPick()">
+        📍 Поставити точку на карті
+      </button>
+
+
+      <button
+        class="modal-button"
+        onclick="savePlace()">
+        ✅ Зберегти
+      </button>
+
+
+      <button
+        class="modal-button gray"
+        onclick="closeAdd()">
+        Закрити
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       ADMIN MODAL
+  ========================== -->
+
+  <div
+    id="adminModal"
+    class="modal">
+
+    <div class="modal-box">
+
+      <div class="modal-title">
+        👑 Адмін-панель
+      </div>
+
+
+      <button
+        class="modal-button"
+        onclick="showPending()">
+        ⏳ Заявки на модерацію
+      </button>
+
+
+      <div
+        id="ownerSection"
+        style="display:none">
+
+        <button
+          class="modal-button"
+          onclick="showAdmins()">
+          👥 Адміністратори
+        </button>
+
+        <div
+          id="adminsBox"
+          style="margin-top:12px">
+        </div>
+
+      </div>
+
+
+      <div
+        id="pendingBox"
+        style="margin-top:12px">
+      </div>
+
+
+      <button
+        class="modal-button gray"
+        onclick="closeAdmin()">
+        Закрити
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       ADD ADMIN MODAL
+  ========================== -->
+
+  <div
+    id="addAdminModal"
+    class="modal">
+
+    <div class="modal-box">
+
+      <div class="modal-title">
+        👥 Додати адміністратора
+      </div>
+
+
+      <div class="group">
+
+        <label class="label">
+          Telegram ID
+        </label>
+
+        <input
+          id="adminTelegramId"
+          class="input"
+          placeholder="Наприклад: 123456789">
+
+      </div>
+
+
+      <div class="group">
+
+        <label class="label">
+          Ім'я
+        </label>
+
+        <input
+          id="adminName"
+          class="input"
+          placeholder="Ім'я адміністратора">
+
+      </div>
+
+
+      <div class="group">
+
+        <label class="label">
+          Роль
+        </label>
+
+        <select
+          id="adminRole"
+          class="select">
+
+          <option value="moderator">
+            🛠 Модератор
+          </option>
+
+          <option value="owner">
+            👑 Власник
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <button
+        class="modal-button"
+        onclick="addAdmin()">
+        ✅ Додати
+      </button>
+
+
+      <button
+        class="modal-button gray"
+        onclick="closeAddAdmin()">
+        Закрити
+      </button>
+
+    </div>
+
+  </div>
+
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   CONFIG
+===================================================== */
+
+const SUPABASE_URL =
+  "https://usggjqukcqzttrilgmmo.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_g3Hi1tMxV4sV5bYXBpijBA_nHFd0zxA";
+
+const MAP_API =
+  SUPABASE_URL +
+  "/functions/v1/map-api";
+
+const OWNER_ID =
+  "8186262020";
 
 
 /* =====================================================
-   ADD PLACE
+   TELEGRAM
 ===================================================== */
 
-function openAdd(){
-
-  editingId = null;
-
-  clearForm();
-
-
-  document
-    .getElementById("addTitle")
-    .textContent =
-      "➕ Додати точку";
+const tg =
+  window.Telegram &&
+  window.Telegram.WebApp
+    ? window.Telegram.WebApp
+    : null;
 
 
-  document
-    .getElementById("addModal")
-    .style.display =
-      "flex";
+if(tg){
 
-}
+  tg.ready();
 
-
-function closeAdd(){
-
-  document
-    .getElementById("addModal")
-    .style.display =
-      "none";
-
-  pickMode = false;
-
-}
-
-
-function clearForm(){
-
-  [
-    "newName",
-    "newAddress",
-    "newPhone",
-    "newTelegram",
-    "newWebsite",
-    "newDescription"
-  ]
-  .forEach(
-    id=>{
-
-      document
-        .getElementById(id)
-        .value = "";
-
-    }
-  );
-
-
-  document
-    .getElementById("newLogo")
-    .value = "";
-
-
-  document
-    .getElementById(
-      "addressResults"
-    )
-    .innerHTML = "";
-
-
-  selectedLat = null;
-  selectedLng = null;
-
-
-  document
-    .getElementById("coords")
-    .textContent =
-      "📍 Координати не вибрані";
-
-
-  if(temporaryMarker){
-
-    map.removeLayer(
-      temporaryMarker
-    );
-
-    temporaryMarker = null;
-
-  }
+  try{
+    tg.expand();
+  }catch(e){}
 
 }
 
 
 /* =====================================================
-   ADDRESS SEARCH
+   STATE
 ===================================================== */
 
-async function searchAddress(){
+let telegramId = "";
 
-  const query =
-    document
-      .getElementById(
-        "newAddress"
-      )
-      .value
-      .trim();
+let currentAdmin = null;
+
+let places = [];
+
+let currentPlace = null;
+
+let currentMarker = null;
+
+let selectedLat = null;
+
+let selectedLng = null;
+
+let pickMode = false;
+
+let editingId = null;
+
+let selectedRating = 0;
+
+let activeCategory = "all";
+
+let map = null;
+
+let temporaryMarker = null;
+
+let mapType = "roadmap";
 
 
-  if(!query){
+/* =====================================================
+   API
+===================================================== */
 
-    alert(
-      "Введіть адресу."
+async function api(body){
+
+  const response =
+    await fetch(
+      MAP_API,
+      {
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json",
+          "apikey":SUPABASE_KEY
+        },
+
+        body:JSON.stringify(body)
+      }
     );
 
-    return;
 
-  }
-
-
-  const box =
-    document.getElementById(
-      "addressResults"
-    );
-
-
-  box.innerHTML =
-    "🔎 Шукаємо адресу...";
-
+  let data = {};
 
   try{
 
-    const url =
-      "https://nominatim.openstreetmap.org/search" +
-      "?format=jsonv2" +
-      "&countrycodes=ua" +
-      "&limit=6" +
-      "&accept-language=uk" +
-      "&q=" +
-      encodeURIComponent(
-        query
-      );
-
-
-    const response =
-      await fetch(
-        url,
-        {
-          headers:{
-            "Accept":
-              "application/json"
-          }
-        }
-      );
-
-
-    const results =
+    data =
       await response.json();
 
-
-    box.innerHTML = "";
-
-
-    if(!results.length){
-
-      box.innerHTML =
-        `
-          <div
-            style="
-              padding:10px;
-              color:#9da9b5;
-            ">
-            ❌ Адресу не знайдено
-          </div>
-        `;
-
-      return;
-
-    }
-
-
-    results.forEach(
-      result=>{
-
-        const button =
-          document.createElement(
-            "button"
-          );
-
-
-        button.className =
-          "address-result";
-
-
-        button.textContent =
-          "📍 " +
-          result.display_name;
-
-
-        button.onclick =
-          function(){
-
-            const lat =
-              Number(
-                result.lat
-              );
-
-
-            const lng =
-              Number(
-                result.lon
-              );
-
-
-            document
-              .getElementById(
-                "newAddress"
-              )
-              .value =
-                result.display_name;
-
-
-            setCoordinates(
-              lat,
-              lng
-            );
-
-
-            box.innerHTML =
-              "";
-
-          };
-
-
-        box.appendChild(
-          button
-        );
-
-      }
-    );
-
-
   }catch(error){
 
-    box.innerHTML =
-      `
-        <div
-          style="
-            padding:10px;
-            color:#ff7272;
-          ">
-          ❌ Помилка пошуку адреси
-        </div>
-      `;
+    data = {};
 
   }
+
+
+  if(!response.ok){
+
+    throw new Error(
+      data.error ||
+      data.message ||
+      "Помилка сервера"
+    );
+
+  }
+
+
+  return data;
 
 }
 
 
 /* =====================================================
-   PICK POINT
+   GOOGLE MAP INIT
 ===================================================== */
 
-function startMapPick(){
+function initMap(){
 
-  closeAdd();
+  map =
+    new google.maps.Map(
+      document.getElementById("map"),
+      {
 
-  pickMode = true;
+        center:{
+          lat:48.5,
+          lng:31.2
+        },
 
+        zoom:6,
 
-  alert(
-    "Натисніть потрібне місце на карті."
-  );
+        mapTypeId:
+          google.maps.MapTypeId.ROADMAP,
 
-}
+        mapTypeControl:true,
 
+        mapTypeControlOptions:{
+          position:
+            google.maps.ControlPosition.TOP_RIGHT,
 
-function setCoordinates(
-  lat,
-  lng
-){
+          style:
+            google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
 
-  selectedLat = lat;
-  selectedLng = lng;
+          mapTypeIds:[
+            google.maps.MapTypeId.ROADMAP,
+            google.maps.MapTypeId.SATELLITE,
+            google.maps.MapTypeId.HYBRID,
+            google.maps.MapTypeId.TERRAIN
+          ]
+        },
 
+        streetViewControl:false,
 
-  if(temporaryMarker){
+        fullscreenControl:true,
 
-    map.removeLayer(
-      temporaryMarker
+        zoomControl:false,
+
+        gestureHandling:"greedy",
+
+        styles:darkMapStyle()
+
+      }
     );
 
-  }
 
-
-  temporaryMarker =
-    L.marker(
-      [lat,lng],
-      {
-        draggable:true
-      }
-    )
-    .addTo(map);
-
-
-  temporaryMarker.on(
-    "dragend",
+  map.addListener(
+    "click",
     function(event){
 
-      const point =
-        event.target.getLatLng();
+      if(!pickMode){
+
+        return;
+
+      }
 
 
-      selectedLat =
-        point.lat;
-
-
-      selectedLng =
-        point.lng;
-
-
-      updateCoordinates();
+      setCoordinates(
+        event.latLng.lat(),
+        event.latLng.lng()
+      );
 
     }
   );
 
 
-  map.setView(
-    [lat,lng],
-    16
-  );
+  setupInterface();
 
+  setupReviews();
 
-  updateCoordinates();
-
-
-  pickMode = false;
-
-
-  document
-    .getElementById(
-      "addModal"
-    )
-    .style.display =
-      "flex";
+  detectTelegramUser();
 
 }
 
 
-function updateCoordinates(){
+/* =====================================================
+   DARK GOOGLE MAP STYLE
+===================================================== */
+
+function darkMapStyle(){
+
+  return [
+
+    {
+      elementType:"geometry",
+      stylers:[
+        {
+          color:"#18212b"
+        }
+      ]
+    },
+
+    {
+      elementType:"labels.text.fill",
+      stylers:[
+        {
+          color:"#b8c2cc"
+        }
+      ]
+    },
+
+    {
+      elementType:"labels.text.stroke",
+      stylers:[
+        {
+          color:"#18212b"
+        }
+      ]
+    },
+
+    {
+      featureType:"administrative",
+      elementType:"geometry",
+      stylers:[
+        {
+          color:"#34414d"
+        }
+      ]
+    },
+
+    {
+      featureType:"road",
+      elementType:"geometry",
+      stylers:[
+        {
+          color:"#354250"
+        }
+      ]
+    },
+
+    {
+      featureType:"road.highway",
+      elementType:"geometry",
+      stylers:[
+        {
+          color:"#455463"
+        }
+      ]
+    },
+
+    {
+      featureType:"road",
+      elementType:"labels.text.fill",
+      stylers:[
+        {
+          color:"#c6d0da"
+        }
+      ]
+    },
+
+    {
+      featureType:"water",
+      elementType:"geometry",
+      stylers:[
+        {
+          color:"#071e3c"
+        }
+      ]
+    },
+
+    {
+      featureType:"poi",
+      stylers:[
+        {
+          visibility:"simplified"
+        }
+      ]
+    }
+
+  ];
+
+}
+
+
+/* =====================================================
+   GOOGLE MAP TYPE
+===================================================== */
+
+function toggleMapType(){
+
+  if(!map){
+
+    return;
+
+  }
+
 
   if(
-    selectedLat === null ||
-    selectedLng === null
+    map.getMapTypeId() ===
+    google.maps.MapTypeId.SATELLITE
   ){
+
+    map.setMapTypeId(
+      google.maps.MapTypeId.ROADMAP
+    );
 
     document
       .getElementById(
-        "coords"
+        "mapTypeButton"
       )
       .textContent =
-        "📍 Координати не вибрані";
+        "🛰";
 
-    return;
+  }else{
+
+    map.setMapTypeId(
+      google.maps.MapTypeId.SATELLITE
+    );
+
+    document
+      .getElementById(
+        "mapTypeButton"
+      )
+      .textContent =
+        "🗺";
 
   }
-
-
-  document
-    .getElementById(
-      "coords"
-    )
-    .textContent =
-      "📍 " +
-      selectedLat.toFixed(6) +
-      ", " +
-      selectedLng.toFixed(6);
 
 }
 
 
 /* =====================================================
-   SAVE PLACE
+   TELEGRAM USER
 ===================================================== */
 
-async function savePlace(){
+async function detectTelegramUser(){
 
-  const name =
-    document
-      .getElementById(
-        "newName"
-      )
-      .value
-      .trim();
+  if(tg){
 
-
-  if(!name){
-
-    alert(
-      "Вкажіть назву."
-    );
-
-    return;
-
-  }
-
-
-  if(
-    selectedLat === null ||
-    selectedLng === null
-  ){
-
-    alert(
-      "Знайдіть адресу або поставте точку на карті."
-    );
-
-    return;
-
-  }
-
-
-  const file =
-    document
-      .getElementById(
-        "newLogo"
-      )
-      .files[0];
-
-
-  let logoData = null;
-  let logoType = null;
-
-
-  if(file){
-
-    logoData =
-      await fileToBase64(
-        file
+    telegramId =
+      String(
+        tg.initDataUnsafe &&
+        tg.initDataUnsafe.user &&
+        tg.initDataUnsafe.user.id
+        || ""
       );
 
-    logoType =
-      file.type;
+  }
+
+
+  /*
+     Для власника використовуємо
+     Telegram ID 8186262020.
+  */
+
+  if(
+    telegramId ===
+    OWNER_ID
+  ){
+
+    currentAdmin = {
+      telegram_id:OWNER_ID,
+      role:"owner",
+      active:true
+    };
+
+
+    document
+      .getElementById(
+        "adminButton"
+      )
+      .style.display =
+        "block";
+
+
+    document
+      .getElementById(
+        "ownerSection"
+      )
+      .style.display =
+        "block";
 
   }
 
 
-  const place = {
+  await detectAdmin();
 
-    name:name,
-
-    category:
-      document
-        .getElementById(
-          "newCategory"
-        )
-        .value,
-
-    address:
-      document
-        .getElementById(
-          "newAddress"
-        )
-        .value
-        .trim(),
-
-    phone:
-      document
-        .getElementById(
-          "newPhone"
-        )
-        .value
-        .trim(),
-
-    telegram:
-      document
-        .getElementById(
-          "newTelegram"
-        )
-        .value
-        .trim(),
-
-    website:
-      document
-        .getElementById(
-          "newWebsite"
-        )
-        .value
-        .trim(),
-
-    description:
-      document
-        .getElementById(
-          "newDescription"
-        )
-        .value
-        .trim(),
-
-    latitude:
-      selectedLat,
-
-    longitude:
-      selectedLng
-
-  };
-
-
-  if(logoData){
-
-    place.logo_data =
-      logoData;
-
-    place.logo_type =
-      logoType;
-
-  }
-
-
-  try{
-
-    await api(
-      {
-        action:
-          editingId
-            ? "update"
-            : "submit",
-
-        id:
-          editingId,
-
-        telegram_id:
-          telegramId,
-
-        place
-      }
-    );
-
-
-    alert(
-      editingId
-        ? "Точку оновлено."
-        : currentAdmin
-          ? "Точку додано."
-          : "Заявку відправлено на модерацію."
-    );
-
-
-    closeAdd();
-
-    await loadPlaces();
-
-
-  }catch(error){
-
-    alert(
-      "❌ " +
-      error.message
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   EDIT
-===================================================== */
-
-function editPlace(){
-
-  if(!currentPlace){
-
-    return;
-
-  }
-
-
-  editingId =
-    currentPlace.id;
-
-
-  document
-    .getElementById(
-      "addTitle"
-    )
-    .textContent =
-      "✏️ Редагувати точку";
-
-
-  document
-    .getElementById(
-      "newCategory"
-    )
-    .value =
-      currentPlace.category ||
-      "shop";
-
-
-  document
-    .getElementById(
-      "newName"
-    )
-    .value =
-      currentPlace.name ||
-      "";
-
-
-  document
-    .getElementById(
-      "newAddress"
-    )
-    .value =
-      currentPlace.address ||
-      "";
-
-
-  document
-    .getElementById(
-      "newPhone"
-    )
-    .value =
-      currentPlace.phone ||
-      "";
-
-
-  document
-    .getElementById(
-      "newTelegram"
-    )
-    .value =
-      currentPlace.telegram ||
-      "";
-
-
-  document
-    .getElementById(
-      "newWebsite"
-    )
-    .value =
-      currentPlace.website ||
-      "";
-
-
-  document
-    .getElementById(
-      "newDescription"
-    )
-    .value =
-      currentPlace.description ||
-      "";
-
-
-  selectedLat =
-    Number(
-      currentPlace.latitude
-    );
-
-
-  selectedLng =
-    Number(
-      currentPlace.longitude
-    );
-
-
-  updateCoordinates();
-
-  closeCard();
-
-
-  document
-    .getElementById(
-      "addModal"
-    )
-    .style.display =
-      "flex";
-
-}
-
-
-/* =====================================================
-   DELETE
-===================================================== */
-
-async function deletePlace(){
-
-  if(!currentPlace){
-
-    return;
-
-  }
-
-
-  const confirmed =
-    confirm(
-      `Видалити «${currentPlace.name}»?`
-    );
-
-
-  if(!confirmed){
-
-    return;
-
-  }
-
-
-  try{
-
-    await api(
-      {
-        action:"delete",
-
-        telegram_id:
-          telegramId,
-
-        id:
-          currentPlace.id
-      }
-    );
-
-
-    closeCard();
-
-    await loadPlaces();
-
-
-    alert(
-      "Точку видалено."
-    );
-
-
-  }catch(error){
-
-    alert(
-      "❌ " +
-      error.message
-    );
-
-  }
+  await loadPlaces();
 
 }
 
@@ -3398,16 +3821,7 @@ async function deletePlace(){
 
 async function detectAdmin(){
 
-  /*
-     В Telegram WebApp отримуємо реальний ID.
-     Для власника:
-     8186262020
-  */
-
-
-  if(
-    !telegramId
-  ){
+  if(!telegramId){
 
     return;
 
@@ -3437,7 +3851,7 @@ async function detectAdmin(){
           );
 
 
-    currentAdmin =
+    const found =
       list.find(
         admin =>
           String(
@@ -3447,19 +3861,13 @@ async function detectAdmin(){
             telegramId
           ) &&
           admin.active !== false
-      )
-      ||
-      null;
-
-
-    if(
-      currentAdmin
-    ){
-
-      localStorage.setItem(
-        "map_admin_id",
-        telegramId
       );
+
+
+    if(found){
+
+      currentAdmin =
+        found;
 
 
       document
@@ -3471,7 +3879,7 @@ async function detectAdmin(){
 
 
       if(
-        currentAdmin.role ===
+        found.role ===
         "owner"
       ){
 
@@ -3486,11 +3894,11 @@ async function detectAdmin(){
 
     }
 
-
   }catch(error){
 
     console.log(
-      "Користувач не адміністратор"
+      "Admin check:",
+      error.message
     );
 
   }
@@ -3499,57 +3907,807 @@ async function detectAdmin(){
 
 
 /* =====================================================
-   ADMIN PANEL
+   INTERFACE
 ===================================================== */
 
-async function openAdmin(){
+function setupInterface(){
 
-  if(!currentAdmin){
+  document
+    .getElementById(
+      "search"
+    )
+    .addEventListener(
+      "input",
+      renderMarkers
+    );
+
+
+  document
+    .querySelectorAll(
+      ".category"
+    )
+    .forEach(
+      button=>{
+
+        button.onclick =
+          function(){
+
+            document
+              .querySelectorAll(
+                ".category"
+              )
+              .forEach(
+                item =>
+                  item.classList.remove(
+                    "active"
+                  )
+              );
+
+
+            button.classList.add(
+              "active"
+            );
+
+
+            activeCategory =
+              button.dataset.cat;
+
+
+            renderMarkers();
+
+          };
+
+      }
+    );
+
+}
+
+
+/* =====================================================
+   LOAD PLACES
+===================================================== */
+
+async function loadPlaces(){
+
+  try{
+
+    const response =
+      await fetch(
+        MAP_API,
+        {
+          headers:{
+            "apikey":
+              SUPABASE_KEY
+          }
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if(
+      Array.isArray(data)
+    ){
+
+      places = data;
+
+    }else if(
+      data &&
+      Array.isArray(
+        data.places
+      )
+    ){
+
+      places =
+        data.places;
+
+    }else{
+
+      places = [];
+
+    }
+
+
+    renderMarkers();
+
+  }catch(error){
+
+    console.error(
+      "Load places:",
+      error
+    );
+
+
+    places = [];
+
+    renderMarkers();
+
+  }
+
+}
+
+
+/* =====================================================
+   MARKERS
+===================================================== */
+
+function renderMarkers(){
+
+  if(!map){
 
     return;
 
   }
 
 
+  places.forEach(
+    place=>{
+
+      if(
+        place.__marker
+      ){
+
+        place.__marker.setMap(
+          null
+        );
+
+      }
+
+    }
+  );
+
+
+  const query =
+    document
+      .getElementById(
+        "search"
+      )
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  let visible = 0;
+
+
+  places.forEach(
+    place=>{
+
+      const lat =
+        Number(
+          place.latitude ??
+          place.lat
+        );
+
+
+      const lng =
+        Number(
+          place.longitude ??
+          place.lng
+        );
+
+
+      if(
+        !Number.isFinite(lat) ||
+        !Number.isFinite(lng)
+      ){
+
+        return;
+
+      }
+
+
+      const category =
+        String(
+          place.category ||
+          ""
+        );
+
+
+      const categoryOK =
+        activeCategory ===
+          "all" ||
+        category ===
+          activeCategory;
+
+
+      const searchable =
+        (
+          String(
+            place.name ||
+            ""
+          ) +
+          " " +
+          String(
+            place.address ||
+            ""
+          ) +
+          " " +
+          String(
+            place.city ||
+            ""
+          )
+        )
+        .toLowerCase();
+
+
+      const searchOK =
+        !query ||
+        searchable.includes(
+          query
+        );
+
+
+      if(
+        !categoryOK ||
+        !searchOK
+      ){
+
+        return;
+
+      }
+
+
+      visible++;
+
+
+      const rating =
+        Number(
+          place.rating ||
+          0
+        );
+
+
+      const labelText =
+        rating > 0
+          ? `★ ${rating.toFixed(1)}`
+          : "★ —";
+
+
+      const marker =
+        new google.maps.Marker(
+          {
+            position:{
+              lat,
+              lng
+            },
+
+            map,
+
+            title:
+              place.name ||
+              "",
+
+            label:{
+              text:
+                labelText,
+
+              color:"#111",
+
+              fontWeight:"800",
+
+              fontSize:"13px"
+            }
+          }
+        );
+
+
+      marker.addListener(
+        "click",
+        function(){
+
+          openPlace(
+            place
+          );
+
+        }
+      );
+
+
+      place.__marker =
+        marker;
+
+    }
+  );
+
+
   document
     .getElementById(
-      "adminModal"
+      "empty"
     )
     .style.display =
-      "flex";
-
-
-  await showPending();
-
-}
-
-
-function closeAdmin(){
-
-  document
-    .getElementById(
-      "adminModal"
-    )
-    .style.display =
-      "none";
+      visible
+        ? "none"
+        : "block";
 
 }
 
 
 /* =====================================================
-   PENDING
+   PLACE CARD
 ===================================================== */
 
-async function showPending(){
+async function openPlace(
+  place
+){
 
-  const box =
-    document.getElementById(
-      "pendingBox"
+  currentPlace =
+    place;
+
+
+  document
+    .getElementById(
+      "card"
+    )
+    .style.display =
+      "block";
+
+
+  document
+    .getElementById(
+      "cardName"
+    )
+    .textContent =
+      place.name ||
+      "Без назви";
+
+
+  const rating =
+    Number(
+      place.rating ||
+      0
     );
 
 
+  document
+    .getElementById(
+      "cardRating"
+    )
+    .textContent =
+      rating
+        ? rating.toFixed(1)
+        : "—";
+
+
+  document
+    .getElementById(
+      "cardStars"
+    )
+    .textContent =
+      makeStars(
+        rating
+      );
+
+
+  document
+    .getElementById(
+      "cardReviews"
+    )
+    .textContent =
+      `(${place.reviews_count || 0})`;
+
+
+  const image =
+    document
+      .getElementById(
+        "cardImage"
+      );
+
+
+  if(
+    place.logo_url
+  ){
+
+    image.src =
+      place.logo_url;
+
+    image.style.display =
+      "block";
+
+  }else{
+
+    image.removeAttribute(
+      "src"
+    );
+
+    image.style.display =
+      "none";
+
+  }
+
+
+  document
+    .getElementById(
+      "placeInfo"
+    )
+    .innerHTML =
+
+      infoRow(
+        "📍",
+        escapeHtml(
+          place.address ||
+          "Адреса не вказана"
+        )
+      ) +
+
+      infoRow(
+        "☎",
+        place.phone
+          ?
+          `
+            <a
+              href="tel:${escapeAttribute(
+                place.phone
+              )}">
+              ${escapeHtml(
+                place.phone
+              )}
+            </a>
+          `
+          :
+          "Телефон не вказаний"
+      ) +
+
+      infoRow(
+        "✈️",
+        place.telegram
+          ?
+          `
+            <a
+              href="${telegramUrl(
+                place.telegram
+              )}"
+              target="_blank">
+              ${escapeHtml(
+                place.telegram
+              )}
+            </a>
+          `
+          :
+          "Telegram не вказаний"
+      ) +
+
+      infoRow(
+        "🌐",
+        place.website
+          ?
+          `
+            <a
+              href="${safeUrl(
+                place.website
+              )}"
+              target="_blank">
+              ${escapeHtml(
+                place.website
+              )}
+            </a>
+          `
+          :
+          "Сайт не вказаний"
+      );
+
+
+  const description =
+    document
+      .getElementById(
+        "placeDescription"
+      );
+
+
+  if(
+    place.description
+  ){
+
+    description.textContent =
+      place.description;
+
+    description.style.display =
+      "block";
+
+  }else{
+
+    description.style.display =
+      "none";
+
+  }
+
+
+  setupCardButtons(
+    place
+  );
+
+
+  document
+    .getElementById(
+      "adminPlaceActions"
+    )
+    .style.display =
+      currentAdmin
+        ? "block"
+        : "none";
+
+
+  await loadReviews(
+    place.id
+  );
+
+}
+
+
+/* =====================================================
+   INFO
+===================================================== */
+
+function infoRow(
+  icon,
+  value
+){
+
+  return `
+    <div class="info-row">
+
+      <div class="info-icon">
+        ${icon}
+      </div>
+
+      <div class="info-value">
+        ${value}
+      </div>
+
+    </div>
+  `;
+
+}
+
+
+/* =====================================================
+   CARD BUTTONS
+===================================================== */
+
+function setupCardButtons(
+  place
+){
+
+  const lat =
+    Number(
+      place.latitude ??
+      place.lat
+    );
+
+
+  const lng =
+    Number(
+      place.longitude ??
+      place.lng
+    );
+
+
+  document
+    .getElementById(
+      "routeButton"
+    )
+    .onclick =
+      function(){
+
+        const url =
+          "https://www.google.com/maps/dir/?api=1" +
+          "&destination=" +
+          encodeURIComponent(
+            `${lat},${lng}`
+          );
+
+
+        openExternal(
+          url
+        );
+
+      };
+
+
+  const phoneButton =
+    document
+      .getElementById(
+        "phoneButton"
+      );
+
+
+  if(
+    place.phone
+  ){
+
+    phoneButton.style.display =
+      "block";
+
+
+    phoneButton.onclick =
+      function(){
+
+        window.location.href =
+          "tel:" +
+          place.phone;
+
+      };
+
+  }else{
+
+    phoneButton.style.display =
+      "none";
+
+  }
+
+
+  const siteButton =
+    document
+      .getElementById(
+        "siteButton"
+      );
+
+
+  if(
+    place.website
+  ){
+
+    siteButton.style.display =
+      "block";
+
+
+    siteButton.onclick =
+      function(){
+
+        openExternal(
+          safeUrl(
+            place.website
+          )
+        );
+
+      };
+
+  }else{
+
+    siteButton.style.display =
+      "none";
+
+  }
+
+
+  const telegramButton =
+    document
+      .getElementById(
+        "telegramButton"
+      );
+
+
+  if(
+    place.telegram
+  ){
+
+    telegramButton.style.display =
+      "block";
+
+
+    telegramButton.onclick =
+      function(){
+
+        openExternal(
+          telegramUrl(
+            place.telegram
+          )
+        );
+
+      };
+
+  }else{
+
+    telegramButton.style.display =
+      "none";
+
+  }
+
+}
+
+
+/* =====================================================
+   CLOSE CARD
+===================================================== */
+
+function closeCard(){
+
+  document
+    .getElementById(
+      "card"
+    )
+    .style.display =
+      "none";
+
+
+  currentPlace =
+    null;
+
+}
+
+
+/* =====================================================
+   REVIEWS
+===================================================== */
+
+function setupReviews(){
+
+  document
+    .querySelectorAll(
+      "#starSelect button"
+    )
+    .forEach(
+      button=>{
+
+        button.onclick =
+          function(){
+
+            selectedRating =
+              Number(
+                button.dataset.star
+              );
+
+
+            document
+              .querySelectorAll(
+                "#starSelect button"
+              )
+              .forEach(
+                item=>{
+
+                  const number =
+                    Number(
+                      item.dataset.star
+                    );
+
+
+                  item.textContent =
+                    number <=
+                    selectedRating
+                      ? "★"
+                      : "☆";
+
+
+                  item.classList.toggle(
+                    "active",
+                    number <=
+                    selectedRating
+                  );
+
+                }
+              );
+
+          };
+
+      }
+    );
+
+}
+
+
+/* =====================================================
+   REVIEWS LOAD
+===================================================== */
+
+async function loadReviews(
+  placeId
+){
+
+  const box =
+    document
+      .getElementById(
+        "reviews"
+      );
+
+
   box.innerHTML =
-    "⏳ Завантаження...";
+    `
+      <div class="review">
+        Завантаження відгуків...
+      </div>
+    `;
 
 
   try{
@@ -3557,10 +4715,10 @@ async function showPending(){
     const data =
       await api(
         {
-          action:"pending",
+          action:"reviews",
 
-          telegram_id:
-            telegramId
+          place_id:
+            placeId
         }
       );
 
@@ -3569,22 +4727,32 @@ async function showPending(){
       Array.isArray(data)
         ? data
         : (
-            Array.isArray(data.pending)
-              ? data.pending
-              : []
+            Array.isArray(
+              data.reviews
+            )
+            ?
+            data.reviews
+            :
+            []
           );
 
 
-    if(!list.length){
+    if(
+      !list.length
+    ){
 
       box.innerHTML =
         `
-          <div
-            style="
-              padding:12px;
-              color:#8e9aa6;
-            ">
-            Заявок немає.
+          <div class="review">
+
+            <div class="review-author">
+              Поки немає відгуків
+            </div>
+
+            <div class="review-text">
+              Будьте першим!
+            </div>
+
           </div>
         `;
 
@@ -3596,57 +4764,39 @@ async function showPending(){
     box.innerHTML =
       list
         .map(
-          place=>`
+          review=>`
 
-            <div class="pending">
+            <div class="review">
 
-              <div class="pending-name">
+              <div class="review-author">
                 ${escapeHtml(
-                  place.name ||
-                  "Без назви"
+                  review.author_name ||
+                  review.name ||
+                  "Анонім"
                 )}
               </div>
 
-              <div class="pending-info">
-
-                ${escapeHtml(
-                  place.category_name ||
-                  place.category ||
-                  ""
+              <div class="review-date">
+                ${formatDate(
+                  review.created_at
                 )}
-
-                <br>
-
-                📍
-                ${escapeHtml(
-                  place.address ||
-                  ""
-                )}
-
-                <br>
-
-                ☎
-                ${escapeHtml(
-                  place.phone ||
-                  ""
-                )}
-
               </div>
 
-              <div class="pending-actions">
+              <div class="review-stars">
+                ${makeStars(
+                  Number(
+                    review.rating ||
+                    0
+                  )
+                )}
+              </div>
 
-                <button
-                  class="modal-button"
-                  onclick="approvePlace('${escapeAttribute(place.id)}')">
-                  ✅ Одобрити
-                </button>
-
-                <button
-                  class="modal-button red"
-                  onclick="rejectPlace('${escapeAttribute(place.id)}')">
-                  ❌ Відхилити
-                </button>
-
+              <div class="review-text">
+                ${escapeHtml(
+                  review.review_text ||
+                  review.text ||
+                  ""
+                )}
               </div>
 
             </div>
@@ -3660,10 +4810,8 @@ async function showPending(){
 
     box.innerHTML =
       `
-        <div style="color:#ff7272">
-          ❌ ${escapeHtml(
-            error.message
-          )}
+        <div class="review">
+          Не вдалося завантажити відгуки.
         </div>
       `;
 
@@ -3673,731 +4821,157 @@ async function showPending(){
 
 
 /* =====================================================
-   APPROVE / REJECT
+   SEND REVIEW
 ===================================================== */
 
-async function approvePlace(id){
+async function sendReview(){
 
-  await moderatePlace(
-    "approve",
-    id
-  );
-
-}
-
-
-async function rejectPlace(id){
-
-  await moderatePlace(
-    "reject",
-    id
-  );
-
-}
-
-
-async function moderatePlace(
-  action,
-  id
-){
-
-  try{
-
-    await api(
-      {
-        action,
-
-        telegram_id:
-          telegramId,
-
-        id
-      }
-    );
-
-
-    await showPending();
-
-    await loadPlaces();
-
-
-  }catch(error){
-
-    alert(
-      "❌ " +
-      error.message
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   ADMINS
-===================================================== */
-
-async function showAdmins(){
-
-  if(
-    !currentAdmin ||
-    currentAdmin.role !==
-      "owner"
-  ){
+  if(!currentPlace){
 
     return;
 
   }
 
 
-  const box =
-    document.getElementById(
-      "adminsBox"
+  if(!selectedRating){
+
+    alert(
+      "Оберіть оцінку."
     );
 
-
-  box.innerHTML =
-    "⏳ Завантаження...";
-
-
-  try{
-
-    const data =
-      await api(
-        {
-          action:"admins",
-
-          telegram_id:
-            telegramId
-        }
-      );
-
-
-    const list =
-      Array.isArray(data)
-        ? data
-        : (
-            Array.isArray(data.admins)
-              ? data.admins
-              : []
-          );
-
-
-    box.innerHTML =
-      `
-        <button
-          class="modal-button"
-          onclick="openAddAdmin()">
-          ➕ Додати адміністратора
-        </button>
-
-        <div style="margin-top:12px">
-          ${
-            list
-              .map(
-                admin=>`
-
-                  <div class="admin-item">
-
-                    <div class="admin-name">
-                      ${escapeHtml(
-                        admin.name ||
-                        "Без імені"
-                      )}
-                    </div>
-
-                    <div class="admin-meta">
-
-                      Telegram ID:
-                      ${escapeHtml(
-                        admin.telegram_id
-                      )}
-
-                      <br>
-
-                      ${
-                        admin.role ===
-                        "owner"
-                        ? "👑 Власник"
-                        : "🛠 Модератор"
-                      }
-
-                      <br>
-
-                      ${
-                        admin.active === false
-                        ? "⛔ Вимкнений"
-                        : "✅ Активний"
-                      }
-
-                    </div>
-
-                    ${
-                      String(
-                        admin.telegram_id
-                      ) !==
-                      String(
-                        telegramId
-                      )
-                      &&
-                      admin.active !== false
-                      ?
-                      `
-                        <button
-                          class="modal-button red"
-                          onclick="removeAdmin('${escapeAttribute(admin.id)}')">
-                          Видалити доступ
-                        </button>
-                      `
-                      :
-                      ""
-                    }
-
-                  </div>
-
-                `
-              )
-              .join("")
-          }
-        </div>
-      `;
-
-
-  }catch(error){
-
-    box.innerHTML =
-      `
-        <div style="color:#ff7272">
-          ❌ ${escapeHtml(
-            error.message
-          )}
-        </div>
-      `;
+    return;
 
   }
 
-}
 
-
-/* =====================================================
-   ADD ADMIN
-===================================================== */
-
-function openAddAdmin(){
-
-  document
-    .getElementById(
-      "addAdminModal"
-    )
-    .style.display =
-      "flex";
-
-}
-
-
-function closeAddAdmin(){
-
-  document
-    .getElementById(
-      "addAdminModal"
-    )
-    .style.display =
-      "none";
-
-}
-
-
-async function addAdmin(){
-
-  const newId =
+  const text =
     document
       .getElementById(
-        "adminTelegramId"
+        "reviewText"
       )
       .value
       .trim();
+
+
+  if(!text){
+
+    alert(
+      "Напишіть відгук."
+    );
+
+    return;
+
+  }
 
 
   const name =
     document
       .getElementById(
-        "adminName"
+        "reviewName"
       )
       .value
-      .trim();
-
-
-  const role =
-    document
-      .getElementById(
-        "adminRole"
-      )
-      .value;
-
-
-  if(!newId){
-
-    alert(
-      "Вкажіть Telegram ID."
-    );
-
-    return;
-
-  }
+      .trim()
+      ||
+      "Анонім";
 
 
   try{
 
     await api(
       {
-        action:"add_admin",
+        action:
+          "add_review",
 
-        telegram_id:
-          telegramId,
+        place_id:
+          currentPlace.id,
 
-        new_telegram_id:
-          newId,
+        author_name:
+          name,
 
-        name,
+        rating:
+          selectedRating,
 
-        role
+        review_text:
+          text
       }
     );
 
 
     document
       .getElementById(
-        "adminTelegramId"
+        "reviewName"
       )
       .value = "";
 
 
     document
       .getElementById(
-        "adminName"
+        "reviewText"
       )
       .value = "";
 
 
-    closeAddAdmin();
+    selectedRating =
+      0;
 
 
-    await showAdmins();
-
-
-    alert(
-      "Адміністратора додано."
-    );
-
-
-  }catch(error){
-
-    alert(
-      "❌ " +
-      error.message
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   REMOVE ADMIN
-===================================================== */
-
-async function removeAdmin(id){
-
-  if(
-    !confirm(
-      "Забрати доступ адміністратора?"
-    )
-  ){
-
-    return;
-
-  }
-
-
-  try{
-
-    await api(
-      {
-        action:"remove_admin",
-
-        telegram_id:
-          telegramId,
-
-        id
-      }
-    );
-
-
-    await showAdmins();
-
-
-  }catch(error){
-
-    alert(
-      "❌ " +
-      error.message
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   MAP CONTROLS
-===================================================== */
-
-function zoomIn(){
-
-  if(map){
-
-    map.zoomIn();
-
-  }
-
-}
-
-
-function zoomOut(){
-
-  if(map){
-
-    map.zoomOut();
-
-  }
-
-}
-
-
-function findMe(){
-
-  if(
-    !navigator.geolocation
-  ){
-
-    alert(
-      "Геолокація не підтримується."
-    );
-
-    return;
-
-  }
-
-
-  navigator.geolocation.getCurrentPosition(
-
-    function(position){
-
-      const lat =
-        position.coords.latitude;
-
-      const lng =
-        position.coords.longitude;
-
-
-      map.setView(
-        [lat,lng],
-        15
-      );
-
-
-      L.circleMarker(
-        [lat,lng],
-        {
-          radius:8,
-          color:"#fff",
-          weight:3,
-          fillColor:"#087cf5",
-          fillOpacity:1
-        }
+    document
+      .querySelectorAll(
+        "#starSelect button"
       )
-      .addTo(map);
+      .forEach(
+        button=>{
 
-    },
+          button.textContent =
+            "☆";
 
-    function(){
-
-      alert(
-        "Не вдалося отримати ваше місцезнаходження."
-      );
-
-    },
-
-    {
-      enableHighAccuracy:true,
-      timeout:10000
-    }
-
-  );
-
-}
-
-
-/* =====================================================
-   CATEGORY FILTER
-===================================================== */
-
-function toggleCategories(){
-
-  const categories =
-    document.getElementById(
-      "categories"
-    );
-
-
-  categories.style.display =
-    categories.style.display ===
-    "none"
-      ? "flex"
-      : "none";
-
-}
-
-
-/* =====================================================
-   HELPERS
-===================================================== */
-
-function makeStars(rating){
-
-  let result = "";
-
-  const rounded =
-    Math.round(
-      Number(rating || 0)
-    );
-
-
-  for(
-    let i=1;
-    i<=5;
-    i++
-  ){
-
-    result +=
-      i <= rounded
-        ? "★"
-        : "☆";
-
-  }
-
-
-  return result;
-
-}
-
-
-function formatDate(date){
-
-  if(!date){
-
-    return "";
-
-  }
-
-
-  try{
-
-    return new Date(date)
-      .toLocaleDateString(
-        "uk-UA",
-        {
-          day:"numeric",
-          month:"long",
-          year:"numeric"
-        }
-      );
-
-  }catch(e){
-
-    return "";
-
-  }
-
-}
-
-
-function safeUrl(url){
-
-  if(
-    !url
-  ){
-
-    return "#";
-
-  }
-
-
-  if(
-    /^https?:\/\//i.test(
-      url
-    )
-  ){
-
-    return url;
-
-  }
-
-
-  return "https://" + url;
-
-}
-
-
-function telegramUrl(value){
-
-  const text =
-    String(
-      value || ""
-    )
-    .trim();
-
-
-  if(
-    /^https?:\/\//i.test(
-      text
-    )
-  ){
-
-    return text;
-
-  }
-
-
-  return (
-    "https://t.me/" +
-    text.replace(
-      /^@/,
-      ""
-    )
-  );
-
-}
-
-
-function openExternal(url){
-
-  if(!url){
-
-    return;
-
-  }
-
-
-  if(
-    tg &&
-    typeof tg.openLink ===
-      "function"
-  ){
-
-    try{
-
-      tg.openLink(url);
-
-      return;
-
-    }catch(e){}
-
-  }
-
-
-  window.open(
-    url,
-    "_blank"
-  );
-
-}
-
-
-function escapeHtml(value){
-
-  return String(
-    value ?? ""
-  )
-  .replaceAll(
-    "&",
-    "&amp;"
-  )
-  .replaceAll(
-    "<",
-    "&lt;"
-  )
-  .replaceAll(
-    ">",
-    "&gt;"
-  )
-  .replaceAll(
-    '"',
-    "&quot;"
-  )
-  .replaceAll(
-    "'",
-    "&#039;"
-  );
-
-}
-
-
-function escapeAttribute(value){
-
-  return escapeHtml(
-    value
-  );
-
-}
-
-
-function fileToBase64(file){
-
-  return new Promise(
-    function(resolve,reject){
-
-      const reader =
-        new FileReader();
-
-
-      reader.onload =
-        function(){
-
-          resolve(
-            reader.result
+          button.classList.remove(
+            "active"
           );
 
-        };
+        }
+      );
 
 
-      reader.onerror =
-        reject;
+    alert(
+      "Дякуємо за відгук!"
+    );
 
 
-      reader.readAsDataURL(
-        file
+    await loadPlaces();
+
+
+    const updated =
+      places.find(
+        item =>
+          String(
+            item.id
+          ) ===
+          String(
+            currentPlace.id
+          )
+      );
+
+
+    if(updated){
+
+      await openPlace(
+        updated
       );
 
     }
-  );
-
-}
 
 
-/* =====================================================
-   START
-===================================================== */
+  }catch(error){
 
-window.addEventListener(
-  "load",
-  function(){
-
-    init();
+    alert(
+      "❌ " +
+      error.message
+    );
 
   }
-);
 
+}
 </script>
-
 </body>
 </html>
