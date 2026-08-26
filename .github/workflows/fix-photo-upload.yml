@@ -1,32 +1,30 @@
 name: Apply app compatibility fixes
-on:
-  push:
-    branches: [main]
+on: [push]
 permissions:
   contents: write
 jobs:
   fix:
-    if: ${{ github.event.head_commit.message != 'Apply app compatibility fixes' }}
+    if: github.event.head_commit.message != 'Apply app compatibility fixes'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Patch app
+      - name: Patch map
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import re
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
 
-          # Remove satellite control.
-          s=re.sub(r'\n\s*<button\s+id="mapTypeButton".*?</button>\s*', '\n', s, count=1, flags=re.S)
+          # Remove satellite button.
+          s = re.sub(r'\n\s*<button\s+id="mapTypeButton".*?</button>\s*', '\n', s, count=1, flags=re.S)
 
-          # Fix a runtime error: the marker class must not extend OverlayView
-          # before Google Maps has loaded window.google.
-          old=re.search(r'class LogoRatingOverlay extends google\.maps\.OverlayView\{.*?\n\}\n\n\nfunction renderMarkers', s, flags=re.S)
-          if old:
-              new='''class LogoRatingOverlay{
+          # Do not extend google.maps.OverlayView before Google Maps loads.
+          start = s.find('class LogoRatingOverlay extends google.maps.OverlayView{')
+          end_marker = '\n\n\nfunction renderMarkers'
+          end = s.find(end_marker, start)
+          if start >= 0 and end > start:
+              replacement = '''class LogoRatingOverlay{
   constructor(position,place,clickHandler){
     this.position=position;
     this.place=place;
@@ -34,7 +32,6 @@ jobs:
     this.div=null;
     this.overlay=new google.maps.OverlayView();
     const self=this;
-
     this.overlay.onAdd=function(){
       const div=document.createElement("div");
       div.className="custom-map-marker";
@@ -51,7 +48,6 @@ jobs:
       self.div=div;
       self.overlay.getPanes().overlayMouseTarget.appendChild(div);
     };
-
     this.overlay.draw=function(){
       if(!self.div)return;
       const projection=self.overlay.getProjection();
@@ -60,45 +56,23 @@ jobs:
       self.div.style.left=point.x+"px";
       self.div.style.top=point.y+"px";
     };
-
     this.overlay.onRemove=function(){
       if(self.div){self.div.remove();self.div=null;}
     };
   }
-
   setMap(value){
     this.overlay.setMap(value);
   }
 }
+'''
+              s = s[:start] + replacement + s[end+3:]
 
-
-function renderMarkers'''
-              s=s[:old.start()]+new+s[old.end():]
-
-          # Photo upload compatibility.
-          old_photo='''  if(file){\n\n    place.logo_data =\n      await fileToBase64(\n        file\n      );\n\n    place.logo_type =\n      file.type;\n\n  }'''
-          new_photo='''  if(file){\n\n    const prepared =\n      await prepareImageFile(file);\n\n    place.logo_data =\n      prepared.data;\n\n    place.logo_type =\n      "image/jpeg";\n\n  }'''
-          if old_photo in s:
-              s=s.replace(old_photo,new_photo,1)
-
-          marker='function fileToBase64(\n  file\n){'
-          helper='''async function prepareImageFile(file){\n\n  if(!file){\n    throw new Error("Фото не вибране.");\n  }\n\n  if(!file.type.startsWith("image/")){\n    throw new Error("Оберіть файл зображення.");\n  }\n\n  const maxSide=1600;\n  const data=await fileToBase64(file);\n\n  try{\n    const img=await new Promise((resolve,reject)=>{\n      const image=new Image();\n      image.onload=()=>resolve(image);\n      image.onerror=reject;\n      image.src=data;\n    });\n    const scale=Math.min(1,maxSide/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));\n    const canvas=document.createElement("canvas");\n    canvas.width=Math.max(1,Math.round((img.naturalWidth||img.width)*scale));\n    canvas.height=Math.max(1,Math.round((img.naturalHeight||img.height)*scale));\n    const ctx=canvas.getContext("2d");\n    ctx.drawImage(img,0,0,canvas.width,canvas.height);\n    return {data:canvas.toDataURL("image/jpeg",0.82)};\n  }catch(e){\n    if(/heic|heif/i.test(file.type||file.name||"")){\n      throw new Error("iPhone HEIC не підтримується браузером. Відкрийте фото в Фото та виберіть JPG/JPEG.");\n    }\n    return {data};\n  }\n}\n\n\n'''+marker
-          if 'async function prepareImageFile(file)' not in s and marker in s:
-              s=s.replace(marker,helper,1)
-
-          # Google Maps loader compatibility.
-          s=s.replace('&loading=async','')
-          p.write_text(s,encoding='utf-8')
+          p.write_text(s, encoding='utf-8')
           PY
-
       - name: Commit changes
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add index.html
-          if git diff --cached --quiet; then
-            echo "No changes"
-          else
-            git commit -m "Apply app compatibility fixes"
-            git push
-          fi
+          git commit -m "Apply app compatibility fixes" || exit 0
+          git push
