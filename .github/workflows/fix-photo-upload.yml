@@ -19,6 +19,23 @@ jobs:
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
 
+          # Repair the two custom blocks if an earlier updater wrote literal \\n          # characters instead of real line breaks.
+          css_start='\\n/* CUSTOM LOGO + RATING MAP MARKERS */'
+          css_end='\n/* =========================\n   TOP\n========================= */'
+          if css_start in s:
+              a=s.index(css_start)
+              b=s.index(css_end,a)
+              block=s[a:b].replace('\\n','\n')
+              s=s[:a]+block+s[b:]
+
+          overlay_start='\\nclass LogoRatingOverlay extends google.maps.OverlayView'
+          overlay_end='\n\nfunction renderMarkers(){'
+          if overlay_start in s:
+              a=s.index(overlay_start)
+              b=s.index(overlay_end,a)
+              block=s[a:b].replace('\\n','\n')
+              s=s[:a]+block+s[b:]
+
           # Photo upload compatibility
           old='''  if(file){\n\n    place.logo_data =\n      await fileToBase64(\n        file\n      );\n\n    place.logo_type =\n      file.type;\n\n  }'''
           new='''  if(file){\n\n    const prepared =\n      await prepareImageFile(file);\n\n    place.logo_data =\n      prepared.data;\n\n    place.logo_type =\n      "image/jpeg";\n\n  }'''
