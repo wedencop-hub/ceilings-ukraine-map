@@ -128,7 +128,7 @@ jobs:
                 "data:image/svg+xml;charset=UTF-8," +
                 encodeURIComponent(`
                   <svg xmlns="http://www.w3.org/2000/svg" width="92" height="46" viewBox="0 0 92 46">
-                    <rect x="1" y="1" width="90" height="44" rx="22" fill="white" stroke="rgba(0,0,0,.18)" stroke-width="2"/>
+                    <rect x="1" y="1" width="90" height="44" rx="22" fill="white" stroke="#d6d6d6" stroke-width="2"/>
                     <defs>
                       <clipPath id="c"><circle cx="23" cy="23" r="16"/></clipPath>
                     </defs>
@@ -186,3 +186,5 @@ jobs:
           git rm .github/workflows/patch-marker-logo.yml
           git commit -m "Remove temporary marker patch workflow marker-logo"
           git push
+
+# trigger marker-logo patch
