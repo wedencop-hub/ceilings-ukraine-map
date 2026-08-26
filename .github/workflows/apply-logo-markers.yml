@@ -1,0 +1,190 @@
+name: Apply logo rating markers
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch index.html
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+
+          css = r'''
+          /* CUSTOM LOGO + RATING MAP MARKERS */
+          .custom-map-marker{
+            position:absolute;
+            transform:translate(-50%,-100%);
+            display:flex;
+            align-items:center;
+            gap:6px;
+            padding:5px 8px 5px 5px;
+            background:rgba(255,255,255,.98);
+            color:#111;
+            border:2px solid rgba(0,0,0,.18);
+            border-radius:22px;
+            box-shadow:0 4px 14px rgba(0,0,0,.42);
+            font-size:13px;
+            font-weight:800;
+            white-space:nowrap;
+            cursor:pointer;
+            user-select:none;
+            -webkit-user-select:none;
+          }
+          .custom-map-marker::after{
+            content:"";
+            position:absolute;
+            left:50%;
+            bottom:-7px;
+            width:12px;
+            height:12px;
+            background:#fff;
+            transform:translateX(-50%) rotate(45deg);
+            border-right:2px solid rgba(0,0,0,.12);
+            border-bottom:2px solid rgba(0,0,0,.12);
+            z-index:-1;
+          }
+          .custom-map-marker .marker-logo{
+            width:34px;
+            height:34px;
+            object-fit:cover;
+            border-radius:50%;
+            background:#f1f3f5;
+            border:2px solid #fff;
+            box-shadow:0 1px 5px rgba(0,0,0,.2);
+          }
+          .custom-map-marker .marker-logo-fallback{
+            width:34px;
+            height:34px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            border-radius:50%;
+            background:#087cf5;
+            color:#fff;
+            font-size:18px;
+          }
+          .custom-map-marker .marker-rating-text{
+            display:flex;
+            align-items:center;
+            gap:3px;
+            line-height:1;
+          }
+          .custom-map-marker .marker-star{
+            color:#f5b900;
+            font-size:16px;
+          }
+          '''
+
+          if '/* CUSTOM LOGO + RATING MAP MARKERS */' not in text:
+              text = text.replace('/* =========================\n   TOP\n========================= */', css + '\n/* =========================\n   TOP\n========================= */', 1)
+
+          overlay_class = r'''
+          class LogoRatingOverlay extends google.maps.OverlayView{
+            constructor(position, place, clickHandler){
+              super();
+              this.position = position;
+              this.place = place;
+              this.clickHandler = clickHandler;
+              this.div = null;
+            }
+
+            onAdd(){
+              const div = document.createElement("div");
+              div.className = "custom-map-marker";
+              div.setAttribute("role","button");
+              div.setAttribute("aria-label", this.place.name || "Точка");
+
+              const logo = this.place.logo_url
+                ? `<img class="marker-logo" src="${escapeAttribute(this.place.logo_url)}" alt="">`
+                : `<div class="marker-logo-fallback">🏠</div>`;
+
+              const rating = Number(this.place.rating || 0);
+              const ratingText = rating > 0 ? rating.toFixed(1) : "—";
+
+              div.innerHTML =
+                logo +
+                `<span class="marker-rating-text"><span class="marker-star">★</span>${ratingText}</span>`;
+
+              div.addEventListener("click", this.clickHandler);
+              div.addEventListener("touchend", (event)=>{
+                event.preventDefault();
+                this.clickHandler(event);
+              }, {passive:false});
+
+              this.div = div;
+              this.getPanes().overlayMouseTarget.appendChild(div);
+            }
+
+            draw(){
+              if(!this.div) return;
+              const projection = this.getProjection();
+              const point = projection.fromLatLngToDivPixel(this.position);
+              if(!point) return;
+              this.div.style.left = point.x + "px";
+              this.div.style.top = point.y + "px";
+            }
+
+            onRemove(){
+              if(this.div){
+                this.div.remove();
+                this.div = null;
+              }
+            }
+          }
+          '''
+
+          if 'class LogoRatingOverlay extends google.maps.OverlayView' not in text:
+              text = text.replace('function renderMarkers(){', overlay_class + '\n\nfunction renderMarkers(){', 1)
+
+          old = re.compile(r'''      const marker =\n        new google\.maps\.Marker\(\n          \{.*?\n          \}\n        \);\n\n\n      marker\.addListener\(\n        "click",\n        function\(\)\{\n\n          openPlace\(\n            place\n          \);\n\n        \}\n      \);\n\n\n      place\.__marker =\n        marker;''', re.S)
+
+          new = '''      const marker =
+        new LogoRatingOverlay(
+          new google.maps.LatLng(lat,lng),
+          place,
+          function(){
+            openPlace(place);
+          }
+        );
+
+      marker.setMap(map);
+
+      place.__marker =
+        marker;'''
+
+          text2, count = old.subn(new, text, count=1)
+          if count != 1:
+              raise SystemExit('Marker block was not found; no changes made.')
+          text = text2
+
+          path.write_text(text, encoding='utf-8')
+
+      - name: Commit patched app
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Show company logos with ratings on map"
+            git push
+          fi
