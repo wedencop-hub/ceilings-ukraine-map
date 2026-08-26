@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Make review fields optional
+      - name: Separate star ratings from written reviews
         shell: python
         run: |
           from pathlib import Path
@@ -24,41 +24,48 @@ jobs:
           s = p.read_text(encoding='utf-8')
           original = s
 
-          # Only alter the review form. Name and text stay available, but are optional.
-          m = re.search(r'<div[^>]*class=["\']review-form["\'][^>]*>.*?</div>\s*(?=<|$)', s, re.S)
-          if m:
-              form = m.group(0)
-              form = re.sub(r'\s+required(?=\s|>)', '', form, flags=re.I)
-              form = re.sub(r'\s+aria-required=["\']true["\']', '', form, flags=re.I)
-              form = form.replace('Ваше ім\'я', 'Ваше ім\'я (необов\'язково)')
-              form = form.replace('Ім\'я', 'Ім\'я (необов\'язково)')
-              form = form.replace('Відгук', 'Відгук (необов\'язково)')
-              s = s[:m.start()] + form + s[m.end():]
+          # Add a dedicated rating button immediately after the star selector.
+          old = '''      <div\n        id="starSelect"\n        class="star-select">'''
+          if 'id="sendRatingButton"' not in s and old in s:
+              marker_end = '''        <button data-star="5">☆</button>\n\n      </div>'''
+              replacement = marker_end + '''\n\n      <button\n        id="sendRatingButton"\n        class="modal-button"\n        onclick="sendRating()">\n        ⭐ Поставити оцінку\n      </button>'''
+              s = s.replace(marker_end, replacement, 1)
 
-          # Remove common front-end validation that requires author/text; keep rating mandatory.
-          patterns = [
-              r'if\s*\((?=[^)]*(?:name|author))(?=[^)]*(?:text|review))(?=[^)]*(?:rating|star))[^)]*\)',
-              r'if\s*\((?=[^)]*(?:name|author))(?=[^)]*(?:text|review))[^)]*\)',
-          ]
-          for pat in patterns:
-              s = re.sub(pat, 'if(!rating)', s, flags=re.I)
+          # Make the written review section explicitly separate.
+          s = s.replace('''      <input\n        id="reviewName"\n        class="input"\n        placeholder="Ваше ім'я"\n      >''', '''      <div class="review-form-title" style="margin-top:14px">💬 Написати відгук</div>\n\n      <input\n        id="reviewName"\n        class="input"\n        placeholder="Ваше ім'я"\n      >''', 1)
+          s = s.replace('''        Надіслати відгук\n      </button>''', '''        Надіслати відгук\n      </button>''', 1)
 
-          # Add a small explanatory note next to the rating selector once.
-          if 'rating-only-note' not in s:
-              marker = '<div class="star-select">'
-              note = '<div class="rating-only-note">Можна залишити лише оцінку ⭐ — ім\'я та відгук необов\'язкові.</div>\n'
-              s = s.replace(marker, note + marker, 1)
-              s = s.replace('</style>', '.rating-only-note{margin:0 0 8px;color:#9eabb7;font-size:12px;line-height:1.35;}\n</style>', 1)
+          # Written reviews are displayed; rating-only entries are hidden from the review cards.
+          s = s.replace('''    if(\n      !list.length\n    ){''', '''    const visibleReviews = list.filter(review => String(review.review_text || review.text || '').trim().length > 0);\n\n    if(\n      !visibleReviews.length\n    ){''', 1)
+          s = s.replace('''      list\n        .map(\n          review=>`''', '''      visibleReviews\n        .map(\n          review=>`''', 1)
+
+          # Add admin delete control to written reviews.
+          old_review_end = '''              <div class="review-text">\n                ${escapeHtml(\n                  review.review_text ||\n                  review.text ||\n                  ""\n                )}\n              </div>\n\n            </div>'''
+          new_review_end = '''              <div class="review-text">\n                ${escapeHtml(\n                  review.review_text ||\n                  review.text ||\n                  ""\n                )}\n              </div>\n\n              ${currentAdmin ? `<button class="review-delete" onclick="deleteReview('${escapeAttribute(review.id)}')">🗑 Видалити відгук</button>` : ""}\n\n            </div>'''
+          s = s.replace(old_review_end, new_review_end, 1)
+
+          # Replace sendReview: it is text-only and requires name + text. Rating is independent.
+          start = s.find('async function sendReview(){')
+          end = s.find('/* =====================================================\n   ADD PLACE', start)
+          if start >= 0 and end > start:
+              new_fn = '''async function sendReview(){\n\n  if(!currentPlace){ return; }\n\n  const name = document.getElementById("reviewName").value.trim();\n  const text = document.getElementById("reviewText").value.trim();\n\n  if(!name){\n    alert("Для відгуку потрібно вказати ім'я.");\n    return;\n  }\n\n  if(!text){\n    alert("Напишіть текст відгуку.");\n    return;\n  }\n\n  try{\n    await api({\n      action:"add_review",\n      place_id:currentPlace.id,\n      author_name:name,\n      review_text:text\n    });\n\n    document.getElementById("reviewName").value="";\n    document.getElementById("reviewText").value="";\n\n    alert("Дякуємо за відгук!");\n    await loadPlaces();\n    const updated=places.find(item=>String(item.id)===String(currentPlace.id));\n    if(updated) await openPlace(updated);\n  }catch(error){\n    alert("❌ "+error.message);\n  }\n}\n\nasync function sendRating(){\n\n  if(!currentPlace){ return; }\n\n  if(!selectedRating){\n    alert("Оберіть кількість зірок.");\n    return;\n  }\n\n  try{\n    await api({\n      action:"add_rating",\n      place_id:currentPlace.id,\n      rating:selectedRating\n    });\n\n    selectedRating=0;\n    document.querySelectorAll("#starSelect button").forEach(button=>{\n      button.textContent="☆";\n      button.classList.remove("active");\n    });\n\n    alert("Оцінку збережено ⭐");\n    await loadPlaces();\n    const updated=places.find(item=>String(item.id)===String(currentPlace.id));\n    if(updated) await openPlace(updated);\n  }catch(error){\n    alert("❌ "+error.message);\n  }\n}\n\nasync function deleteReview(id){\n  if(!currentAdmin || !currentPlace) return;\n  if(!confirm("Видалити цей відгук?")) return;\n  try{\n    await api({action:"delete_review",telegram_id:telegramId,id,place_id:currentPlace.id});\n    await openPlace(currentPlace);\n  }catch(error){\n    alert("❌ "+error.message);\n  }\n}\n\n\n'''
+              s = s[:start] + new_fn + s[end:]
+
+          # Add styling for the admin delete button.
+          if '.review-delete' not in s:
+              s = s.replace('</style>', '.review-delete{margin-top:10px;border:0;border-radius:9px;padding:8px 10px;background:#d7353d;color:#fff;font-size:12px;font-weight:800;}\n</style>', 1)
+
+          # Mark the migration so the workflow is idempotent.
+          if 'SEPARATE_RATING_REVIEW_V2' not in s:
+              s = s.replace('<body>', '<body>\n<!-- SEPARATE_RATING_REVIEW_V2 -->', 1)
 
           if s != original:
               p.write_text(s, encoding='utf-8')
-          else:
-              print('No textual patch was necessary.')
 
       - name: Commit patch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git diff --cached --quiet || git commit -m "Make review text and name optional"
+          git diff --cached --quiet || git commit -m "Separate star ratings from written reviews"
           git push
