@@ -19,30 +19,75 @@ jobs:
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
 
-          # Photo upload compatibility
-          old='''  if(file){\n\n    place.logo_data =\n      await fileToBase64(\n        file\n      );\n\n    place.logo_type =\n      file.type;\n\n  }'''
-          new='''  if(file){\n\n    const prepared =\n      await prepareImageFile(file);\n\n    place.logo_data =\n      prepared.data;\n\n    place.logo_type =\n      "image/jpeg";\n\n  }'''
-          if old in s:
-              s=s.replace(old,new,1)
+          # Remove satellite control.
+          s=re.sub(r'\n\s*<button\s+id="mapTypeButton".*?</button>\s*', '\n', s, count=1, flags=re.S)
+
+          # Fix a runtime error: the marker class must not extend OverlayView
+          # before Google Maps has loaded window.google.
+          old=re.search(r'class LogoRatingOverlay extends google\.maps\.OverlayView\{.*?\n\}\n\n\nfunction renderMarkers', s, flags=re.S)
+          if old:
+              new='''class LogoRatingOverlay{
+  constructor(position,place,clickHandler){
+    this.position=position;
+    this.place=place;
+    this.clickHandler=clickHandler;
+    this.div=null;
+    this.overlay=new google.maps.OverlayView();
+    const self=this;
+
+    this.overlay.onAdd=function(){
+      const div=document.createElement("div");
+      div.className="custom-map-marker";
+      div.setAttribute("role","button");
+      div.setAttribute("aria-label",self.place.name||"Точка");
+      const logo=self.place.logo_url
+        ? `<img class="marker-logo" src="${escapeAttribute(self.place.logo_url)}" alt="">`
+        : `<div class="marker-logo-fallback">🏠</div>`;
+      const rating=Number(self.place.rating||0);
+      const ratingText=rating>0?rating.toFixed(1):"—";
+      div.innerHTML=logo+`<span class="marker-rating-text"><span class="marker-star">★</span>${ratingText}</span>`;
+      div.addEventListener("click",self.clickHandler);
+      div.addEventListener("touchend",event=>{event.preventDefault();self.clickHandler(event);},{passive:false});
+      self.div=div;
+      self.overlay.getPanes().overlayMouseTarget.appendChild(div);
+    };
+
+    this.overlay.draw=function(){
+      if(!self.div)return;
+      const projection=self.overlay.getProjection();
+      const point=projection.fromLatLngToDivPixel(self.position);
+      if(!point)return;
+      self.div.style.left=point.x+"px";
+      self.div.style.top=point.y+"px";
+    };
+
+    this.overlay.onRemove=function(){
+      if(self.div){self.div.remove();self.div=null;}
+    };
+  }
+
+  setMap(value){
+    this.overlay.setMap(value);
+  }
+}
+
+
+function renderMarkers'''
+              s=s[:old.start()]+new+s[old.end():]
+
+          # Photo upload compatibility.
+          old_photo='''  if(file){\n\n    place.logo_data =\n      await fileToBase64(\n        file\n      );\n\n    place.logo_type =\n      file.type;\n\n  }'''
+          new_photo='''  if(file){\n\n    const prepared =\n      await prepareImageFile(file);\n\n    place.logo_data =\n      prepared.data;\n\n    place.logo_type =\n      "image/jpeg";\n\n  }'''
+          if old_photo in s:
+              s=s.replace(old_photo,new_photo,1)
 
           marker='function fileToBase64(\n  file\n){'
-          helper='''async function prepareImageFile(file){\n\n  if(!file){\n    throw new Error("Фото не вибране.");\n  }\n\n  if(!file.type.startsWith("image/")){\n    throw new Error("Оберіть файл зображення.");\n  }\n\n  const maxSide=1600;\n  const data=await fileToBase64(file);\n\n  try{\n    const img=await new Promise((resolve,reject)=>{\n      const image=new Image();\n      image.onload=()=>resolve(image);\n      image.onerror=reject;\n      image.src=data;\n    });\n\n    const scale=Math.min(1,maxSide/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));\n    const canvas=document.createElement("canvas");\n    canvas.width=Math.max(1,Math.round((img.naturalWidth||img.width)*scale));\n    canvas.height=Math.max(1,Math.round((img.naturalHeight||img.height)*scale));\n    const ctx=canvas.getContext("2d");\n    ctx.drawImage(img,0,0,canvas.width,canvas.height);\n    return {data:canvas.toDataURL("image/jpeg",0.82)};\n  }catch(e){\n    if(/heic|heif/i.test(file.type||file.name||"")){\n      throw new Error("iPhone HEIC не підтримується браузером. Відкрийте фото в Фото та виберіть JPG/JPEG.");\n    }\n    return {data};\n  }\n}\n\n\n'''+marker
+          helper='''async function prepareImageFile(file){\n\n  if(!file){\n    throw new Error("Фото не вибране.");\n  }\n\n  if(!file.type.startsWith("image/")){\n    throw new Error("Оберіть файл зображення.");\n  }\n\n  const maxSide=1600;\n  const data=await fileToBase64(file);\n\n  try{\n    const img=await new Promise((resolve,reject)=>{\n      const image=new Image();\n      image.onload=()=>resolve(image);\n      image.onerror=reject;\n      image.src=data;\n    });\n    const scale=Math.min(1,maxSide/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));\n    const canvas=document.createElement("canvas");\n    canvas.width=Math.max(1,Math.round((img.naturalWidth||img.width)*scale));\n    canvas.height=Math.max(1,Math.round((img.naturalHeight||img.height)*scale));\n    const ctx=canvas.getContext("2d");\n    ctx.drawImage(img,0,0,canvas.width,canvas.height);\n    return {data:canvas.toDataURL("image/jpeg",0.82)};\n  }catch(e){\n    if(/heic|heif/i.test(file.type||file.name||"")){\n      throw new Error("iPhone HEIC не підтримується браузером. Відкрийте фото в Фото та виберіть JPG/JPEG.");\n    }\n    return {data};\n  }\n}\n\n\n'''+marker
           if 'async function prepareImageFile(file)' not in s and marker in s:
               s=s.replace(marker,helper,1)
 
-          # Fix Google Maps loading in Telegram WebView.
-          s=s.replace('&loading=async', '')
-          if 'MAP LOAD TIMEOUT' not in s:
-              needle='''  script.defer =\n    true;'''
-              replacement='''  script.defer =\n    true;\n\n  script.onload =\n    function(){\n      setTimeout(function(){\n        if(!(window.google && window.google.maps)){\n          showMapLoadError("Google Maps не відповів у Telegram.");\n        }\n      },7000);\n    };'''
-              if needle in s:
-                  s=s.replace(needle,replacement,1)
-
-              marker2='''/* =====================================================\n   GOOGLE MAPS LOADER\n===================================================== */'''
-              helper2='''function showMapLoadError(message){\n  const mapBox=document.getElementById("map");\n  if(!mapBox)return;\n  mapBox.innerHTML=`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:30px;text-align:center;background:#101b25;color:#fff;z-index:9999"><div><div style="font-size:44px">🗺️</div><div style="font-size:19px;font-weight:800;margin-top:8px">Карта не завантажилась</div><div style="font-size:14px;color:#9aa7b4;margin-top:8px">${message}</div><button onclick="location.reload()" style="margin-top:16px;padding:11px 18px;border:0;border-radius:10px;background:#087cf5;color:#fff;font-weight:800">Оновити</button></div></div>`;\n}\n\n\n'''+marker2
-              if marker2 in s:
-                  s=s.replace(marker2,helper2,1)
-
+          # Google Maps loader compatibility.
+          s=s.replace('&loading=async','')
           p.write_text(s,encoding='utf-8')
           PY
 
