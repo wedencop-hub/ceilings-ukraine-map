@@ -616,6 +616,9 @@ button{
 .input,
 .select,
 .textarea{
+  caret-color:#ffffff;
+  -webkit-text-fill-color:#ffffff;
+
   width:100%;
 
   padding:12px;
@@ -1613,6 +1616,8 @@ function initMap(){
     }
   );
 
+
+  setupLongPressPicker();
 
   setupInterface();
 
@@ -3347,124 +3352,69 @@ async function searchAddress(){
 ===================================================== */
 
 function startMapPick(){
-
   closeAdd();
-
-  pickMode =
-    true;
-
-
-  alert(
-    "Натисніть потрібне місце на карті."
-  );
-
+  pickMode=true;
+  alert("Натисніть і утримуйте палець на потрібному місці приблизно 1 секунду.");
 }
 
-
-function setCoordinates(
-  lat,
-  lng
-){
-
-  selectedLat =
-    Number(
-      lat
-    );
-
-
-  selectedLng =
-    Number(
-      lng
-    );
-
-
-  if(
-    temporaryMarker
-  ){
-
-    temporaryMarker.setMap(
-      null
-    );
-
+function setupLongPressPicker(){
+  const el = map.getDiv();
+  let timer = null;
+  let startX = 0;
+  let startY = 0;
+  let active = false;
+  function cancel(){ if(timer){ clearTimeout(timer); timer=null; } active=false; }
+  function latLngAt(x,y){
+    const projection = map.getProjection();
+    if(!projection) return null;
+    const rect = el.getBoundingClientRect();
+    const center = projection.fromLatLngToPoint(map.getCenter());
+    const scale = Math.pow(2, map.getZoom());
+    const px = x - rect.left, py = y - rect.top;
+    const world = new google.maps.Point(center.x + (px - rect.width/2) / scale, center.y + (py - rect.height/2) / scale);
+    return projection.fromPointToLatLng(world);
   }
-
-
-  temporaryMarker =
-    new google.maps.Marker({
-
-      position:{
-        lat:
-          selectedLat,
-
-        lng:
-          selectedLng
-      },
-
-      map,
-
-      draggable:true,
-
-      title:
-        "Нова точка"
-
-    });
-
-
-  temporaryMarker.addListener(
-    "dragend",
-    function(){
-
-      const position =
-        temporaryMarker
-          .getPosition();
-
-
-      selectedLat =
-        position.lat();
-
-
-      selectedLng =
-        position.lng();
-
-
-      updateCoordinates();
-
-    }
-  );
-
-
-  map.panTo({
-
-    lat:
-      selectedLat,
-
-    lng:
-      selectedLng
-
-  });
-
-
-  map.setZoom(
-    16
-  );
-
-
-  updateCoordinates();
-
-
-  pickMode =
-    false;
-
-
-  document
-    .getElementById(
-      "addModal"
-    )
-    .style.display =
-      "flex";
-
+  function start(x,y){
+    if(!pickMode) return;
+    startX=x; startY=y; active=true;
+    timer=setTimeout(()=>{
+      if(!active || !pickMode) return;
+      const ll=latLngAt(startX,startY);
+      if(ll){ setCoordinates(ll.lat(),ll.lng()); if(navigator.vibrate) navigator.vibrate(30); }
+      cancel();
+    },700);
+  }
+  function move(x,y){ if(active && Math.hypot(x-startX,y-startY)>12) cancel(); }
+  el.addEventListener('touchstart',e=>{ if(!pickMode) return; const t=e.touches[0]; start(t.clientX,t.clientY); },{passive:true});
+  el.addEventListener('touchmove',e=>{ if(!active) return; const t=e.touches[0]; move(t.clientX,t.clientY); },{passive:true});
+  el.addEventListener('touchend',cancel,{passive:true});
+  el.addEventListener('touchcancel',cancel,{passive:true});
+  el.addEventListener('mousedown',e=>{ if(e.button===0) start(e.clientX,e.clientY); });
+  el.addEventListener('mousemove',e=>move(e.clientX,e.clientY));
+  el.addEventListener('mouseup',cancel);
+  el.addEventListener('mouseleave',cancel);
 }
 
+function setCoordinates(lat,lng){
+  selectedLat=Number(lat); selectedLng=Number(lng);
+  if(temporaryMarker) temporaryMarker.setMap(null);
+  temporaryMarker=new google.maps.Marker({position:{lat:selectedLat,lng:selectedLng},map,draggable:true,title:"Нова точка"});
+  temporaryMarker.addListener("dragend",()=>{const p=temporaryMarker.getPosition();selectedLat=p.lat();selectedLng=p.lng();updateCoordinates();reverseGeocode(selectedLat,selectedLng);});
+  map.panTo({lat:selectedLat,lng:selectedLng}); map.setZoom(16); updateCoordinates();
+  reverseGeocode(selectedLat,selectedLng);
+  pickMode=false;
+  document.getElementById("addModal").style.display="flex";
+}
+function reverseGeocode(lat,lng){
+  if(!window.google||!google.maps)return;
+  new google.maps.Geocoder().geocode({location:{lat:Number(lat),lng:Number(lng)},language:"uk",region:"UA"},(results,status)=>{
+    if(status!=="OK"||!results||!results.length)return;
+    const input=document.getElementById("newAddress");
+    if(input) input.value=results[0].formatted_address;
+    const box=document.getElementById("addressResults");
+    if(box) box.innerHTML="";
+  });
+}
 
 function updateCoordinates(){
 
