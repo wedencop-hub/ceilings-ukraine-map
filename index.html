@@ -88,7 +88,71 @@ button{
   font-size:15px;
 }
 
-\n/* CUSTOM LOGO + RATING MAP MARKERS */\n.custom-map-marker{\n  position:absolute;\n  transform:translate(-50%,-100%);\n  display:flex;\n  align-items:center;\n  gap:6px;\n  padding:5px 8px 5px 5px;\n  background:rgba(255,255,255,.98);\n  color:#111;\n  border:2px solid rgba(0,0,0,.18);\n  border-radius:22px;\n  box-shadow:0 4px 14px rgba(0,0,0,.42);\n  font-size:13px;\n  font-weight:800;\n  white-space:nowrap;\n  cursor:pointer;\n  user-select:none;\n  -webkit-user-select:none;\n}\n.custom-map-marker::after{\n  content:"";\n  position:absolute;\n  left:50%;\n  bottom:-7px;\n  width:12px;\n  height:12px;\n  background:#fff;\n  transform:translateX(-50%) rotate(45deg);\n  border-right:2px solid rgba(0,0,0,.12);\n  border-bottom:2px solid rgba(0,0,0,.12);\n  z-index:-1;\n}\n.custom-map-marker .marker-logo{\n  width:34px;\n  height:34px;\n  object-fit:cover;\n  border-radius:50%;\n  background:#f1f3f5;\n  border:2px solid #fff;\n  box-shadow:0 1px 5px rgba(0,0,0,.2);\n}\n.custom-map-marker .marker-logo-fallback{\n  width:34px;\n  height:34px;\n  display:flex;\n  align-items:center;\n  justify-content:center;\n  border-radius:50%;\n  background:#087cf5;\n  color:#fff;\n  font-size:18px;\n}\n.custom-map-marker .marker-rating-text{\n  display:flex;\n  align-items:center;\n  gap:3px;\n  line-height:1;\n}\n.custom-map-marker .marker-star{\n  color:#f5b900;\n  font-size:16px;\n}\n
+
+/* CUSTOM LOGO + RATING MAP MARKERS */
+.custom-map-marker{
+  position:absolute;
+  transform:translate(-50%,-100%);
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 8px 5px 5px;
+  background:rgba(255,255,255,.98);
+  color:#111;
+  border:2px solid rgba(0,0,0,.18);
+  border-radius:22px;
+  box-shadow:0 4px 14px rgba(0,0,0,.42);
+  font-size:13px;
+  font-weight:800;
+  white-space:nowrap;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.custom-map-marker::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:-7px;
+  width:12px;
+  height:12px;
+  background:#fff;
+  transform:translateX(-50%) rotate(45deg);
+  border-right:2px solid rgba(0,0,0,.12);
+  border-bottom:2px solid rgba(0,0,0,.12);
+  z-index:-1;
+}
+.custom-map-marker .marker-logo{
+  width:34px;
+  height:34px;
+  object-fit:cover;
+  border-radius:50%;
+  background:#f1f3f5;
+  border:2px solid #fff;
+  box-shadow:0 1px 5px rgba(0,0,0,.2);
+}
+.custom-map-marker .marker-logo-fallback{
+  width:34px;
+  height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:#087cf5;
+  color:#fff;
+  font-size:18px;
+}
+.custom-map-marker .marker-rating-text{
+  display:flex;
+  align-items:center;
+  gap:3px;
+  line-height:1;
+}
+.custom-map-marker .marker-star{
+  color:#f5b900;
+  font-size:16px;
+}
+
 /* =========================
    TOP
 ========================= */
@@ -1961,7 +2025,44 @@ async function loadPlaces(){
    MARKERS
 ===================================================== */
 
-\nclass LogoRatingOverlay extends google.maps.OverlayView{\n  constructor(position,place,clickHandler){\n    super();\n    this.position=position;\n    this.place=place;\n    this.clickHandler=clickHandler;\n    this.div=null;\n  }\n  onAdd(){\n    const div=document.createElement("div");\n    div.className="custom-map-marker";\n    div.setAttribute("role","button");\n    div.setAttribute("aria-label",this.place.name||"Точка");\n    const logo=this.place.logo_url\n      ? `<img class="marker-logo" src="${escapeAttribute(this.place.logo_url)}" alt="">`\n      : `<div class="marker-logo-fallback">🏠</div>`;\n    const rating=Number(this.place.rating||0);\n    const ratingText=rating>0?rating.toFixed(1):"—";\n    div.innerHTML=logo+`<span class="marker-rating-text"><span class="marker-star">★</span>${ratingText}</span>`;\n    div.addEventListener("click",this.clickHandler);\n    div.addEventListener("touchend",event=>{event.preventDefault();this.clickHandler(event);},{passive:false});\n    this.div=div;\n    this.getPanes().overlayMouseTarget.appendChild(div);\n  }\n  draw(){\n    if(!this.div)return;\n    const projection=this.getProjection();\n    const point=projection.fromLatLngToDivPixel(this.position);\n    if(!point)return;\n    this.div.style.left=point.x+"px";\n    this.div.style.top=point.y+"px";\n  }\n  onRemove(){\n    if(this.div){this.div.remove();this.div=null;}\n  }\n}\n
+
+class LogoRatingOverlay extends google.maps.OverlayView{
+  constructor(position,place,clickHandler){
+    super();
+    this.position=position;
+    this.place=place;
+    this.clickHandler=clickHandler;
+    this.div=null;
+  }
+  onAdd(){
+    const div=document.createElement("div");
+    div.className="custom-map-marker";
+    div.setAttribute("role","button");
+    div.setAttribute("aria-label",this.place.name||"Точка");
+    const logo=this.place.logo_url
+      ? `<img class="marker-logo" src="${escapeAttribute(this.place.logo_url)}" alt="">`
+      : `<div class="marker-logo-fallback">🏠</div>`;
+    const rating=Number(this.place.rating||0);
+    const ratingText=rating>0?rating.toFixed(1):"—";
+    div.innerHTML=logo+`<span class="marker-rating-text"><span class="marker-star">★</span>${ratingText}</span>`;
+    div.addEventListener("click",this.clickHandler);
+    div.addEventListener("touchend",event=>{event.preventDefault();this.clickHandler(event);},{passive:false});
+    this.div=div;
+    this.getPanes().overlayMouseTarget.appendChild(div);
+  }
+  draw(){
+    if(!this.div)return;
+    const projection=this.getProjection();
+    const point=projection.fromLatLngToDivPixel(this.position);
+    if(!point)return;
+    this.div.style.left=point.x+"px";
+    this.div.style.top=point.y+"px";
+  }
+  onRemove(){
+    if(this.div){this.div.remove();this.div=null;}
+  }
+}
+
 
 function renderMarkers(){
 
