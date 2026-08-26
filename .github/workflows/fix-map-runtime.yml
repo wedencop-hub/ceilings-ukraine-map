@@ -29,18 +29,63 @@ jobs:
               flags=re.S,
           )
 
-          # The custom marker class was extending google.maps.OverlayView before
-          # the Google Maps script had loaded. That can stop the whole JS program.
-          # Use an internal OverlayView instance instead, created only after Maps loads.
+          # Do not reference google.maps.OverlayView at script parse time.
+          # Telegram can load this page before Google Maps has created window.google.
           old = re.search(
-              r'class LogoRatingOverlay extends google\\.maps\\.OverlayView\\{.*?\n\\}\\n\\n\\nfunction renderMarkers',
+              r'class LogoRatingOverlay extends google\.maps\.OverlayView\{.*?\n\}\n\n\nfunction renderMarkers',
               s,
               flags=re.S,
           )
           if not old:
               raise SystemExit('LogoRatingOverlay block not found')
 
-          new = '''class LogoRatingOverlay{\n  constructor(position,place,clickHandler){\n    this.position=position;\n    this.place=place;\n    this.clickHandler=clickHandler;\n    this.div=null;\n    this.overlay=new google.maps.OverlayView();\n    const self=this;\n\n    this.overlay.onAdd=function(){\n      const div=document.createElement("div");\n      div.className="custom-map-marker";\n      div.setAttribute("role","button");\n      div.setAttribute("aria-label",self.place.name||"Точка");\n      const logo=self.place.logo_url\n        ? `<img class="marker-logo" src="${escapeAttribute(self.place.logo_url)}" alt="">`\n        : `<div class="marker-logo-fallback">🏠</div>`;\n      const rating=Number(self.place.rating||0);\n      const ratingText=rating>0?rating.toFixed(1):"—";\n      div.innerHTML=logo+`<span class="marker-rating-text"><span class="marker-star">★</span>${ratingText}</span>`;\n      div.addEventListener("click",self.clickHandler);\n      div.addEventListener("touchend",event=>{event.preventDefault();self.clickHandler(event);},{passive:false});\n      self.div=div;\n      self.overlay.getPanes().overlayMouseTarget.appendChild(div);\n    };\n\n    this.overlay.draw=function(){\n      if(!self.div)return;\n      const projection=self.overlay.getProjection();\n      const point=projection.fromLatLngToDivPixel(self.position);\n      if(!point)return;\n      self.div.style.left=point.x+"px";\n      self.div.style.top=point.y+"px";\n    };\n\n    this.overlay.onRemove=function(){\n      if(self.div){self.div.remove();self.div=null;}\n    };\n  }\n\n  setMap(value){\n    this.overlay.setMap(value);\n  }\n}\n\n\nfunction renderMarkers'''
+          new = '''class LogoRatingOverlay{
+  constructor(position,place,clickHandler){
+    this.position=position;
+    this.place=place;
+    this.clickHandler=clickHandler;
+    this.div=null;
+    this.overlay=new google.maps.OverlayView();
+    const self=this;
+
+    this.overlay.onAdd=function(){
+      const div=document.createElement("div");
+      div.className="custom-map-marker";
+      div.setAttribute("role","button");
+      div.setAttribute("aria-label",self.place.name||"Точка");
+      const logo=self.place.logo_url
+        ? `<img class="marker-logo" src="${escapeAttribute(self.place.logo_url)}" alt="">`
+        : `<div class="marker-logo-fallback">🏠</div>`;
+      const rating=Number(self.place.rating||0);
+      const ratingText=rating>0?rating.toFixed(1):"—";
+      div.innerHTML=logo+`<span class="marker-rating-text"><span class="marker-star">★</span>${ratingText}</span>`;
+      div.addEventListener("click",self.clickHandler);
+      div.addEventListener("touchend",event=>{event.preventDefault();self.clickHandler(event);},{passive:false});
+      self.div=div;
+      self.overlay.getPanes().overlayMouseTarget.appendChild(div);
+    };
+
+    this.overlay.draw=function(){
+      if(!self.div)return;
+      const projection=self.overlay.getProjection();
+      const point=projection.fromLatLngToDivPixel(self.position);
+      if(!point)return;
+      self.div.style.left=point.x+"px";
+      self.div.style.top=point.y+"px";
+    };
+
+    this.overlay.onRemove=function(){
+      if(self.div){self.div.remove();self.div=null;}
+    };
+  }
+
+  setMap(value){
+    this.overlay.setMap(value);
+  }
+}
+
+
+function renderMarkers'''
           s = s[:old.start()] + new + s[old.end():]
 
           p.write_text(s)
