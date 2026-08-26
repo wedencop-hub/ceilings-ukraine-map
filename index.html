@@ -1018,16 +1018,7 @@ button{
       onclick="zoomOut()">
       −
     </button>
-
-    <button
-      id="mapTypeButton"
-      class="map-type-button"
-      onclick="toggleMapType()"
-      title="Карта / Спутник">
-      🛰
-    </button>
-
-  </div>
+</div>
 
   <button
     class="my-location"
@@ -2026,44 +2017,46 @@ async function loadPlaces(){
 ===================================================== */
 
 
-class LogoRatingOverlay extends google.maps.OverlayView{
+class LogoRatingOverlay{
   constructor(position,place,clickHandler){
-    super();
     this.position=position;
     this.place=place;
     this.clickHandler=clickHandler;
     this.div=null;
+    this.overlay=new google.maps.OverlayView();
+    const self=this;
+    this.overlay.onAdd=function(){
+      const div=document.createElement("div");
+      div.className="custom-map-marker";
+      div.setAttribute("role","button");
+      div.setAttribute("aria-label",self.place.name||"Point");
+      const logo=self.place.logo_url
+        ? `<img class="marker-logo" src="${escapeAttribute(self.place.logo_url)}" alt="">`
+        : `<div class="marker-logo-fallback">+</div>`;
+      const rating=Number(self.place.rating||0);
+      const ratingText=rating>0?rating.toFixed(1):"-";
+      div.innerHTML=logo+`<span class="marker-rating-text"><span class="marker-star">*</span>${ratingText}</span>`;
+      div.addEventListener("click",self.clickHandler);
+      div.addEventListener("touchend",event=>{event.preventDefault();self.clickHandler(event);},{passive:false});
+      self.div=div;
+      self.overlay.getPanes().overlayMouseTarget.appendChild(div);
+    };
+    this.overlay.draw=function(){
+      if(!self.div)return;
+      const projection=self.overlay.getProjection();
+      const point=projection.fromLatLngToDivPixel(self.position);
+      if(!point)return;
+      self.div.style.left=point.x+"px";
+      self.div.style.top=point.y+"px";
+    };
+    this.overlay.onRemove=function(){
+      if(self.div){self.div.remove();self.div=null;}
+    };
   }
-  onAdd(){
-    const div=document.createElement("div");
-    div.className="custom-map-marker";
-    div.setAttribute("role","button");
-    div.setAttribute("aria-label",this.place.name||"Точка");
-    const logo=this.place.logo_url
-      ? `<img class="marker-logo" src="${escapeAttribute(this.place.logo_url)}" alt="">`
-      : `<div class="marker-logo-fallback">🏠</div>`;
-    const rating=Number(this.place.rating||0);
-    const ratingText=rating>0?rating.toFixed(1):"—";
-    div.innerHTML=logo+`<span class="marker-rating-text"><span class="marker-star">★</span>${ratingText}</span>`;
-    div.addEventListener("click",this.clickHandler);
-    div.addEventListener("touchend",event=>{event.preventDefault();this.clickHandler(event);},{passive:false});
-    this.div=div;
-    this.getPanes().overlayMouseTarget.appendChild(div);
-  }
-  draw(){
-    if(!this.div)return;
-    const projection=this.getProjection();
-    const point=projection.fromLatLngToDivPixel(this.position);
-    if(!point)return;
-    this.div.style.left=point.x+"px";
-    this.div.style.top=point.y+"px";
-  }
-  onRemove(){
-    if(this.div){this.div.remove();this.div=null;}
+  setMap(value){
+    this.overlay.setMap(value);
   }
 }
-
-
 function renderMarkers(){
 
   if(!map){
