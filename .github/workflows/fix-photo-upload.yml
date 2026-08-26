@@ -1,0 +1,37 @@
+name: Fix photo upload compatibility
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  fix:
+    if: ${{ github.event.head_commit.message != 'Apply photo upload fix' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch photo upload
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          old='''  if(file){\n\n    place.logo_data =\n      await fileToBase64(\n        file\n      );\n\n    place.logo_type =\n      file.type;\n\n  }'''
+          new='''  if(file){\n\n    const prepared =\n      await prepareImageFile(file);\n\n    place.logo_data =\n      prepared.data;\n\n    place.logo_type =\n      "image/jpeg";\n\n  }'''
+          if old not in s:
+              raise SystemExit('savePlace photo block not found')
+          s=s.replace(old,new,1)
+          marker='function fileToBase64(\n  file\n){'
+          helper='''async function prepareImageFile(file){\n\n  if(!file){\n    throw new Error("Фото не вибране.");\n  }\n\n  if(!file.type.startsWith("image/")){\n    throw new Error("Оберіть файл зображення.");\n  }\n\n  const maxSide=1600;\n  const data=await fileToBase64(file);\n\n  try{\n    const img=await new Promise((resolve,reject)=>{\n      const image=new Image();\n      image.onload=()=>resolve(image);\n      image.onerror=reject;\n      image.src=data;\n    });\n\n    const scale=Math.min(1,maxSide/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));\n    const canvas=document.createElement("canvas");\n    canvas.width=Math.max(1,Math.round((img.naturalWidth||img.width)*scale));\n    canvas.height=Math.max(1,Math.round((img.naturalHeight||img.height)*scale));\n    const ctx=canvas.getContext("2d");\n    ctx.drawImage(img,0,0,canvas.width,canvas.height);\n    return {data:canvas.toDataURL("image/jpeg",0.82)};\n  }catch(e){\n    if(/heic|heif/i.test(file.type||file.name||"")){\n      throw new Error("iPhone HEIC не підтримується браузером. Відкрийте фото в Фото та виберіть JPG/JPEG.");\n    }\n    return {data};\n  }\n}\n\n\n'''+marker
+          if marker not in s:
+              raise SystemExit('fileToBase64 marker not found')
+          s=s.replace(marker,helper,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Apply photo upload fix"
+          git push
