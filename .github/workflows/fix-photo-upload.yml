@@ -4,7 +4,7 @@ permissions:
   contents: write
 jobs:
   fix:
-    if: github.event.head_commit.message != 'Apply app compatibility fixes'
+    if: ${{ github.event.head_commit.message != 'Apply app compatibility fixes' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12,62 +12,16 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import re
-          p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-
-          # Remove satellite button.
-          s = re.sub(r'\n\s*<button\s+id="mapTypeButton".*?</button>\s*', '\n', s, count=1, flags=re.S)
-
-          # Do not extend google.maps.OverlayView before Google Maps loads.
-          start = s.find('class LogoRatingOverlay extends google.maps.OverlayView{')
-          end_marker = '\n\n\nfunction renderMarkers'
-          end = s.find(end_marker, start)
-          if start >= 0 and end > start:
-              replacement = '''class LogoRatingOverlay{
-  constructor(position,place,clickHandler){
-    this.position=position;
-    this.place=place;
-    this.clickHandler=clickHandler;
-    this.div=null;
-    this.overlay=new google.maps.OverlayView();
-    const self=this;
-    this.overlay.onAdd=function(){
-      const div=document.createElement("div");
-      div.className="custom-map-marker";
-      div.setAttribute("role","button");
-      div.setAttribute("aria-label",self.place.name||"Точка");
-      const logo=self.place.logo_url
-        ? `<img class="marker-logo" src="${escapeAttribute(self.place.logo_url)}" alt="">`
-        : `<div class="marker-logo-fallback">🏠</div>`;
-      const rating=Number(self.place.rating||0);
-      const ratingText=rating>0?rating.toFixed(1):"—";
-      div.innerHTML=logo+`<span class="marker-rating-text"><span class="marker-star">★</span>${ratingText}</span>`;
-      div.addEventListener("click",self.clickHandler);
-      div.addEventListener("touchend",event=>{event.preventDefault();self.clickHandler(event);},{passive:false});
-      self.div=div;
-      self.overlay.getPanes().overlayMouseTarget.appendChild(div);
-    };
-    this.overlay.draw=function(){
-      if(!self.div)return;
-      const projection=self.overlay.getProjection();
-      const point=projection.fromLatLngToDivPixel(self.position);
-      if(!point)return;
-      self.div.style.left=point.x+"px";
-      self.div.style.top=point.y+"px";
-    };
-    this.overlay.onRemove=function(){
-      if(self.div){self.div.remove();self.div=null;}
-    };
-  }
-  setMap(value){
-    this.overlay.setMap(value);
-  }
-}
-'''
-              s = s[:start] + replacement + s[end+3:]
-
-          p.write_text(s, encoding='utf-8')
+          import re, base64
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=re.sub(r'\n\s*<button\s+id="mapTypeButton".*?</button>\s*','\n',s,count=1,flags=re.S)
+          start=s.find('class LogoRatingOverlay extends google.maps.OverlayView{')
+          end=s.find('\n\n\nfunction renderMarkers',start)
+          if start>=0 and end>start:
+              b='Y2xhc3MgTG9nb1JhdGluZ092ZXJsYXl7CiAgY29uc3RydWN0b3IocG9zaXRpb24scGxhY2UsY2xpY2tIYW5kbGVyKXsKICAgIHRoaXMucG9zaXRpb249cG9zaXRpb247CiAgICB0aGlzLnBsYWNlPXBsYWNlOwogICAgdGhpcy5jbGlja0hhbmRsZXI9Y2xpY2tIYW5kbGVyOwogICAgdGhpcy5kaXY9bnVsbDsKICAgIHRoaXMub3ZlcmxheT1uZXcgZ29vZ2xlLm1hcHMuT3ZlcmxheVZpZXcoKTsKICAgIGNvbnN0IHNlbGY9dGhpczsKICAgIHRoaXMub3ZlcmxheS5vbkFkZD1mdW5jdGlvbigpewogICAgICBjb25zdCBkaXY9ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgiZGl2Iik7CiAgICAgIGRpdi5jbGFzc05hbWU9ImN1c3RvbS1tYXAtbWFya2VyIjsKICAgICAgZGl2LnNldEF0dHJpYnV0ZSgicm9sZSIsImJ1dHRvbiIpOwogICAgICBkaXYuc2V0QXR0cmlidXRlKCJhcmlhLWxhYmVsIixzZWxmLnBsYWNlLm5hbWV8fCLQotC+0YfQutCwIik7CiAgICAgIGNvbnN0IGxvZ289c2VsZi5wbGFjZS5sb2dvX3VybAogICAgICAgID8gYDxpbWcgY2xhc3M9Im1hcmtlci1sb2dvIiBzcmM9IiR7ZXNjYXBlQXR0cmlidXRlKHNlbGYucGxhY2UubG9nb191cmwpfSIgYWx0PSIiPmAKICAgICAgICA6IGA8ZGl2IGNsYXNzPSJtYXJrZXItbG9nby1mYWxsYmFjayI+8J+PoDwvZGl2PmA7CiAgICAgIGNvbnN0IHJhdGluZz1OdW1iZXIoc2VsZi5wbGFjZS5yYXRpbmd8fDApOwogICAgICBjb25zdCByYXRpbmdUZXh0PXJhdGluZz4wP3JhdGluZy50b0ZpeGVkKDEpOiLigJQiOwogICAgICBkaXYuaW5uZXJIVE1MPWxvZ28rYDxzcGFuIGNsYXNzPSJtYXJrZXItcmF0aW5nLXRleHQiPjxzcGFuIGNsYXNzPSJtYXJrZXItc3RhciI+4piFPC9zcGFuPiR7cmF0aW5nVGV4dH08L3NwYW4+YDsKICAgICAgZGl2LmFkZEV2ZW50TGlzdGVuZXIoImNsaWNrIixzZWxmLmNsaWNrSGFuZGxlcik7CiAgICAgIGRpdi5hZGRFdmVudExpc3RlbmVyKCJ0b3VjaGVuZCIsZXZlbnQ9PntldmVudC5wcmV2ZW50RGVmYXVsdCgpO3NlbGYuY2xpY2tIYW5kbGVyKGV2ZW50KTt9LHtwYXNzaXZlOmZhbHNlfSk7CiAgICAgIHNlbGYuZGl2PWRpdjsKICAgICAgc2VsZi5vdmVybGF5LmdldFBhbmVzKCkub3ZlcmxheU1vdXNlVGFyZ2V0LmFwcGVuZENoaWxkKGRpdik7CiAgICB9OwogICAgdGhpcy5vdmVybGF5LmRyYXc9ZnVuY3Rpb24oKXsKICAgICAgaWYoIXNlbGYuZGl2KXJldHVybjsKICAgICAgY29uc3QgcHJvamVjdGlvbj1zZWxmLm92ZXJsYXkuZ2V0UHJvamVjdGlvbigpOwogICAgICBjb25zdCBwb2ludD1wcm9qZWN0aW9uLmZyb21MYXRMbmdUb0RpdlBpeGVsKHNlbGYucG9zaXRpb24pOwogICAgICBpZighcG9pbnQpcmV0dXJuOwogICAgICBzZWxmLmRpdi5zdHlsZS5sZWZ0PXBvaW50LngrInB4IjsKICAgICAgc2VsZi5kaXYuc3R5bGUudG9wPXBvaW50LnkrInB4IjsKICAgIH07CiAgICB0aGlzLm92ZXJsYXkub25SZW1vdmU9ZnVuY3Rpb24oKXsKICAgICAgaWYoc2VsZi5kaXYpe3NlbGYuZGl2LnJlbW92ZSgpO3NlbGYuZGl2PW51bGw7fQogICAgfTsKICB9CiAgc2V0TWFwKHZhbHVlKXsKICAgIHRoaXMub3ZlcmxheS5zZXRNYXAoKdmFsdWUpOwogIH0KfQo='
+              s=s[:start]+base64.b64decode(b).decode()+s[end+3:]
+          p.write_text(s,encoding='utf-8')
           PY
       - name: Commit changes
         run: |
