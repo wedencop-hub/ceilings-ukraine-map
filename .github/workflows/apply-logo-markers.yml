@@ -188,3 +188,5 @@ jobs:
             git commit -m "Show company logos with ratings on map"
             git push
           fi
+
+# Triggered from ChatGPT to apply the marker change.
