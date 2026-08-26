@@ -4838,6 +4838,13 @@ function showMapLoadError(message){
 }
 
 
+function showMapLoadError(message){
+  const mapBox=document.getElementById("map");
+  if(!mapBox)return;
+  mapBox.innerHTML=`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:30px;text-align:center;background:#101b25;color:#fff;z-index:9999"><div><div style="font-size:44px">🗺️</div><div style="font-size:19px;font-weight:800;margin-top:8px">Карта не завантажилась</div><div style="font-size:14px;color:#9aa7b4;margin-top:8px">${message}</div><button onclick="location.reload()" style="margin-top:16px;padding:11px 18px;border:0;border-radius:10px;background:#087cf5;color:#fff;font-weight:800">Оновити</button></div></div>`;
+}
+
+
 /* =====================================================
    GOOGLE MAPS LOADER
 ===================================================== */
@@ -4869,7 +4876,7 @@ function loadGoogleMaps(){
     "&libraries=geometry" +
     "&language=uk" +
     "&region=UA" +
-    "&loading=async" +
+    "" +
     "";
 
 
@@ -4879,6 +4886,15 @@ function loadGoogleMaps(){
 
   script.defer =
     true;
+
+  script.onload =
+    function(){
+      setTimeout(function(){
+        if(!(window.google && window.google.maps)){
+          showMapLoadError("Google Maps не відповів у Telegram.");
+        }
+      },7000);
+    };
 
   script.onload =
     function(){
