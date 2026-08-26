@@ -58,35 +58,7 @@ button{
   background:#15202b;
 }
 
-.marker-rating{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:3px;
-
-  min-width:58px;
-  height:34px;
-
-  padding:0 10px;
-
-  background:#fff;
-  color:#111;
-
-  border:2px solid rgba(0,0,0,.15);
-  border-radius:20px;
-
-  box-shadow:0 4px 14px rgba(0,0,0,.4);
-
-  font-size:13px;
-  font-weight:800;
-
-  white-space:nowrap;
-}
-
-.marker-rating .star{
-  color:#f5b900;
-  font-size:15px;
-}
+.marker-rating{display:flex;align-items:center;justify-content:center;gap:5px;min-width:76px;height:38px;padding:3px 8px 3px 4px;background:#fff;color:#111;border:2px solid rgba(0,0,0,.15);border-radius:20px;box-shadow:0 4px 14px rgba(0,0,0,.4);font-size:13px;font-weight:800;white-space:nowrap}.marker-rating .logo{width:30px;height:30px;border-radius:50%;object-fit:cover;background:#eef2f5;border:1px solid rgba(0,0,0,.12)}.marker-rating .star{color:#f5b900;font-size:15px}
 
 /* =========================
    TOP
@@ -2089,35 +2061,10 @@ function renderMarkers(){
         );
 
 
-      const marker =
-        new google.maps.Marker(
-          {
-            position:{
-              lat,
-              lng
-            },
-
-            map,
-
-            title:
-              place.name ||
-              "",
-
-            label:{
-              text:
-                rating > 0
-                  ? "★ " +
-                    rating.toFixed(1)
-                  : "★ —",
-
-              color:"#111",
-
-              fontWeight:"800",
-
-              fontSize:"13px"
-            }
-          }
-        );
+      const markerLabel = rating > 0 ? rating.toFixed(1) : "—";
+      const logoUrl = String(place.logo_url || "").trim();
+      const markerIcon = logoUrl ? {url:"data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="92" height="46"><rect x="1" y="1" width="90" height="44" rx="22" fill="white" stroke="#d6d6d6" stroke-width="2"/><circle cx="23" cy="23" r="16" fill="#eef2f5"/><image href="${logoUrl}" x="7" y="7" width="32" height="32" preserveAspectRatio="xMidYMid slice"/><text x="44" y="29" font-family="Arial" font-size="16" font-weight="700" fill="#111">★ ${markerLabel}</text></svg>`),scaledSize:new google.maps.Size(92,46),anchor:new google.maps.Point(46,23)} : undefined;
+      const marker = new google.maps.Marker({position:{lat,lng},map,title:place.name || "",icon:markerIcon,label:logoUrl ? undefined : {text:"★ "+markerLabel,color:"#111",fontWeight:"800",fontSize:"13px"}});
 
 
       marker.addListener(
