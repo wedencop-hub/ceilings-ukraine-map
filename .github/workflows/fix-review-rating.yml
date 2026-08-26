@@ -1,0 +1,64 @@
+name: Fix review rating flow
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make review fields optional
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          original = s
+
+          # Only alter the review form. Name and text stay available, but are optional.
+          m = re.search(r'<div[^>]*class=["\']review-form["\'][^>]*>.*?</div>\s*(?=<|$)', s, re.S)
+          if m:
+              form = m.group(0)
+              form = re.sub(r'\s+required(?=\s|>)', '', form, flags=re.I)
+              form = re.sub(r'\s+aria-required=["\']true["\']', '', form, flags=re.I)
+              form = form.replace('Ваше ім\'я', 'Ваше ім\'я (необов\'язково)')
+              form = form.replace('Ім\'я', 'Ім\'я (необов\'язково)')
+              form = form.replace('Відгук', 'Відгук (необов\'язково)')
+              s = s[:m.start()] + form + s[m.end():]
+
+          # Remove common front-end validation that requires author/text; keep rating mandatory.
+          patterns = [
+              r'if\s*\((?=[^)]*(?:name|author))(?=[^)]*(?:text|review))(?=[^)]*(?:rating|star))[^)]*\)',
+              r'if\s*\((?=[^)]*(?:name|author))(?=[^)]*(?:text|review))[^)]*\)',
+          ]
+          for pat in patterns:
+              s = re.sub(pat, 'if(!rating)', s, flags=re.I)
+
+          # Add a small explanatory note next to the rating selector once.
+          if 'rating-only-note' not in s:
+              marker = '<div class="star-select">'
+              note = '<div class="rating-only-note">Можна залишити лише оцінку ⭐ — ім\'я та відгук необов\'язкові.</div>\n'
+              s = s.replace(marker, note + marker, 1)
+              s = s.replace('</style>', '.rating-only-note{margin:0 0 8px;color:#9eabb7;font-size:12px;line-height:1.35;}\n</style>', 1)
+
+          if s != original:
+              p.write_text(s, encoding='utf-8')
+          else:
+              print('No textual patch was necessary.')
+
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Make review text and name optional"
+          git push
