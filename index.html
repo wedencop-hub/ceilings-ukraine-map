@@ -153,6 +153,12 @@ button{
   font-size:16px;
 }
 
+.custom-map-marker .gas-marker-logo{
+  background:#fff3e0;
+  color:#ff6d00;
+  font-size:21px;
+}
+
 /* =========================
    TOP
 ========================= */
@@ -983,14 +989,7 @@ button{
         data-cat="shop">
         🏪 Магазини
       </button>
-
-      <button
-        class="category"
-        data-cat="tools">
-        🔧 Інструмент
-      </button>
-
-      <button
+<button
         class="category"
         data-cat="gas">
         🔥 Газ
@@ -2048,9 +2047,13 @@ class LogoRatingOverlay{
       div.className="custom-map-marker";
       div.setAttribute("role","button");
       div.setAttribute("aria-label",self.place.name||"Point");
-      const logo=self.place.logo_url
-        ? `<img class="marker-logo" src="${escapeAttribute(self.place.logo_url)}" alt="">`
-        : `<div class="marker-logo-fallback">+</div>`;
+      const category=String(self.place.category||"");
+      const isGas=category==="gas";
+      const logo=isGas
+        ? `<div class="marker-logo-fallback gas-marker-logo">🔥</div>`
+        : self.place.logo_url
+          ? `<img class="marker-logo" src="${escapeAttribute(self.place.logo_url)}" alt="">`
+          : `<div class="marker-logo-fallback">+</div>`;
       const rating=Number(self.place.rating||0);
       const ratingText=rating>0?rating.toFixed(1):"-";
       div.innerHTML=logo+`<span class="marker-rating-text"><span class="marker-star">*</span>${ratingText}</span>`;
