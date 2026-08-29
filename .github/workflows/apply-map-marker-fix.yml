@@ -83,3 +83,5 @@ jobs:
           fi
           git commit -m 'Show flame marker for gas stations and remove tools filter'
           git push
+
+# trigger
