@@ -18,56 +18,27 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
+          import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
 
           # Remove Instrument as a map filter only.
-          old_filter = '''      <button
-        class="category"
-        data-cat="tools">
-        🔧 Інструмент
-      </button>
-
-'''
-          if old_filter in s:
-              s = s.replace(old_filter, '', 1)
+          s = re.sub(r'\n\s*<button\s+class="category"\s+data-cat="tools">.*?</button>\s*', '\n', s, count=1, flags=re.S)
 
           # Gas points always use the flame marker on the map.
-          old_marker = '''      const logo=self.place.logo_url
-        ? `<img class="marker-logo" src="${escapeAttribute(self.place.logo_url)}" alt="">`
-        : `<div class="marker-logo-fallback">+</div>`;
-'''
-          new_marker = '''      const category=String(self.place.category||"");
-      const isGas=category==="gas";
-      const logo=isGas
-        ? `<div class="marker-logo-fallback gas-marker-logo">🔥</div>`
-        : self.place.logo_url
-          ? `<img class="marker-logo" src="${escapeAttribute(self.place.logo_url)}" alt="">`
-          : `<div class="marker-logo-fallback">+</div>`;
-'''
+          old_marker = '''      const logo=self.place.logo_url\n        ? `<img class="marker-logo" src="${escapeAttribute(self.place.logo_url)}" alt="">`\n        : `<div class="marker-logo-fallback">+</div>`;\n'''
+          new_marker = '''      const category=String(self.place.category||"");\n      const isGas=category==="gas";\n      const logo=isGas\n        ? `<div class="marker-logo-fallback gas-marker-logo">🔥</div>`\n        : self.place.logo_url\n          ? `<img class="marker-logo" src="${escapeAttribute(self.place.logo_url)}" alt="">`\n          : `<div class="marker-logo-fallback">+</div>`;\n'''
           if old_marker in s:
               s = s.replace(old_marker, new_marker, 1)
 
-          old_css = '''.custom-map-marker .marker-logo-fallback{
-  width:34px;
-  height:34px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:50%;
-  background:#087cf5;
-  color:#fff;
-  font-size:18px;
-}
-'''
-          new_css = old_css + '''.custom-map-marker .gas-marker-logo{
-  background:#fff3e0;
-  color:#ff6d00;
-  font-size:21px;
-}
-'''
-          if old_css in s and '.gas-marker-logo' not in s:
-              s = s.replace(old_css, new_css, 1)
+          # Add dedicated styling for the flame badge.
+          if '.gas-marker-logo{' not in s:
+              css = '''.custom-map-marker .gas-marker-logo{\n  background:#fff3e0;\n  color:#ff6d00;\n  font-size:21px;\n}\n'''
+              pos = s.find('/* =========================\n   TOP')
+              if pos >= 0:
+                  s = s[:pos] + css + '\n' + s[pos:]
+              else:
+                  s = s.replace('</style>', css + '</style>', 1)
 
           # Keep automatic flame logo for newly added gas points when no photo is supplied.
           old_save = '''  if(file){\n\n    const prepared =\n      await prepareImageFile(file);\n\n    place.logo_data =\n      prepared.data;\n\n    place.logo_type =\n      "image/jpeg";\n\n  }'''
