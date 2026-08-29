@@ -1,0 +1,85 @@
+name: Apply map marker fix
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-map-marker-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Patch index.html
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          old_filter = '''      <button
+        class="category"
+        data-cat="tools">
+        🔧 Інструмент
+      </button>
+
+'''
+          if old_filter in s:
+              s = s.replace(old_filter, '', 1)
+
+          old_marker = '''      const logo=self.place.logo_url
+        ? `<img class="marker-logo" src="${escapeAttribute(self.place.logo_url)}" alt="">`
+        : `<div class="marker-logo-fallback">+</div>`;
+'''
+          new_marker = '''      const category=String(self.place.category||"");
+      const isGas=category==="gas";
+      const logo=isGas
+        ? `<div class="marker-logo-fallback gas-marker-logo">🔥</div>`
+        : self.place.logo_url
+          ? `<img class="marker-logo" src="${escapeAttribute(self.place.logo_url)}" alt="">`
+          : `<div class="marker-logo-fallback">+</div>`;
+'''
+          if old_marker in s:
+              s = s.replace(old_marker, new_marker, 1)
+
+          old_css = '''.custom-map-marker .marker-logo-fallback{
+  width:34px;
+  height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:#087cf5;
+  color:#fff;
+  font-size:18px;
+}
+'''
+          new_css = old_css + '''.custom-map-marker .gas-marker-logo{
+  background:#fff3e0;
+  color:#ff6d00;
+  font-size:21px;
+}
+'''
+          if old_css in s and '.gas-marker-logo' not in s:
+              s = s.replace(old_css, new_css, 1)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          if git diff --cached --quiet; then
+            echo 'No changes needed'
+            exit 0
+          fi
+          git commit -m 'Show flame marker for gas stations and remove tools filter'
+          git push
