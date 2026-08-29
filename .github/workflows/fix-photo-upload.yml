@@ -15,12 +15,31 @@ jobs:
           import re, base64
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
+
           s=re.sub(r'\n\s*<button\s+id="mapTypeButton".*?</button>\s*','\n',s,count=1,flags=re.S)
           start=s.find('class LogoRatingOverlay extends google.maps.OverlayView{')
           end=s.find('\n\n\nfunction renderMarkers',start)
           if start>=0 and end>start:
-              b='Y2xhc3MgTG9nb1JhdGluZ092ZXJsYXl7CiAgY29uc3RydWN0b3IocG9zaXRpb24scGxhY2UsY2xpY2tIYW5kbGVyKXsKICAgIHRoaXMucG9zaXRpb249cG9zaXRpb247CiAgICB0aGlzLnBsYWNlPXBsYWNlOwogICAgdGhpcy5jbGlja0hhbmRsZXI9Y2xpY2tIYW5kbGVyOwogICAgdGhpcy5kaXY9bnVsbDsKICAgIHRoaXMub3ZlcmxheT1uZXcgZ29vZ2xlLm1hcHMuT3ZlcmxheVZpZXcoKTsKICAgIGNvbnN0IHNlbGY9dGhpczsKICAgIHRoaXMub3ZlcmxheS5vbkFkZD1mdW5jdGlvbigpewogICAgICBjb25zdCBkaXY9ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgiZGl2Iik7CiAgICAgIGRpdi5jbGFzc05hbWU9ImN1c3RvbS1tYXAtbWFya2VyIjsKICAgICAgZGl2LnNldEF0dHJpYnV0ZSgicm9sZSIsImJ1dHRvbiIpOwogICAgICBkaXYuc2V0QXR0cmlidXRlKCJhcmlhLWxhYmVsIixzZWxmLnBsYWNlLm5hbWV8fCJQb2ludCIpOwogICAgICBjb25zdCBsb2dvPXNlbGYucGxhY2UubG9nb191cmwKICAgICAgICA/IGA8aW1nIGNsYXNzPSJtYXJrZXItbG9nbyIgc3JjPSIke2VzY2FwZUF0dHJpYnV0ZShzZWxmLnBsYWNlLmxvZ29fdXJsKX0iIGFsdD0iIj5gCiAgICAgICAgOiBgPGRpdiBjbGFzcz0ibWFya2VyLWxvZ28tZmFsbGJhY2siPis8L2Rpdj5gOwogICAgICBjb25zdCByYXRpbmc9TnVtYmVyKHNlbGYucGxhY2UucmF0aW5nfHwwKTsKICAgICAgY29uc3QgcmF0aW5nVGV4dD1yYXRpbmc+MD9yYXRpbmcudG9GaXhlZCgxKToiLSI7CiAgICAgIGRpdi5pbm5lckhUTUw9bG9nbytgPHNwYW4gY2xhc3M9Im1hcmtlci1yYXRpbmctdGV4dCI+PHNwYW4gY2xhc3M9Im1hcmtlci1zdGFyIj4qPC9zcGFuPiR7cmF0aW5nVGV4dH08L3NwYW4+YDsKICAgICAgZGl2LmFkZEV2ZW50TGlzdGVuZXIoImNsaWNrIixzZWxmLmNsaWNrSGFuZGxlcik7CiAgICAgIGRpdi5hZGRFdmVudExpc3RlbmVyKCJ0b3VjaGVuZCIsZXZlbnQ9PntldmVudC5wcmV2ZW50RGVmYXVsdCgpO3NlbGYuY2xpY2tIYW5kbGVyKGV2ZW50KTt9LHtwYXNzaXZlOmZhbHNlfSk7CiAgICAgIHNlbGYuZGl2PWRpdjsKICAgICAgc2VsZi5vdmVybGF5LmdldFBhbmVzKCkub3ZlcmxheU1vdXNlVGFyZ2V0LmFwcGVuZENoaWxkKGRpdik7CiAgICB9OwogICAgdGhpcy5vdmVybGF5LmRyYXc9ZnVuY3Rpb24oKXsKICAgICAgaWYoIXNlbGYuZGl2KXJldHVybjsKICAgICAgY29uc3QgcHJvamVjdGlvbj1zZWxmLm92ZXJsYXkuZ2V0UHJvamVjdGlvbigpOwogICAgICBjb25zdCBwb2ludD1wcm9qZWN0aW9uLmZyb21MYXRMbmdUb0RpdlBpeGVsKHNlbGYucG9zaXRpb24pOwogICAgICBpZighcG9pbnQpcmV0dXJuOwogICAgICBzZWxmLmRpdi5zdHlsZS5sZWZ0PXBvaW50LngrInB4IjsKICAgICAgc2VsZi5kaXYuc3R5bGUudG9wPXBvaW50LnkrInB4IjsKICAgIH07CiAgICB0aGlzLm92ZXJsYXkub25SZW1vdmU9ZnVuY3Rpb24oKXsKICAgICAgaWYoc2VsZi5kaXYpe3NlbGYuZGl2LnJlbW92ZSgpO3NlbGYuZGl2PW51bGw7fQogICAgfTsKICB9CiAgc2V0TWFwKHZhbHVlKXsKICAgIHRoaXMub3ZlcmxheS5zZXRNYXAodmFsdWUpOwogIH0KfQo='
+              b='Y2xhc3MgTG9nb1JhdGluZ092ZXJsYXl7CiAgY29uc3RydWN0b3IocG9zaXRpb24scGxhY2UsY2xpY2tIYW5kbGVyKXsKICAgIHRoaXMucG9zaXRpb249cG9zaXRpb247CiAgICB0aGlzLnBsYWNlPXBsYWNlOwogICAgdGhpcy5jbGlja0hhbmRsZXI9Y2xpY2tIYW5kbGVyOwogICAgdGhpcy5kaXY9bnVsbDsKICAgIHRoaXMub3ZlcmxheT1uZXcgZ29vZ2xlLm1hcHMuT3ZlcmxheVZpZXcoKTsKICAgIGNvbnN0IHNlbGY9dGhpczsKICAgIHNlbGYub3ZlcmxheS5vbkFkZD1mdW5jdGlvbigpewogICAgICBjb25zdCBkaXY9ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgiZGl2Iik7CiAgICAgIGRpdi5jbGFzc05hbWU9ImN1c3RvbS1tYXAtbWFya2VyIjsKICAgICAgZGl2LnNldEF0dHJpYnV0ZSgicm9sZSIsImJ1dHRvbiIpOwogICAgICBkaXYuc2V0QXR0cmlidXRlKCJhcmlhLWxhYmVsIixzZWxmLnBsYWNlLm5hbWV8fCJQb2ludCIpOwogICAgICBjb25zdCBsb2dvPXNlbGYucGxhY2UubG9nb191cmwKICAgICAgICA/IGA8aW1nIGNsYXNzPSJtYXJrZXItbG9nbyIgc3JjPSIke2VzY2FwZUF0dHJpYnV0ZShzZWxmLnBsYWNlLmxvZ29fdXJsKX0iIGFsdD0iIj5gCiAgICAgICAgOiBgPGRpdiBjbGFzcz0ibWFya2VyLWxvZ28tZmFsbGJhY2siPis8L2Rpdj5gOwogICAgICBjb25zdCByYXRpbmc9TnVtYmVyKHNlbGYucGxhY2UucmF0aW5nfHwwKTsKICAgICAgY29uc3QgcmF0aW5nVGV4dD1yYXRpbmc+MD9yYXRpbmcudG9GaXhlZCgxKToiLSI7CiAgICAgIGRpdi5pbm5lckhUTUw9bG9nbytgPHNwYW4gY2xhc3M9Im1hcmtlci1yYXRpbmctdGV4dCI+PHNwYW4gY2xhc3M9Im1hcmtlci1zdGFyIj4qPC9zcGFuPiR7cmF0aW5nVGV4dH08L3NwYW4+YDsKICAgICAgZGl2LmFkZEV2ZW50TGlzdGVuZXIoImNsaWNrIixzZWxmLmNsaWNrSGFuZGxlcik7CiAgICAgIGRpdi5hZGRFdmVudExpc3RlbmVyKCJ0b3VjaGVuZCIsZXZlbnQ9PntldmVudC5wcmV2ZW50RGVmYXVsdCgpO3NlbGYuY2xpY2tIYW5kbGVyKGV2ZW50KTt9LHtwYXNzaXZlOmZhbHNlfSk7CiAgICAgIHNlbGYuZGl2PWRpdjsKICAgICAgc2VsZi5vdmVybGF5LmdldFBhbmVzKCkub3ZlcmxheU1vdXNlVGFyZ2V0LmFwcGVuZENoaWxkKGRpdik7CiAgICB9OwogICAgdGhpcy5vdmVybGF5LmRyYXc9ZnVuY3Rpb24oKXsKICAgICAgaWYoIXNlbGYuZGl2KXJldHVybjsKICAgICAgY29uc3QgcHJvamVjdGlvbj1zZWxmLm92ZXJsYXkuZ2V0UHJvamVjdGlvbigpOwogICAgICBjb25zdCBwb2ludD1wcm9qZWN0aW9uLmZyb21MYXRMbmdUb0RpdlBpeGVsKHNlbGYucG9zaXRpb24pOwogICAgICBpZighcG9pbnQpcmV0dXJuOwogICAgICBzZWxmLmRpdi5zdHlsZS5sZWZ0PXBvaW50LngrInB4IjsKICAgICAgc2VsZi5kaXYuc3R5bGUudG9wPXBvaW50LnkrInB4IjsKICAgIH07CiAgICB0aGlzLm92ZXJsYXkub25SZW1vdmU9ZnVuY3Rpb24oKXsKICAgICAgaWYoc2VsZi5kaXYpe3NlbGYuZGl2LnJlbW92ZSgpO3NlbGYuZGl2PW51bGw7fQogICAgfTsKICB9CiAgc2V0TWFwKHZhbHVlKXsKICAgIHRoaXMub3ZlcmxheS5zZXRNYXAodmFsdWUpOwogIH0KfQo='
               s=s[:start]+base64.b64decode(b).decode('utf-8')+s[end+3:]
+
+          # Remove Instrument from the map filter.
+          s=re.sub(r'\n\s*<button\s+class="category"\s+data-cat="tools">.*?</button>\s*', '\n', s, count=1, flags=re.S)
+
+          # Always show a flame marker for gas points.
+          old_marker='''      const logo=self.place.logo_url\n        ? `<img class="marker-logo" src="${escapeAttribute(self.place.logo_url)}" alt="">`\n        : `<div class="marker-logo-fallback">+</div>`;\n'''
+          new_marker='''      const category=String(self.place.category||"");\n      const isGas=category==="gas";\n      const logo=isGas\n        ? `<div class="marker-logo-fallback gas-marker-logo">🔥</div>`\n        : self.place.logo_url\n          ? `<img class="marker-logo" src="${escapeAttribute(self.place.logo_url)}" alt="">`\n          : `<div class="marker-logo-fallback">+</div>`;\n'''
+          if old_marker in s:
+              s=s.replace(old_marker,new_marker,1)
+
+          old_css=''' .custom-map-marker .marker-logo-fallback{'''
+          if '.gas-marker-logo' not in s:
+              s=s.replace('.custom-map-marker .marker-logo-fallback{', '.custom-map-marker .marker-logo-fallback{', 1)
+              marker_css='''.custom-map-marker .gas-marker-logo{\n  background:#fff3e0;\n  color:#ff6d00;\n  font-size:21px;\n}\n'''
+              pos=s.find('/* =========================\n   TOP')
+              if pos>=0:
+                  s=s[:pos]+marker_css+'\n'+s[pos:]
+
           p.write_text(s,encoding='utf-8')
           PY
       - name: Commit changes
@@ -29,4 +48,5 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add index.html
           git commit -m "Apply app compatibility fixes" || exit 0
+          git pull --rebase origin main
           git push
