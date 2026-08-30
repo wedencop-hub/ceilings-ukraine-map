@@ -1,6 +1,10 @@
 name: Worker Menu Bot
 
 on:
+  push:
+    paths:
+      - 'worker-menu/**'
+      - '.github/workflows/worker-menu.yml'
   workflow_dispatch:
   schedule:
     - cron: '0 */5 * * *'
