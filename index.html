@@ -88,7 +88,6 @@ button{
   font-size:15px;
 }
 
-
 /* CUSTOM LOGO + RATING MAP MARKERS */
 .custom-map-marker{
   position:absolute;
@@ -1154,24 +1153,6 @@ button{
 
       <div class="review-form-title" style="margin-top:14px">💬 Написати відгук</div>
 
-      <div class="review-form-title" style="margin-top:14px">💬 Написати відгук</div>
-
-      <div class="review-form-title" style="margin-top:14px">💬 Написати відгук</div>
-
-      <div class="review-form-title" style="margin-top:14px">💬 Написати відгук</div>
-
-      <div class="review-form-title" style="margin-top:14px">💬 Написати відгук</div>
-
-      <div class="review-form-title" style="margin-top:14px">💬 Написати відгук</div>
-
-      <div class="review-form-title" style="margin-top:14px">💬 Написати відгук</div>
-
-      <div class="review-form-title" style="margin-top:14px">💬 Написати відгук</div>
-
-      <div class="review-form-title" style="margin-top:14px">💬 Написати відгук</div>
-
-      <div class="review-form-title" style="margin-top:14px">💬 Написати відгук</div>
-
       <input
         id="reviewName"
         class="input"
@@ -1543,7 +1524,6 @@ const MAP_API =
 const OWNER_ID =
   "1454798203";
 
-
 /* =====================================================
    TELEGRAM
 ===================================================== */
@@ -1554,7 +1534,6 @@ const tg =
     ? window.Telegram.WebApp
     : null;
 
-
 if(tg){
 
   tg.ready();
@@ -1564,7 +1543,6 @@ if(tg){
   }catch(e){}
 
 }
-
 
 /* =====================================================
    STATE
@@ -1594,7 +1572,6 @@ let map = null;
 
 let temporaryMarker = null;
 
-
 /* =====================================================
    API
 ===================================================== */
@@ -1616,7 +1593,6 @@ async function api(body){
       }
     );
 
-
   let data = {};
 
   try{
@@ -1630,7 +1606,6 @@ async function api(body){
 
   }
 
-
   if(!response.ok){
 
     throw new Error(
@@ -1641,11 +1616,9 @@ async function api(body){
 
   }
 
-
   return data;
 
 }
-
 
 /* =====================================================
    GOOGLE MAP INIT
@@ -1681,7 +1654,6 @@ function initMap(){
       }
     );
 
-
   map.addListener(
     "click",
     function(event){
@@ -1692,7 +1664,6 @@ function initMap(){
 
       }
 
-
       setCoordinates(
         event.latLng.lat(),
         event.latLng.lng()
@@ -1700,7 +1671,6 @@ function initMap(){
 
     }
   );
-
 
   setupLongPressPicker();
 
@@ -1711,7 +1681,6 @@ function initMap(){
   detectTelegramUser();
 
 }
-
 
 /* =====================================================
    MAP TYPE
@@ -1725,11 +1694,9 @@ function toggleMapType(){
 
   }
 
-
   const satellite =
     map.getMapTypeId() ===
     google.maps.MapTypeId.SATELLITE;
-
 
   if(satellite){
 
@@ -1761,7 +1728,6 @@ function toggleMapType(){
 
 }
 
-
 /* =====================================================
    TELEGRAM USER
 ===================================================== */
@@ -1780,7 +1746,6 @@ async function detectTelegramUser(){
 
   }
 
-
   if(
     telegramId ===
     OWNER_ID
@@ -1796,14 +1761,12 @@ async function detectTelegramUser(){
 
     };
 
-
     document
       .getElementById(
         "adminButton"
       )
       .style.display =
         "block";
-
 
     document
       .getElementById(
@@ -1814,13 +1777,11 @@ async function detectTelegramUser(){
 
   }
 
-
   await detectAdmin();
 
   await loadPlaces();
 
 }
-
 
 /* =====================================================
    ADMIN DETECTION
@@ -1834,7 +1795,6 @@ async function detectAdmin(){
 
   }
 
-
   try{
 
     const data =
@@ -1847,7 +1807,6 @@ async function detectAdmin(){
         }
       );
 
-
     const list =
       Array.isArray(data)
         ? data
@@ -1858,7 +1817,6 @@ async function detectAdmin(){
               ? data.admins
               : []
           );
-
 
     const found =
       list.find(
@@ -1872,12 +1830,10 @@ async function detectAdmin(){
           admin.active !== false
       );
 
-
     if(found){
 
       currentAdmin =
         found;
-
 
       document
         .getElementById(
@@ -1885,7 +1841,6 @@ async function detectAdmin(){
         )
         .style.display =
           "block";
-
 
       if(
         found.role ===
@@ -1914,7 +1869,6 @@ async function detectAdmin(){
 
 }
 
-
 /* =====================================================
    INTERFACE
 ===================================================== */
@@ -1929,7 +1883,6 @@ function setupInterface(){
       "input",
       renderMarkers
     );
-
 
   document
     .querySelectorAll(
@@ -1952,15 +1905,12 @@ function setupInterface(){
                   )
               );
 
-
             button.classList.add(
               "active"
             );
 
-
             activeCategory =
               button.dataset.cat;
-
 
             renderMarkers();
 
@@ -1970,7 +1920,6 @@ function setupInterface(){
     );
 
 }
-
 
 /* =====================================================
    LOAD PLACES
@@ -1991,10 +1940,8 @@ async function loadPlaces(){
         }
       );
 
-
     const data =
       await response.json();
-
 
     if(
       Array.isArray(data)
@@ -2020,7 +1967,6 @@ async function loadPlaces(){
 
     }
 
-
     renderMarkers();
 
   }catch(error){
@@ -2029,7 +1975,6 @@ async function loadPlaces(){
       "Load places:",
       error
     );
-
 
     places =
       [];
@@ -2040,11 +1985,9 @@ async function loadPlaces(){
 
 }
 
-
 /* =====================================================
    MARKERS
 ===================================================== */
-
 
 class LogoRatingOverlay{
   constructor(position,place,clickHandler){
@@ -2098,7 +2041,6 @@ function renderMarkers(){
 
   }
 
-
   places.forEach(
     place=>{
 
@@ -2115,21 +2057,17 @@ function renderMarkers(){
     }
   );
 
-
   const searchElement =
     document.getElementById(
       "search"
     );
-
 
   const query =
     searchElement
       ? searchElement.value.trim().toLowerCase()
       : "";
 
-
   let visible = 0;
-
 
   places.forEach(
     place=>{
@@ -2140,13 +2078,11 @@ function renderMarkers(){
           place.lat
         );
 
-
       const lng =
         Number(
           place.longitude ??
           place.lng
         );
-
 
       if(
         !Number.isFinite(lat) ||
@@ -2157,20 +2093,17 @@ function renderMarkers(){
 
       }
 
-
       const category =
         String(
           place.category ||
           ""
         );
 
-
       const categoryOK =
         activeCategory ===
           "all" ||
         category ===
           activeCategory;
-
 
       const searchable =
         (
@@ -2191,13 +2124,11 @@ function renderMarkers(){
         )
         .toLowerCase();
 
-
       const searchOK =
         !query ||
         searchable.includes(
           query
         );
-
 
       if(
         !categoryOK ||
@@ -2208,16 +2139,13 @@ function renderMarkers(){
 
       }
 
-
       visible++;
-
 
       const rating =
         Number(
           place.rating ||
           0
         );
-
 
       const marker =
         new LogoRatingOverlay(
@@ -2236,7 +2164,6 @@ function renderMarkers(){
     }
   );
 
-
   document
     .getElementById(
       "empty"
@@ -2247,7 +2174,6 @@ function renderMarkers(){
         : "block";
 
 }
-
 
 /* =====================================================
    PLACE CARD
@@ -2260,14 +2186,12 @@ async function openPlace(
   currentPlace =
     place;
 
-
   document
     .getElementById(
       "card"
     )
     .style.display =
       "block";
-
 
   document
     .getElementById(
@@ -2277,13 +2201,11 @@ async function openPlace(
       place.name ||
       "Без назви";
 
-
   const rating =
     Number(
       place.rating ||
       0
     );
-
 
   document
     .getElementById(
@@ -2294,7 +2216,6 @@ async function openPlace(
         ? rating.toFixed(1)
         : "—";
 
-
   document
     .getElementById(
       "cardStars"
@@ -2303,7 +2224,6 @@ async function openPlace(
       makeStars(
         rating
       );
-
 
   document
     .getElementById(
@@ -2317,13 +2237,11 @@ async function openPlace(
       ) +
       ")";
 
-
   const image =
     document
       .getElementById(
         "cardImage"
       );
-
 
   if(
     place.logo_url
@@ -2345,7 +2263,6 @@ async function openPlace(
       "none";
 
   }
-
 
   document
     .getElementById(
@@ -2417,13 +2334,11 @@ async function openPlace(
           "Сайт не вказаний"
       );
 
-
   const description =
     document
       .getElementById(
         "placeDescription"
       );
-
 
   if(
     place.description
@@ -2442,11 +2357,9 @@ async function openPlace(
 
   }
 
-
   setupCardButtons(
     place
   );
-
 
   document
     .getElementById(
@@ -2457,13 +2370,11 @@ async function openPlace(
         ? "block"
         : "none";
 
-
   await loadReviews(
     place.id
   );
 
 }
-
 
 /* =====================================================
    INFO
@@ -2490,7 +2401,6 @@ function infoRow(
 
 }
 
-
 /* =====================================================
    CARD BUTTONS
 ===================================================== */
@@ -2505,13 +2415,11 @@ function setupCardButtons(
       place.lat
     );
 
-
   const lng =
     Number(
       place.longitude ??
       place.lng
     );
-
 
   document
     .getElementById(
@@ -2527,13 +2435,11 @@ function setupCardButtons(
             `${lat},${lng}`
           );
 
-
         openExternal(
           url
         );
 
       };
-
 
   const phoneButton =
     document
@@ -2541,14 +2447,12 @@ function setupCardButtons(
         "phoneButton"
       );
 
-
   if(
     place.phone
   ){
 
     phoneButton.style.display =
       "block";
-
 
     phoneButton.onclick =
       function(){
@@ -2566,13 +2470,11 @@ function setupCardButtons(
 
   }
 
-
   const siteButton =
     document
       .getElementById(
         "siteButton"
       );
-
 
   if(
     place.website
@@ -2580,7 +2482,6 @@ function setupCardButtons(
 
     siteButton.style.display =
       "block";
-
 
     siteButton.onclick =
       function(){
@@ -2600,13 +2501,11 @@ function setupCardButtons(
 
   }
 
-
   const telegramButton =
     document
       .getElementById(
         "telegramButton"
       );
-
 
   if(
     place.telegram
@@ -2614,7 +2513,6 @@ function setupCardButtons(
 
     telegramButton.style.display =
       "block";
-
 
     telegramButton.onclick =
       function(){
@@ -2636,7 +2534,6 @@ function setupCardButtons(
 
 }
 
-
 /* =====================================================
    CLOSE CARD
 ===================================================== */
@@ -2650,12 +2547,10 @@ function closeCard(){
     .style.display =
       "none";
 
-
   currentPlace =
     null;
 
 }
-
 
 /* =====================================================
    REVIEWS
@@ -2678,7 +2573,6 @@ function setupReviews(){
                 button.dataset.star
               );
 
-
             document
               .querySelectorAll(
                 "#starSelect button"
@@ -2691,13 +2585,11 @@ function setupReviews(){
                       item.dataset.star
                     );
 
-
                   item.textContent =
                     number <=
                     selectedRating
                       ? "★"
                       : "☆";
-
 
                   item.classList.toggle(
                     "active",
@@ -2715,7 +2607,6 @@ function setupReviews(){
 
 }
 
-
 /* =====================================================
    LOAD REVIEWS
 ===================================================== */
@@ -2730,14 +2621,12 @@ async function loadReviews(
         "reviews"
       );
 
-
   box.innerHTML =
     `
       <div class="review">
         Завантаження відгуків...
       </div>
     `;
-
 
   try{
 
@@ -2751,7 +2640,6 @@ async function loadReviews(
         }
       );
 
-
     const list =
       Array.isArray(data)
         ? data
@@ -2762,7 +2650,6 @@ async function loadReviews(
               ? data.reviews
               : []
           );
-
 
     const visibleReviews = list.filter(review => String(review.review_text || review.text || '').trim().length > 0);
 
@@ -2788,7 +2675,6 @@ async function loadReviews(
       return;
 
     }
-
 
     box.innerHTML =
       visibleReviews
@@ -2836,7 +2722,6 @@ async function loadReviews(
         )
         .join("");
 
-
   }catch(error){
 
     box.innerHTML =
@@ -2849,7 +2734,6 @@ async function loadReviews(
   }
 
 }
-
 
 /* =====================================================
    SEND REVIEW
@@ -2949,7 +2833,6 @@ async function savePlace(){
       .value
       .trim();
 
-
   if(!name){
 
     alert(
@@ -2959,7 +2842,6 @@ async function savePlace(){
     return;
 
   }
-
 
   if(
     selectedLat === null ||
@@ -2974,14 +2856,12 @@ async function savePlace(){
 
   }
 
-
   const file =
     document
       .getElementById(
         "newLogo"
       )
       .files[0];
-
 
   const place = {
 
@@ -3042,7 +2922,6 @@ async function savePlace(){
 
   };
 
-
   if(file){
 
     const prepared =
@@ -3070,7 +2949,6 @@ async function savePlace(){
 
   }
 
-
   try{
 
     await api({
@@ -3090,7 +2968,6 @@ async function savePlace(){
 
     });
 
-
     alert(
       editingId
         ? "Точку оновлено."
@@ -3099,11 +2976,9 @@ async function savePlace(){
           : "Заявку відправлено на модерацію."
     );
 
-
     closeAdd();
 
     await loadPlaces();
-
 
   }catch(error){
 
@@ -3116,15 +2991,12 @@ async function savePlace(){
 
 }
 
-
 function openAdd(){
 
   editingId =
     null;
 
-
   clearForm();
-
 
   document
     .getElementById(
@@ -3132,7 +3004,6 @@ function openAdd(){
     )
     .textContent =
       "➕ Додати точку";
-
 
   document
     .getElementById(
@@ -3143,7 +3014,6 @@ function openAdd(){
 
 }
 
-
 function closeAdd(){
 
   document
@@ -3153,12 +3023,10 @@ function closeAdd(){
     .style.display =
       "none";
 
-
   pickMode =
     false;
 
 }
-
 
 function clearForm(){
 
@@ -3183,14 +3051,12 @@ function clearForm(){
     }
   );
 
-
   document
     .getElementById(
       "newLogo"
     )
     .value =
       "";
-
 
   document
     .getElementById(
@@ -3199,13 +3065,11 @@ function clearForm(){
     .innerHTML =
       "";
 
-
   selectedLat =
     null;
 
   selectedLng =
     null;
-
 
   document
     .getElementById(
@@ -3213,7 +3077,6 @@ function clearForm(){
     )
     .textContent =
       "📍 Координати не вибрані";
-
 
   if(
     temporaryMarker
@@ -3230,7 +3093,6 @@ function clearForm(){
 
 }
 
-
 /* =====================================================
    SEARCH ADDRESS
 ===================================================== */
@@ -3245,7 +3107,6 @@ async function searchAddress(){
       .value
       .trim();
 
-
   if(!query){
 
     alert(
@@ -3255,7 +3116,6 @@ async function searchAddress(){
     return;
 
   }
-
 
   if(
     !window.google ||
@@ -3270,21 +3130,17 @@ async function searchAddress(){
 
   }
 
-
   const box =
     document
       .getElementById(
         "addressResults"
       );
 
-
   box.innerHTML =
     "🔎 Шукаємо адресу...";
 
-
   const geocoder =
     new google.maps.Geocoder();
-
 
   geocoder.geocode(
     {
@@ -3307,7 +3163,6 @@ async function searchAddress(){
       box.innerHTML =
         "";
 
-
       if(
         status !== "OK" ||
         !results ||
@@ -3329,7 +3184,6 @@ async function searchAddress(){
 
       }
 
-
       results
         .slice(
           0,
@@ -3343,22 +3197,18 @@ async function searchAddress(){
                 "button"
               );
 
-
             button.className =
               "address-result";
-
 
             button.textContent =
               "📍 " +
               result.formatted_address;
-
 
             button.onclick =
               function(){
 
                 const location =
                   result.geometry.location;
-
 
                 document
                   .getElementById(
@@ -3367,18 +3217,15 @@ async function searchAddress(){
                   .value =
                     result.formatted_address;
 
-
                 setCoordinates(
                   location.lat(),
                   location.lng()
                 );
 
-
                 box.innerHTML =
                   "";
 
               };
-
 
             box.appendChild(
               button
@@ -3391,7 +3238,6 @@ async function searchAddress(){
   );
 
 }
-
 
 /* =====================================================
    PICK MAP POINT
@@ -3480,7 +3326,6 @@ function updateCoordinates(){
 
   }
 
-
   document
     .getElementById(
       "coords"
@@ -3497,7 +3342,6 @@ function updateCoordinates(){
 
 }
 
-
 /* =====================================================
    EDIT
 ===================================================== */
@@ -3510,10 +3354,8 @@ function editPlace(){
 
   }
 
-
   editingId =
     currentPlace.id;
-
 
   document
     .getElementById(
@@ -3521,7 +3363,6 @@ function editPlace(){
     )
     .textContent =
       "✏️ Редагувати точку";
-
 
   document
     .getElementById(
@@ -3531,7 +3372,6 @@ function editPlace(){
       currentPlace.category ||
       "shop";
 
-
   document
     .getElementById(
       "newName"
@@ -3539,7 +3379,6 @@ function editPlace(){
     .value =
       currentPlace.name ||
       "";
-
 
   document
     .getElementById(
@@ -3549,7 +3388,6 @@ function editPlace(){
       currentPlace.address ||
       "";
 
-
   document
     .getElementById(
       "newPhone"
@@ -3557,7 +3395,6 @@ function editPlace(){
     .value =
       currentPlace.phone ||
       "";
-
 
   document
     .getElementById(
@@ -3567,7 +3404,6 @@ function editPlace(){
       currentPlace.telegram ||
       "";
 
-
   document
     .getElementById(
       "newWebsite"
@@ -3575,7 +3411,6 @@ function editPlace(){
     .value =
       currentPlace.website ||
       "";
-
 
   document
     .getElementById(
@@ -3585,13 +3420,11 @@ function editPlace(){
       currentPlace.description ||
       "";
 
-
   selectedLat =
     Number(
       currentPlace.latitude ??
       currentPlace.lat
     );
-
 
   selectedLng =
     Number(
@@ -3599,11 +3432,9 @@ function editPlace(){
       currentPlace.lng
     );
 
-
   updateCoordinates();
 
   closeCard();
-
 
   document
     .getElementById(
@@ -3613,7 +3444,6 @@ function editPlace(){
       "flex";
 
 }
-
 
 /* =====================================================
    DELETE
@@ -3627,7 +3457,6 @@ async function deletePlace(){
 
   }
 
-
   if(
     !confirm(
       `Видалити «${currentPlace.name}»?`
@@ -3637,7 +3466,6 @@ async function deletePlace(){
     return;
 
   }
-
 
   try{
 
@@ -3654,16 +3482,13 @@ async function deletePlace(){
 
     });
 
-
     closeCard();
 
     await loadPlaces();
 
-
     alert(
       "Точку видалено."
     );
-
 
   }catch(error){
 
@@ -3675,7 +3500,6 @@ async function deletePlace(){
   }
 
 }
-
 
 /* =====================================================
    ADMIN
@@ -3689,7 +3513,6 @@ async function openAdmin(){
 
   }
 
-
   document
     .getElementById(
       "adminModal"
@@ -3697,11 +3520,9 @@ async function openAdmin(){
     .style.display =
       "flex";
 
-
   await showPending();
 
 }
-
 
 function closeAdmin(){
 
@@ -3714,7 +3535,6 @@ function closeAdmin(){
 
 }
 
-
 async function showPending(){
 
   const box =
@@ -3723,10 +3543,8 @@ async function showPending(){
         "pendingBox"
       );
 
-
   box.innerHTML =
     "⏳ Завантаження...";
-
 
   try{
 
@@ -3741,7 +3559,6 @@ async function showPending(){
 
       });
 
-
     const list =
       Array.isArray(data)
         ? data
@@ -3752,7 +3569,6 @@ async function showPending(){
               ? data.pending
               : []
           );
-
 
     const visibleReviews = list.filter(review => String(review.review_text || review.text || '').trim().length > 0);
 
@@ -3775,7 +3591,6 @@ async function showPending(){
 
     }
 
-
     box.innerHTML =
       list
         .map(
@@ -3793,7 +3608,6 @@ async function showPending(){
                 )}
 
               </div>
-
 
               <div
                 class="pending-info">
@@ -3821,7 +3635,6 @@ async function showPending(){
 
               </div>
 
-
               <div
                 class="pending-actions">
 
@@ -3834,7 +3647,6 @@ async function showPending(){
                   ✅ Одобрити
 
                 </button>
-
 
                 <button
                   class="modal-button red"
@@ -3853,7 +3665,6 @@ async function showPending(){
           `
         )
         .join("");
-
 
   }catch(error){
 
@@ -3876,7 +3687,6 @@ async function showPending(){
 
 }
 
-
 async function approvePlace(
   id
 ){
@@ -3888,7 +3698,6 @@ async function approvePlace(
 
 }
 
-
 async function rejectPlace(
   id
 ){
@@ -3899,7 +3708,6 @@ async function rejectPlace(
   );
 
 }
-
 
 async function moderatePlace(
   action,
@@ -3919,11 +3727,9 @@ async function moderatePlace(
 
     });
 
-
     await showPending();
 
     await loadPlaces();
-
 
   }catch(error){
 
@@ -3935,7 +3741,6 @@ async function moderatePlace(
   }
 
 }
-
 
 /* =====================================================
    ADMINS
@@ -3953,17 +3758,14 @@ async function showAdmins(){
 
   }
 
-
   const box =
     document
       .getElementById(
         "adminsBox"
       );
 
-
   box.innerHTML =
     "⏳ Завантаження...";
-
 
   try{
 
@@ -3978,7 +3780,6 @@ async function showAdmins(){
 
       });
 
-
     const list =
       Array.isArray(data)
         ? data
@@ -3990,7 +3791,6 @@ async function showAdmins(){
               : []
           );
 
-
     box.innerHTML =
       `
 
@@ -4001,7 +3801,6 @@ async function showAdmins(){
           ➕ Додати адміністратора
 
         </button>
-
 
         <div
           style="
@@ -4025,7 +3824,6 @@ async function showAdmins(){
                       )}
 
                     </div>
-
 
                     <div
                       class="admin-meta">
@@ -4053,7 +3851,6 @@ async function showAdmins(){
                       }
 
                     </div>
-
 
                     ${
                       String(
@@ -4093,7 +3890,6 @@ async function showAdmins(){
 
       `;
 
-
   }catch(error){
 
     box.innerHTML =
@@ -4115,7 +3911,6 @@ async function showAdmins(){
 
 }
 
-
 function openAddAdmin(){
 
   document
@@ -4126,7 +3921,6 @@ function openAddAdmin(){
       "flex";
 
 }
-
 
 function closeAddAdmin(){
 
@@ -4139,7 +3933,6 @@ function closeAddAdmin(){
 
 }
 
-
 async function addAdmin(){
 
   const newId =
@@ -4150,7 +3943,6 @@ async function addAdmin(){
       .value
       .trim();
 
-
   const name =
     document
       .getElementById(
@@ -4159,14 +3951,12 @@ async function addAdmin(){
       .value
       .trim();
 
-
   const role =
     document
       .getElementById(
         "adminRole"
       )
       .value;
-
 
   if(!newId){
 
@@ -4177,7 +3967,6 @@ async function addAdmin(){
     return;
 
   }
-
 
   try{
 
@@ -4198,14 +3987,12 @@ async function addAdmin(){
 
     });
 
-
     document
       .getElementById(
         "adminTelegramId"
       )
       .value =
         "";
-
 
     document
       .getElementById(
@@ -4214,17 +4001,13 @@ async function addAdmin(){
       .value =
         "";
 
-
     closeAddAdmin();
 
-
     await showAdmins();
-
 
     alert(
       "Адміністратора додано."
     );
-
 
   }catch(error){
 
@@ -4236,7 +4019,6 @@ async function addAdmin(){
   }
 
 }
-
 
 async function removeAdmin(
   id
@@ -4252,7 +4034,6 @@ async function removeAdmin(
 
   }
 
-
   try{
 
     await api({
@@ -4267,9 +4048,7 @@ async function removeAdmin(
 
     });
 
-
     await showAdmins();
-
 
   }catch(error){
 
@@ -4281,7 +4060,6 @@ async function removeAdmin(
   }
 
 }
-
 
 /* =====================================================
    MAP CONTROLS
@@ -4299,7 +4077,6 @@ function zoomIn(){
 
 }
 
-
 function zoomOut(){
 
   if(map){
@@ -4311,7 +4088,6 @@ function zoomOut(){
   }
 
 }
-
 
 function findMe(){
 
@@ -4327,7 +4103,6 @@ function findMe(){
 
   }
 
-
   navigator
     .geolocation
     .getCurrentPosition(
@@ -4340,7 +4115,6 @@ function findMe(){
         const lng =
           position.coords.longitude;
 
-
         map.setCenter({
 
           lat,
@@ -4349,11 +4123,9 @@ function findMe(){
 
         });
 
-
         map.setZoom(
           15
         );
-
 
         new google.maps.Marker({
 
@@ -4416,7 +4188,6 @@ function findMe(){
 
 }
 
-
 function toggleCategories(){
 
   const categories =
@@ -4425,7 +4196,6 @@ function toggleCategories(){
         "categories"
       );
 
-
   categories.style.display =
     categories.style.display ===
     "none"
@@ -4433,7 +4203,6 @@ function toggleCategories(){
       : "none";
 
 }
-
 
 /* =====================================================
    HELPERS
@@ -4446,7 +4215,6 @@ function makeStars(
   let result =
     "";
 
-
   const rounded =
     Math.round(
       Number(
@@ -4454,7 +4222,6 @@ function makeStars(
         0
       )
     );
-
 
   for(
     let i=1;
@@ -4469,11 +4236,9 @@ function makeStars(
 
   }
 
-
   return result;
 
 }
-
 
 function formatDate(
   date
@@ -4484,7 +4249,6 @@ function formatDate(
     return "";
 
   }
-
 
   try{
 
@@ -4513,7 +4277,6 @@ function formatDate(
 
 }
 
-
 function safeUrl(
   url
 ){
@@ -4523,7 +4286,6 @@ function safeUrl(
     return "#";
 
   }
-
 
   if(
     /^https?:\/\//i.test(
@@ -4535,14 +4297,12 @@ function safeUrl(
 
   }
 
-
   return (
     "https://" +
     url
   );
 
 }
-
 
 function telegramUrl(
   value
@@ -4555,7 +4315,6 @@ function telegramUrl(
     )
     .trim();
 
-
   if(
     /^https?:\/\//i.test(
       text
@@ -4565,7 +4324,6 @@ function telegramUrl(
     return text;
 
   }
-
 
   return (
     "https://t.me/" +
@@ -4577,7 +4335,6 @@ function telegramUrl(
 
 }
 
-
 function openExternal(
   url
 ){
@@ -4587,7 +4344,6 @@ function openExternal(
     return;
 
   }
-
 
   if(
     tg &&
@@ -4607,14 +4363,12 @@ function openExternal(
 
   }
 
-
   window.open(
     url,
     "_blank"
   );
 
 }
-
 
 function escapeHtml(
   value
@@ -4646,7 +4400,6 @@ function escapeHtml(
 
 }
 
-
 function escapeAttribute(
   value
 ){
@@ -4656,7 +4409,6 @@ function escapeAttribute(
   );
 
 }
-
 
 async function prepareImageFile(file){
 
@@ -4694,7 +4446,6 @@ async function prepareImageFile(file){
   }
 }
 
-
 function fileToBase64(
   file
 ){
@@ -4708,7 +4459,6 @@ function fileToBase64(
       const reader =
         new FileReader();
 
-
       reader.onload =
         function(){
 
@@ -4718,10 +4468,8 @@ function fileToBase64(
 
         };
 
-
       reader.onerror =
         reject;
-
 
       reader.readAsDataURL(
         file
@@ -4731,7 +4479,6 @@ function fileToBase64(
   );
 
 }
-
 
 /* =====================================================
    GOOGLE MAPS AUTH FAILURE
@@ -4773,7 +4520,6 @@ window.gm_authFailure =
 
               </div>
 
-
               <div
                 style="
                   font-size:20px;
@@ -4783,7 +4529,6 @@ window.gm_authFailure =
                 Google Maps не завантажився
 
               </div>
-
 
               <div
                 style="
@@ -4805,6 +4550,11 @@ window.gm_authFailure =
 
   };
 
+function showMapLoadError(message){
+  const mapBox=document.getElementById("map");
+  if(!mapBox)return;
+  mapBox.innerHTML=`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:30px;text-align:center;background:#101b25;color:#fff;z-index:9999"><div><div style="font-size:44px">🗺️</div><div style="font-size:19px;font-weight:800;margin-top:8px">Карта не завантажилась</div><div style="font-size:14px;color:#9aa7b4;margin-top:8px">${message}</div><button onclick="location.reload()" style="margin-top:16px;padding:11px 18px;border:0;border-radius:10px;background:#087cf5;color:#fff;font-weight:800">Оновити</button></div></div>`;
+}
 
 function showMapLoadError(message){
   const mapBox=document.getElementById("map");
@@ -4812,20 +4562,11 @@ function showMapLoadError(message){
   mapBox.innerHTML=`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:30px;text-align:center;background:#101b25;color:#fff;z-index:9999"><div><div style="font-size:44px">🗺️</div><div style="font-size:19px;font-weight:800;margin-top:8px">Карта не завантажилась</div><div style="font-size:14px;color:#9aa7b4;margin-top:8px">${message}</div><button onclick="location.reload()" style="margin-top:16px;padding:11px 18px;border:0;border-radius:10px;background:#087cf5;color:#fff;font-weight:800">Оновити</button></div></div>`;
 }
 
-
 function showMapLoadError(message){
   const mapBox=document.getElementById("map");
   if(!mapBox)return;
   mapBox.innerHTML=`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:30px;text-align:center;background:#101b25;color:#fff;z-index:9999"><div><div style="font-size:44px">🗺️</div><div style="font-size:19px;font-weight:800;margin-top:8px">Карта не завантажилась</div><div style="font-size:14px;color:#9aa7b4;margin-top:8px">${message}</div><button onclick="location.reload()" style="margin-top:16px;padding:11px 18px;border:0;border-radius:10px;background:#087cf5;color:#fff;font-weight:800">Оновити</button></div></div>`;
 }
-
-
-function showMapLoadError(message){
-  const mapBox=document.getElementById("map");
-  if(!mapBox)return;
-  mapBox.innerHTML=`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:30px;text-align:center;background:#101b25;color:#fff;z-index:9999"><div><div style="font-size:44px">🗺️</div><div style="font-size:19px;font-weight:800;margin-top:8px">Карта не завантажилась</div><div style="font-size:14px;color:#9aa7b4;margin-top:8px">${message}</div><button onclick="location.reload()" style="margin-top:16px;padding:11px 18px;border:0;border-radius:10px;background:#087cf5;color:#fff;font-weight:800">Оновити</button></div></div>`;
-}
-
 
 /* =====================================================
    GOOGLE MAPS LOADER
@@ -4844,12 +4585,10 @@ function loadGoogleMaps(){
 
   }
 
-
   const script =
     document.createElement(
       "script"
     );
-
 
   script.src =
     "https://maps.googleapis.com/maps/api/js" +
@@ -4861,10 +4600,8 @@ function loadGoogleMaps(){
     "" +
     "";
 
-
   script.async =
     true;
-
 
   script.defer =
     true;
@@ -4895,7 +4632,6 @@ function loadGoogleMaps(){
         }
       },7000);
     };
-
 
   script.onerror =
     function(){
@@ -4931,7 +4667,6 @@ function loadGoogleMaps(){
 
                 </div>
 
-
                 <div
                   style="
                     margin-top:10px;
@@ -4942,7 +4677,6 @@ function loadGoogleMaps(){
                   Не вдалося завантажити Google Maps
 
                 </div>
-
 
                 <div
                   style="
@@ -4962,7 +4696,6 @@ function loadGoogleMaps(){
 
     };
 
-
   document
     .head
     .appendChild(
@@ -4970,7 +4703,6 @@ function loadGoogleMaps(){
     );
 
 }
-
 
 /* =====================================================
    START
