@@ -17,16 +17,28 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Remove duplicate review heading
+      - name: Remove duplicate review heading and fix add modal close icon
         shell: python
         run: |
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
+
           heading = '      <div class="review-form-title" style="margin-top:14px">💬 Написати відгук</div>'
           review_input = '''      <input\n        id="reviewName"\n        class="input"\n        placeholder="Ваше ім'я"\n      >'''
           s = s.replace(heading, '')
           s = s.replace(review_input, heading + '\n\n' + review_input, 1)
+
+          old_box = '''.modal-box{\n  width:100%;'''
+          new_box = '''.modal-box{\n  position:relative;\n\n  width:100%;'''
+          if old_box in s and 'position:relative;' not in s[s.index('.modal-box{'):s.index('.modal-box{')+100]:
+              s = s.replace(old_box, new_box, 1)
+
+          old_gray = '''.modal-button.gray{\n  background:#293540;\n}'''
+          new_gray = '''.modal-button.gray{\n  background:#293540;\n}\n\n/* ADD_MODAL_CLOSE_ICON_V1 */\n#addModal .modal-button.gray{\n  position:absolute;\n  top:10px;\n  right:12px;\n  z-index:10;\n  width:38px;\n  height:38px;\n  margin:0;\n  padding:0;\n  border:1px solid rgba(255,255,255,.13);\n  border-radius:50%;\n  background:rgba(0,0,0,.45);\n  color:#fff;\n  font-size:0;\n}\n\n#addModal .modal-button.gray::after{\n  content:"×";\n  display:flex;\n  align-items:center;\n  justify-content:center;\n  width:100%;\n  height:100%;\n  color:#fff;\n  font-size:23px;\n  font-weight:400;\n  line-height:1;\n}'''
+          if old_gray in s and 'ADD_MODAL_CLOSE_ICON_V1' not in s:
+              s = s.replace(old_gray, new_gray, 1)
+
           p.write_text(s, encoding='utf-8')
 
       - name: Commit and push with retry
@@ -35,10 +47,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Clean duplicate review heading"
+          git commit -m "Fix add point modal close icon"
           for i in 1 2 3 4 5; do
             git fetch origin main
-            git rebase origin/main || { git rebase --abort; git reset --hard origin/main; git add index.html; git diff --cached --quiet && exit 0; git commit -m "Clean duplicate review heading"; }
+            git rebase origin/main || { git rebase --abort; git reset --hard origin/main; git add index.html; git diff --cached --quiet && exit 0; git commit -m "Fix add point modal close icon"; }
             if git push origin HEAD:main; then exit 0; fi
             sleep 2
           done
