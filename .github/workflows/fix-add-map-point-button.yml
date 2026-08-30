@@ -1,0 +1,63 @@
+name: Fix add point button
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Replace address search with map point button
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path("index.html")
+          text = path.read_text(encoding="utf-8")
+
+          old = '''        <button
+          class="modal-button"
+          onclick="searchAddress()">
+          🔎 Знайти адресу
+        </button>'''
+
+          new = '''        <button
+          class="modal-button"
+          onclick="startMapPick()">
+          📍 Поставити точку на карті
+        </button>'''
+
+          if old not in text:
+              raise SystemExit("Target address-search button was not found")
+
+          text = text.replace(old, new, 1)
+
+          duplicate = '''      <button
+        class="modal-button"
+        onclick="startMapPick()">
+        📍 Поставити точку на карті
+      </button>
+
+'''
+
+          # Remove the old duplicate map-pick button near the save controls.
+          if text.count(duplicate) > 1:
+              text = text.replace(duplicate, "", 1)
+
+          path.write_text(text, encoding="utf-8")
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Replace address search with map point button"
+          git push
