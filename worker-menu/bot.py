@@ -18,17 +18,9 @@ def menu_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="🗺 Мои объекты", url="https://t.me/CeilingsUkraineMapBot"),
-                InlineKeyboardButton(text="💰 Прайс", url="https://t.me/ceiling_price_ua_bot"),
-            ],
-            [
-                InlineKeyboardButton(text="📦 Комплектация", callback_data="coming_soon"),
-                InlineKeyboardButton(text="📋 Регламент", callback_data="coming_soon"),
-            ],
-            [
-                InlineKeyboardButton(text="📸 Сдать отчёт", callback_data="coming_soon"),
-                InlineKeyboardButton(text="🆘 Помощь", callback_data="coming_soon"),
-            ],
+                InlineKeyboardButton(text="🗺 КАРТА ОБЪЕКТОВ", url="https://t.me/CeilingsUkraineMapBot"),
+                InlineKeyboardButton(text="💰 ПРАЙС", url="https://t.me/ceiling_price_ua_bot"),
+            ]
         ]
     )
 
@@ -38,7 +30,7 @@ def menu_text(message: types.Message) -> str:
     return (
         f"👋 <b>Добро пожаловать, {name}!</b>\n\n"
         "Твой рабочий кабинет монтажника.\n\n"
-        "Выбери, что нужно сделать:"
+        "Выбери нужный раздел:"
     )
 
 
@@ -54,14 +46,6 @@ async def start(message: types.Message):
 @dp.message(Command("menu"))
 async def menu(message: types.Message):
     await send_menu(message)
-
-
-@dp.callback_query()
-async def callbacks(callback: types.CallbackQuery):
-    if callback.data == "coming_soon":
-        await callback.answer("Раздел будет добавлен позже", show_alert=True)
-    else:
-        await callback.answer()
 
 
 async def main():
