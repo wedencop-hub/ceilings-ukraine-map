@@ -13,25 +13,37 @@ if not TOKEN:
 bot = Bot(TOKEN)
 dp = Dispatcher()
 
-MENU_TEXT = """👷 <b>КАБИНЕТ МОНТАЖНИКА</b>
-
-Все рабочие инструменты в одном месте.
-
-Выберите нужный раздел:"""
-
 
 def menu_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="🗺 КАРТА ОБЪЕКТОВ", url="https://t.me/CeilingsUkraineMapBot")],
-            [InlineKeyboardButton(text="💰 ПРАЙС МОНТАЖНИКА", url="https://t.me/ceiling_price_ua_bot")],
+            [
+                InlineKeyboardButton(text="🗺 Мои объекты", url="https://t.me/CeilingsUkraineMapBot"),
+                InlineKeyboardButton(text="💰 Прайс", url="https://t.me/ceiling_price_ua_bot"),
+            ],
+            [
+                InlineKeyboardButton(text="📦 Комплектация", callback_data="coming_soon"),
+                InlineKeyboardButton(text="📋 Регламент", callback_data="coming_soon"),
+            ],
+            [
+                InlineKeyboardButton(text="📸 Сдать отчёт", callback_data="coming_soon"),
+                InlineKeyboardButton(text="🆘 Помощь", callback_data="coming_soon"),
+            ],
         ]
     )
 
 
+def menu_text(message: types.Message) -> str:
+    name = message.from_user.first_name if message.from_user else "коллега"
+    return (
+        f"👋 <b>Добро пожаловать, {name}!</b>\n\n"
+        "Твой рабочий кабинет монтажника.\n\n"
+        "Выбери, что нужно сделать:"
+    )
+
+
 async def send_menu(message: types.Message):
-    # In a forum group this answer stays in the same topic as the command.
-    await message.answer(MENU_TEXT, reply_markup=menu_keyboard(), parse_mode="HTML")
+    await message.answer(menu_text(message), reply_markup=menu_keyboard(), parse_mode="HTML")
 
 
 @dp.message(Command("start"))
@@ -42,6 +54,14 @@ async def start(message: types.Message):
 @dp.message(Command("menu"))
 async def menu(message: types.Message):
     await send_menu(message)
+
+
+@dp.callback_query()
+async def callbacks(callback: types.CallbackQuery):
+    if callback.data == "coming_soon":
+        await callback.answer("Раздел будет добавлен позже", show_alert=True)
+    else:
+        await callback.answer()
 
 
 async def main():
