@@ -17,10 +17,10 @@ dp = Dispatcher()
 def menu_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [
-                InlineKeyboardButton(text="🗺 КАРТА ОБЪЕКТОВ", url="https://t.me/CeilingsUkraineMapBot"),
-                InlineKeyboardButton(text="💰 ПРАЙС", url="https://t.me/ceiling_price_ua_bot"),
-            ]
+            [InlineKeyboardButton(text="🗺 КАРТА", url="https://t.me/CeilingsUkraineMapBot?profile")],
+            [InlineKeyboardButton(text="▶️ ОТКРЫТЬ ПРИЛОЖЕНИЕ", url="https://t.me/CeilingsUkraineMapBot?profile")],
+            [InlineKeyboardButton(text="💰 PRICE", url="https://t.me/ceiling_price_ua_bot?profile")],
+            [InlineKeyboardButton(text="▶️ ОТКРЫТЬ ПРИЛОЖЕНИЕ", url="https://t.me/ceiling_price_ua_bot?profile")],
         ]
     )
 
@@ -28,9 +28,9 @@ def menu_keyboard() -> InlineKeyboardMarkup:
 def menu_text(message: types.Message) -> str:
     name = message.from_user.first_name if message.from_user else "коллега"
     return (
-        f"👋 <b>Добро пожаловать, {name}!</b>\n\n"
-        "Твой рабочий кабинет монтажника.\n\n"
-        "Выбери нужный раздел:"
+        f"👋 <b>КАБИНЕТ МОНТАЖНИКА</b>\n\n"
+        f"Добро пожаловать, {name}!\n\n"
+        "Выберите нужное приложение:"
     )
 
 
