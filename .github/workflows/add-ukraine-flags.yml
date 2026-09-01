@@ -23,12 +23,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Add Ukraine flags
+      - name: Add Ukraine flag
         run: |
           python - <<'PY'
           from pathlib import Path
-
-          # Map app header
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
           old = '        🗺 Карта натяжних стель'
@@ -38,8 +36,6 @@ jobs:
           elif new not in s:
               raise SystemExit('Map header text not found')
           p.write_text(s, encoding='utf-8')
-
-          # Price app is updated separately in its own repository.
           PY
 
       - name: Commit map change
@@ -48,7 +44,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet || git commit -m "Add Ukrainian flag to map app"
-          git push
+          git pull --rebase origin main
+          git push origin HEAD:main
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
