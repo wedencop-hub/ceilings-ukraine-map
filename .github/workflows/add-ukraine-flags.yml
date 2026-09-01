@@ -1,0 +1,63 @@
+name: Add Ukraine flags
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/add-ukraine-flags.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Add Ukraine flags
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          # Map app header
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = '        🗺 Карта натяжних стель'
+          new = '        🇺🇦 Карта натяжних стель'
+          if old in s:
+              s = s.replace(old, new, 1)
+          elif new not in s:
+              raise SystemExit('Map header text not found')
+          p.write_text(s, encoding='utf-8')
+
+          # Price app is updated separately in its own repository.
+          PY
+
+      - name: Commit map change
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Add Ukrainian flag to map app"
+          git push
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
