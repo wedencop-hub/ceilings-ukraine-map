@@ -1,5 +1,6 @@
 import asyncio
 import os
+from urllib.parse import quote
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
@@ -17,13 +18,17 @@ MAP_BOT = "https://t.me/CeilingsUkraineMapBot"
 PRICE_BOT = "https://t.me/ceiling_price_ua_bot"
 
 
+def share_url(url: str, text: str) -> str:
+    return f"https://t.me/share/url?url={quote(url, safe='')}&text={quote(text, safe='')}"
+
+
 def menu_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="🗺 КАРТА МОНТАЖНИКА", url=f"{MAP_BOT}?profile")],
-            [InlineKeyboardButton(text="📤 ПОДІЛИТИСЯ З КОЛЕГАМИ", switch_inline_query="🗺 Карта монтажника")],
+            [InlineKeyboardButton(text="📤 ПОДІЛИТИСЯ З КОЛЕГАМИ", url=share_url(MAP_BOT, "🗺 Карта монтажника для монтажників по всій Україні"))],
             [InlineKeyboardButton(text="💰 ПРАЙС МОНТАЖНИКА", url=f"{PRICE_BOT}?profile")],
-            [InlineKeyboardButton(text="📤 ПОДІЛИТИСЯ З КОЛЕГАМИ", switch_inline_query="💰 Прайс монтажника")],
+            [InlineKeyboardButton(text="📤 ПОДІЛИТИСЯ З КОЛЕГАМИ", url=share_url(PRICE_BOT, "💰 Прайс монтажника із середніми цінами по ринку"))],
         ]
     )
 
