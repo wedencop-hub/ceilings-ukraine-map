@@ -932,6 +932,33 @@ button{
 .review-delete{margin-top:10px;border:0;border-radius:9px;padding:8px 10px;background:#d7353d;color:#fff;font-size:12px;font-weight:800;}
 </style>
 <script src="map-protection.js?v=2"></script>
+<script>
+/* ADD_FLOW_HARDENING_V1 */
+(function(){
+  function bindAddFlow(){
+    var add=document.getElementById("addButton");
+    if(add&&!add.dataset.bound){
+      add.dataset.bound="1";
+      add.addEventListener("click",function(e){
+        e.preventDefault();
+        try{ if(typeof openAdd==="function") openAdd(); else document.getElementById("addModal").style.display="flex"; }
+        catch(err){ console.error("ADD BUTTON",err); var m=document.getElementById("addModal"); if(m)m.style.display="flex"; }
+      },true);
+    }
+    var pick=document.getElementById("startMapPickButton");
+    if(pick&&!pick.dataset.bound){
+      pick.dataset.bound="1";
+      pick.addEventListener("click",function(e){
+        e.preventDefault();
+        try{ if(typeof startMapPick==="function") startMapPick(); }
+        catch(err){ console.error("MAP PICK BUTTON",err); var m=document.getElementById("addModal"); if(m)m.style.display="none"; window.pickMode=true; }
+      },true);
+    }
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",bindAddFlow); else bindAddFlow();
+})();
+</script>
+
 
 <style>
 /* ADD_POINT_MAP_ONLY_V1 */
@@ -1451,6 +1478,8 @@ button{
       </div>
 
       <button
+        id="startMapPickButton"
+        type="button"
         class="modal-button"
         onclick="startMapPick()">
         📍 Поставити точку на карті
@@ -3195,9 +3224,11 @@ function clearForm(){
 ===================================================== */
 
 function startMapPick(){
-  closeAdd();
   pickMode=true;
-  alert("Натисніть і утримуйте палець на потрібному місці приблизно 1 секунду.");
+  var modal=document.getElementById("addModal");
+  if(modal) modal.style.display="none";
+  if(map){try{map.setOptions({gestureHandling:"greedy"});}catch(e){}}
+  alert("Тепер натисніть на потрібне місце на карті. Точка буде встановлена автоматично.");
 }
 
 function setupLongPressPicker(){
