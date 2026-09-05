@@ -1,0 +1,67 @@
+name: Remove manual address input
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove Google Places and manual address field
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          original = s
+
+          # Places was causing the Google Maps popup inside Telegram WebView.
+          s = s.replace('&libraries=geometry,places', '&libraries=geometry')
+          s = s.replace('libraries=geometry,places', 'libraries=geometry')
+
+          # Remove all versions of the autocomplete style/script injected earlier.
+          s = re.sub(r'<style[^>]*id=["\']ADDRESS_AUTOCOMPLETE_V2_STYLE["\'][^>]*>[\s\S]*?</style>\s*', '', s, flags=re.I)
+          s = re.sub(r'<script[^>]*id=["\']ADDRESS_AUTOCOMPLETE_V2["\'][^>]*>[\s\S]*?</script>\s*', '', s, flags=re.I)
+          s = re.sub(r'<script[^>]*id=["\']ADDRESS_AUTOCOMPLETE_V3["\'][^>]*>[\s\S]*?</script>\s*', '', s, flags=re.I)
+
+          # Remove the visible address block from the add-point form.
+          # Keep a hidden field so existing save logic remains compatible.
+          patterns = [
+              r'<div class="group">\s*<label[^>]*>\s*Адреса\s*</label>[\s\S]*?<div[^>]*id="addressResults"[^>]*>[\s\S]*?</div>\s*</div>',
+              r'<div class="group">\s*<label[^>]*>\s*Адреса\s*</label>[\s\S]*?</div>\s*</div>',
+          ]
+          replacement = '<input type="hidden" id="newAddress" value="">\n<div class="coords">📍 Місце визначається після вибору точки на карті.</div>\n'
+          for pat in patterns:
+              s, n = re.subn(pat, replacement, s, count=1, flags=re.I)
+              if n:
+                  break
+
+          # Remove leftover visible address result container if the block shape differed.
+          s = re.sub(r'<div[^>]*id="addressResults"[^>]*>[\s\S]*?</div>\s*', '', s, flags=re.I)
+
+          # Remove any remaining visible Find Address buttons.
+          s = re.sub(r'<button[^>]*>\s*🔎\s*Знайти адресу\s*</button>\s*', '', s, flags=re.I)
+          s = re.sub(r'<button[^>]*onclick=["\'][^"\']*findAddress[^"\']["\'][^>]*>[\s\S]*?</button>\s*', '', s, flags=re.I)
+
+          if s == original:
+              raise SystemExit('No changes made; patch pattern did not match.')
+
+          p.write_text(s, encoding='utf-8')
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Remove manual address input and Google Places popup"
+          git push
