@@ -1,0 +1,47 @@
+name: Remove address search button
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Remove address search button
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          pattern = r'<button\\b[^>]*>.*?Знайти адресу.*?</button>'
+          new_s, n = re.subn(pattern, '', s, count=1, flags=re.S | re.I)
+
+          if n:
+              p.write_text(new_s, encoding='utf-8')
+              print('Removed address search button')
+          else:
+              print('Address search button not found; no changes')
+          PY
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Remove manual address search button"
+          git push
