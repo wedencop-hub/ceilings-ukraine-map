@@ -19,47 +19,28 @@ jobs:
         run: |
           python3 <<'PY'
           from pathlib import Path
-          import re
 
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
           original = s
 
-          # The address field/search was removed, but clearForm still referenced
-          # the old addressResults element. That exception prevented openAdd().
-          s = re.sub(
-              r'\n\s*document\s*\.getElementById\(\s*["\']addressResults["\']\s*\)\s*\.innerHTML\s*=\s*["\']\s*["\']\s*;\s*\n',
-              '\n',
-              s,
-              count=1,
-              flags=re.S
-          )
-
-          # Keep the add/pick buttons explicit and robust on Telegram iOS.
-          s = s.replace(
-              '<button\n        class="modal-button"\n        onclick="startMapPick()">',
-              '<button\n        id="startMapPickButton"\n        type="button"\n        class="modal-button"\n        onclick="startMapPick()">',
-              1
-          ) if 'id="startMapPickButton"' not in s else s
-
-          # Make map picking a simple tap after the modal closes.
-          old = '''function startMapPick(){
-  closeAdd();
-  pickMode=true;
-  alert("Натисніть і утримуйте палець на потрібному місці приблизно 1 секунду.");
-}'''
-          new = '''function startMapPick(){
-  pickMode=true;
-  var modal=document.getElementById("addModal");
-  if(modal) modal.style.display="none";
-  alert("Тепер натисніть на потрібне місце на карті. Точка буде встановлена автоматично.");
-}'''
+          old = '''  document
+    .getElementById(
+      "addressResults"
+    )
+    .innerHTML =
+      "";'''
+          new = '''  const addressResults =
+    document.getElementById("addressResults");
+  if(addressResults){
+    addressResults.innerHTML = "";
+  }'''
           if old in s:
-              s=s.replace(old,new,1)
+              s = s.replace(old, new, 1)
 
           if s != original:
               p.write_text(s, encoding='utf-8')
-              print('Patched index.html')
+              print('Fixed clearForm addressResults crash')
           else:
               print('No changes needed')
           PY
@@ -73,5 +54,5 @@ jobs:
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "Fix add form crash after address removal"
+          git commit -m "Guard removed address results element"
           git push
