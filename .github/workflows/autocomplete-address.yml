@@ -1,0 +1,113 @@
+name: Add Google-style address autocomplete
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Patch address autocomplete
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          if 'ADDRESS_AUTOCOMPLETE_V2' in s:
+              print('Autocomplete already installed')
+              raise SystemExit(0)
+
+          old = '&libraries=geometry'
+          if old not in s:
+              raise SystemExit('Google Maps libraries parameter not found')
+          s = s.replace(old, '&libraries=geometry,places', 1)
+
+          style = r'''
+          <style id="ADDRESS_AUTOCOMPLETE_V2_STYLE">
+          #addressResults:empty{display:none}
+          .pac-container{
+            z-index:99999 !important;
+            border-radius:12px;
+            overflow:hidden;
+            box-shadow:0 8px 28px rgba(0,0,0,.35);
+            font-family:Arial,Helvetica,sans-serif;
+          }
+          .pac-item{
+            min-height:48px;
+            padding:10px 12px;
+            font-size:14px;
+          }
+          .pac-item-query{font-size:15px}
+          </style>
+          '''
+          s = s.replace('</head>', style + '\n</head>', 1)
+
+          script = r'''
+          <script id="ADDRESS_AUTOCOMPLETE_V2">
+          (function(){
+            function installAddressAutocomplete(){
+              const input=document.getElementById('newAddress');
+              if(!input || !window.google || !google.maps || !google.maps.places) return false;
+              if(input.dataset.addressAutocompleteV2==='1') return true;
+
+              input.setAttribute('autocomplete','off');
+
+              const ac=new google.maps.places.Autocomplete(input,{
+                componentRestrictions:{country:'ua'},
+                fields:['formatted_address','geometry','name'],
+                types:['address']
+              });
+
+              ac.addListener('place_changed',function(){
+                const place=ac.getPlace();
+                if(!place || !place.geometry || !place.geometry.location) return;
+
+                selectedLat=place.geometry.location.lat();
+                selectedLng=place.geometry.location.lng();
+                input.value=place.formatted_address || place.name || input.value;
+
+                const box=document.getElementById('addressResults');
+                if(box) box.innerHTML='';
+              });
+
+              input.dataset.addressAutocompleteV2='1';
+              return true;
+            }
+
+            function waitForGoogle(){
+              if(!installAddressAutocomplete()) setTimeout(waitForGoogle,300);
+            }
+
+            if(document.readyState==='loading'){
+              document.addEventListener('DOMContentLoaded',waitForGoogle);
+            }else{
+              waitForGoogle();
+            }
+            setTimeout(waitForGoogle,1000);
+          })();
+          </script>
+          '''
+          s = s.replace('</body>', script + '\n</body>', 1)
+          p.write_text(s, encoding='utf-8')
+          print('Google-style address autocomplete installed')
+          PY
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Add Google-style address autocomplete"
+          git push
