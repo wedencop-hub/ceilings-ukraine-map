@@ -1,5 +1,5 @@
-// MAP MINI APP PROTECTION V1
-// Telegram WebView hardening: crypto fallback + Supabase timeout/retry.
+// MAP MINI APP PROTECTION V2
+// Telegram WebView hardening: crypto fallback + Supabase timeout/retry + add-form safety.
 (function () {
   try {
     if (window.crypto && !window.crypto.randomUUID && window.crypto.getRandomValues) {
@@ -40,4 +40,48 @@
     }
     throw lastError || new Error('Supabase request failed');
   };
+
+  // The address input was removed from the Add Point form, but an older
+  // clearForm() still tried to access #addressResults. On Telegram iOS that
+  // exception stopped openAdd(), making the ＋ Додати button appear dead.
+  function installSafeClearForm() {
+    if (typeof window.clearForm !== 'function') return false;
+    if (window.clearForm.__safeAddForm) return true;
+
+    const safeClearForm = function () {
+      try {
+        selectedLat = null;
+        selectedLng = null;
+        selectedAddress = '';
+
+        ['newName','newPhone','newTelegram','newWebsite','newDescription'].forEach(function(id){
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+
+        const logo = document.getElementById('newLogo');
+        if (logo) logo.value = '';
+
+        const coords = document.getElementById('coords');
+        if (coords) coords.textContent = '📍 Координати не вибрані';
+
+        if (temporaryMarker) {
+          temporaryMarker.setMap(null);
+          temporaryMarker = null;
+        }
+      } catch (e) {
+        console.warn('SAFE CLEAR FORM', e);
+      }
+    };
+
+    safeClearForm.__safeAddForm = true;
+    window.clearForm = safeClearForm;
+    return true;
+  }
+
+  let tries = 0;
+  const timer = setInterval(function () {
+    tries++;
+    if (installSafeClearForm() || tries > 200) clearInterval(timer);
+  }, 50);
 })();
