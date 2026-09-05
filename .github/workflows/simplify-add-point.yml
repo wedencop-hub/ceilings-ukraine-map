@@ -22,28 +22,25 @@ jobs:
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
 
-          # Remove any accidental duplicate selectedAddress assignment before its declaration.
           s = s.replace('  selectedAddress = "";\nlet selectedAddress = "";', 'let selectedAddress = "";')
-
-          # Remove newAddress from clearForm and clear the metadata address there.
           s = s.replace('    "newAddress",\n', '')
+
+          # Clear the previous reverse-geocoded address whenever a fresh add form opens.
           if 'function clearForm(){' in s:
               a, b = s.split('function clearForm(){', 1)
-              if '/* =====================================================\n   SEARCH ADDRESS' in b:
-                  c, d = b.split('/* =====================================================\n   SEARCH ADDRESS', 1)
-                  c = c.replace('  selectedLng = null;', '  selectedLng = null;\n\n  selectedAddress = "";', 1)
-                  s = a + 'function clearForm(){' + c + '/* =====================================================\n   SEARCH ADDRESS' + d
+              if 'function startMapPick(){' in b:
+                  c, d = b.split('function startMapPick(){', 1)
+                  c = c.replace('selectedLng = null;', 'selectedLng = null;\n\n  selectedAddress = "";', 1)
+                  s = a + 'function clearForm(){' + c + 'function startMapPick(){' + d
 
-          # There must be no manual address-search function or autocomplete.
           if 'function searchAddress(){' in s:
               a = s.index('function searchAddress(){')
               b = s.index('/* =====================================================\n   PICK MAP POINT', a)
               s = s[:a] + s[b:]
+
           s = re.sub(r'\n<style id="ADDRESS_AUTOCOMPLETE_[^"]+">.*?</style>\s*', '\n', s, flags=re.S)
           s = re.sub(r'\n<script id="ADDRESS_AUTOCOMPLETE_[^"]+">.*?</script>\s*', '\n', s, flags=re.S)
           s = s.replace('&libraries=geometry,places', '&libraries=geometry')
-
-          # Remove obsolete address result CSS if any remains.
           s = re.sub(r'\n\.address-results\{.*?\n\}\n\n\.address-result\{.*?\n\}\n', '\n', s, count=1, flags=re.S)
 
           p.write_text(s, encoding='utf-8')
@@ -57,8 +54,8 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes"
           else
-            git commit -m "Finalize map-only address flow"
+            git commit -m "Clear address metadata for new points"
             git push
           fi
 
-# final trigger
+# final trigger 2
