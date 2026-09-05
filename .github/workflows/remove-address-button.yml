@@ -15,34 +15,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Fix add form after address removal
+      - name: Remove address search button
         run: |
           python3 <<'PY'
           from pathlib import Path
+          import re
 
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          original = s
 
-          old = '''  document
-    .getElementById(
-      "addressResults"
-    )
-    .innerHTML =
-      "";'''
-          new = '''  const addressResults =
-    document.getElementById("addressResults");
-  if(addressResults){
-    addressResults.innerHTML = "";
-  }'''
-          if old in s:
-              s = s.replace(old, new, 1)
+          pattern = r'<button\\b[^>]*>.*?Знайти адресу.*?</button>'
+          new_s, n = re.subn(pattern, '', s, count=1, flags=re.S | re.I)
 
-          if s != original:
-              p.write_text(s, encoding='utf-8')
-              print('Fixed clearForm addressResults crash')
+          if n:
+              p.write_text(new_s, encoding='utf-8')
+              print('Removed address search button')
           else:
-              print('No changes needed')
+              print('Address search button not found; no changes')
           PY
 
       - name: Commit changes
@@ -54,5 +43,5 @@ jobs:
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "Guard removed address results element"
+          git commit -m "Remove manual address search button"
           git push
