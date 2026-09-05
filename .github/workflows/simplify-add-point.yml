@@ -25,12 +25,14 @@ jobs:
           s = s.replace('  selectedAddress = "";\nlet selectedAddress = "";', 'let selectedAddress = "";')
           s = s.replace('    "newAddress",\n', '')
 
-          # Clear the previous reverse-geocoded address whenever a fresh add form opens.
+          # Reset coordinates and derived address for every new point.
           if 'function clearForm(){' in s:
               a, b = s.split('function clearForm(){', 1)
               if 'function startMapPick(){' in b:
                   c, d = b.split('function startMapPick(){', 1)
-                  c = c.replace('selectedLng = null;', 'selectedLng = null;\n\n  selectedAddress = "";', 1)
+                  c = re.sub(r'\n\s*selectedLat\s*=\s*null;\s*\n\s*selectedLng\s*=\s*null;\s*\n\s*selectedAddress\s*=\s*"";', '', c, count=1)
+                  c = c.replace('function clearForm(){', '', 1) if False else c
+                  c = '\n  selectedLat = null;\n  selectedLng = null;\n  selectedAddress = "";\n' + c.lstrip('\n')
                   s = a + 'function clearForm(){' + c + 'function startMapPick(){' + d
 
           if 'function searchAddress(){' in s:
@@ -54,8 +56,8 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes"
           else
-            git commit -m "Clear address metadata for new points"
+            git commit -m "Reset point coordinates and address"
             git push
           fi
 
-# final trigger 2
+# final trigger 3
