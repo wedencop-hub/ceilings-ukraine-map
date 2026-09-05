@@ -1,0 +1,108 @@
+name: Fix add button now
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch add flow
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          old = '''      <button
+        class="modal-button"
+        onclick="startMapPick()">
+        📍 Поставити точку на карті
+      </button>'''
+          new = '''      <button
+        id="startMapPickButton"
+        type="button"
+        class="modal-button"
+        onclick="startMapPick()">
+        📍 Поставити точку на карті
+      </button>'''
+          if old in s and 'id="startMapPickButton"' not in s:
+              s = s.replace(old, new, 1)
+
+          marker = '''<script src="map-protection.js?v=2"></script>'''
+          patch = r'''<script src="map-protection.js?v=2"></script>
+<script>
+/* ADD_FLOW_HARDENING_V1 */
+(function(){
+  function bindAddFlow(){
+    const addButton=document.getElementById("addButton");
+    if(addButton && !addButton.dataset.bound){
+      addButton.dataset.bound="1";
+      addButton.addEventListener("click",function(e){
+        e.preventDefault();
+        try{
+          if(typeof openAdd==="function") openAdd();
+          else {
+            const modal=document.getElementById("addModal");
+            if(modal) modal.style.display="flex";
+          }
+        }catch(err){
+          console.error("ADD BUTTON",err);
+          const modal=document.getElementById("addModal");
+          if(modal) modal.style.display="flex";
+        }
+      },true);
+    }
+
+    const pickButton=document.getElementById("startMapPickButton");
+    if(pickButton && !pickButton.dataset.bound){
+      pickButton.dataset.bound="1";
+      pickButton.addEventListener("click",function(e){
+        e.preventDefault();
+        try{
+          if(typeof startMapPick==="function") startMapPick();
+        }catch(err){
+          console.error("MAP PICK BUTTON",err);
+          const modal=document.getElementById("addModal");
+          if(modal) modal.style.display="none";
+          window.pickMode=true;
+        }
+      },true);
+    }
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",bindAddFlow);
+  else bindAddFlow();
+})();
+</script>'''
+          if marker in s and 'ADD_FLOW_HARDENING_V1' not in s:
+              s = s.replace(marker, patch, 1)
+
+          old_start = '''function startMapPick(){
+  closeAdd();
+  pickMode=true;
+  alert("Натисніть і утримуйте палець на потрібному місці приблизно 1 секунду.");
+}'''
+          new_start = '''function startMapPick(){
+  pickMode=true;
+  const modal=document.getElementById("addModal");
+  if(modal) modal.style.display="none";
+  if(map){
+    try{ map.setOptions({gestureHandling:"greedy"}); }catch(e){}
+  }
+  alert("Тепер натисніть на потрібне місце на карті. Точка буде встановлена автоматично.");
+}'''
+          if old_start in s:
+              s = s.replace(old_start, new_start, 1)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Fix add button and map picker"
+          git push
