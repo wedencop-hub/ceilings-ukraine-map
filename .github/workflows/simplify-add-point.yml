@@ -19,61 +19,24 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import re
-
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-
-          # Remove the address form group containing #newAddress.
-          s2 = re.sub(
-              r'\n?\s*<div[^>]*class="group"[^>]*>\s*<label[^>]*class="label"[^>]*>\s*Адреса\s*</label>\s*<input[^>]*id="newAddress"[^>]*>\s*</div>',
-              '', s, count=1, flags=re.S
-          )
+          s2 = re.sub(r'\n?\s*<div[^>]*class="group"[^>]*>\s*<label[^>]*class="label"[^>]*>\s*Адреса\s*</label>\s*<input[^>]*id="newAddress"[^>]*>\s*</div>', '', s, count=1, flags=re.S)
           if s2 == s:
-              s2 = re.sub(
-                  r'\n?\s*<label[^>]*class="label"[^>]*>\s*Адреса\s*</label>\s*<input[^>]*id="newAddress"[^>]*>\s*',
-                  '', s, count=1, flags=re.S
-              )
+              s2 = re.sub(r'\n?\s*<label[^>]*class="label"[^>]*>\s*Адреса\s*</label>\s*<input[^>]*id="newAddress"[^>]*>\s*', '', s, count=1, flags=re.S)
           s = s2
-
-          # Keep the saved address as reverse-geocoded metadata, not user input.
           if 'let selectedAddress = "";' not in s:
               s = s.replace('let selectedLng = null;', 'let selectedLng = null;\nlet selectedAddress = "";', 1)
-
-          s = re.sub(
-              r'address:\s*document\s*\.getElementById\(\s*"newAddress"\s*\)\s*\.value\s*\.trim\(\),',
-              'address: selectedAddress || "",', s, count=1, flags=re.S
-          )
-
-          s = re.sub(
-              r'\n?\s*document\s*\.getElementById\(\s*"newAddress"\s*\)\s*\.value\s*=\s*currentPlace\.address\s*\|\|\s*""\s*;',
-              '\n  selectedAddress = currentPlace.address || "";', s, count=1, flags=re.S
-          )
-
-          # Clear stored address together with coordinates when starting a new form.
+          s = re.sub(r'address:\s*document\s*\.getElementById\(\s*"newAddress"\s*\)\s*\.value\s*\.trim\(\),', 'address: selectedAddress || "",', s, count=1, flags=re.S)
+          s = re.sub(r'\n?\s*document\s*\.getElementById\(\s*"newAddress"\s*\)\s*\.value\s*=\s*currentPlace\.address\s*\|\|\s*""\s*;', '\n  selectedAddress = currentPlace.address || "";', s, count=1, flags=re.S)
           s = s.replace('selectedLng = null;\n', 'selectedLng = null;\n  selectedAddress = "";\n', 1)
-
-          # Reverse geocoding now stores the address only; there is no input to fill.
-          s = re.sub(
-              r'\s*const input=document\.getElementById\("newAddress"\);\s*if\(input\) input\.value=results\[0\]\.formatted_address;\s*const box=document\.getElementById\("addressResults"\);\s*if\(box\) box\.innerHTML="";',
-              '\n    selectedAddress = results[0].formatted_address || "";', s, count=1
-          )
-
-          # Remove the old manual address search function.
-          s = re.sub(
-              r'\nfunction searchAddress\(\)\{.*?\n\}\n\nfunction ',
-              '\nfunction ', s, count=1, flags=re.S
-          )
-
-          # Remove the old autocomplete patch script if present.
+          s = re.sub(r'\s*const input=document\.getElementById\("newAddress"\);\s*if\(input\) input\.value=results\[0\]\.formatted_address;\s*const box=document\.getElementById\("addressResults"\);\s*if\(box\) box\.innerHTML="";', '\n    selectedAddress = results[0].formatted_address || "";', s, count=1)
+          s = re.sub(r'\nfunction searchAddress\(\)\{.*?\n\}\n\nfunction ', '\nfunction ', s, count=1, flags=re.S)
           s = re.sub(r'\n<script id="ADDRESS_AUTOCOMPLETE_[^"]+">.*?</script>\s*', '\n', s, flags=re.S)
-
-          # Remove any leftover address-results container from the add form.
           s = re.sub(r'\n?\s*<div[^>]*id="addressResults"[^>]*>.*?</div>', '', s, flags=re.S)
-
           marker = '<!-- ADD_POINT_MAP_ONLY_V1 -->'
           if marker not in s:
               s = s.replace('</head>', '<style>\n/* ADD_POINT_MAP_ONLY_V1 */\n</style>\n</head>', 1)
-
           p.write_text(s, encoding='utf-8')
           PY
 
@@ -88,3 +51,5 @@ jobs:
             git commit -m "Use map point as address source"
             git push
           fi
+
+# trigger patch
