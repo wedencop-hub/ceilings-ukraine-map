@@ -24,19 +24,21 @@ jobs:
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
 
+          # Remove the V3 Google Geocoder autocomplete that triggers
+          # Google's "Unable to load Google Maps on this page" alert
+          # inside Telegram iOS WebView.
           s2 = re.sub(r'<style id="ADDRESS_AUTOCOMPLETE_V3_STYLE">.*?</style>\s*', '', s, flags=re.S)
           s2 = re.sub(r'<script id="ADDRESS_AUTOCOMPLETE_V3">.*?</script>\s*', '', s2, flags=re.S)
+
+          # Remove any remaining manual address-search button by its text.
           s2 = re.sub(r'<button([^>]*?)>\s*🔎\s*Знайти адресу\s*</button>', '', s2, flags=re.S|re.I)
 
-          # Bump cache version so Telegram iOS receives the new map-protection.js.
-          s2 = s2.replace('map-protection.js?v=2', 'map-protection.js?v=3', 1)
-
           if s2 == s:
-              print('No changes needed')
+              print('No Google address popup code found; nothing to change')
               raise SystemExit(0)
 
           p.write_text(s2, encoding='utf-8')
-          print('Updated map protection cache version')
+          print('Removed Google address autocomplete/geocoder popup code')
           PY
 
       - name: Commit changes
@@ -48,5 +50,5 @@ jobs:
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "Bump map protection cache version"
+          git commit -m "Remove Google address popup from Telegram WebView"
           git push
