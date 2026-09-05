@@ -20,35 +20,41 @@ jobs:
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
           original = s
-
-          # Update the helper text to describe the exact rule.
           s = s.replace(
               'Можна залишити лише оцінку ⭐ — ім\'я та відгук необов\'язкові.',
               'Оцінка ⭐ обов\'язкова. Ім\'я потрібне лише якщо ви пишете текст відгуку.'
           )
-
-          # Remove accidental duplicate "Написати відгук" headings from the review form.
           duplicate_heading = '      <div class="review-form-title" style="margin-top:14px">💬 Написати відгук</div>\n'
           while s.count(duplicate_heading) > 1:
               first = s.find(duplicate_heading)
               second = s.find(duplicate_heading, first + len(duplicate_heading))
-              if second < 0:
-                  break
+              if second < 0: break
               s = s[:second] + s[second + len(duplicate_heading):]
-
-          # Add a capture-phase guard to the review form. Rating is always required;
-          # name/text are optional except that text requires a name.
-          guard = r'''\n<script>\n(function(){\n  if(window.__reviewNameRuleInstalled) return;\n  window.__reviewNameRuleInstalled = true;\n  document.addEventListener('click', function(e){\n    var btn = e.target && e.target.closest ? e.target.closest('.review-form button[type="submit"], .review-form .modal-button') : null;\n    if(!btn) return;\n    var form = btn.closest('.review-form');\n    if(!form) return;\n    var inputs = form.querySelectorAll('input');\n    var nameEl = null;\n    for(var i=0;i<inputs.length;i++){\n      var ph = (inputs[i].placeholder || '').toLowerCase();\n      var nm = (inputs[i].name || '').toLowerCase();\n      if(ph.indexOf('ім') >= 0 || ph.indexOf('им') >= 0 || nm.indexOf('name') >= 0 || nm.indexOf('author') >= 0){ nameEl = inputs[i]; break; }\n    }\n    if(!nameEl && inputs.length) nameEl = inputs[0];\n    var textEl = form.querySelector('textarea');\n    var name = nameEl ? nameEl.value.trim() : '';\n    var text = textEl ? textEl.value.trim() : '';\n    if(text && !name){\n      e.preventDefault();\n      e.stopImmediatePropagation();\n      alert('Якщо ви пишете відгук, будь ласка, вкажіть ім\'я.');\n    }\n  }, true);\n})();\n</script>\n'''
+          guard = r'''\n<script>\n(function(){\n  if(window.__reviewNameRuleInstalled) return;\n  window.__reviewNameRuleInstalled = true;\n  document.addEventListener('click', function(e){\n    var btn = e.target && e.target.closest ? e.target.closest('.review-form button[type="submit"], .review-form .modal-button') : null;\n    if(!btn) return;\n    var form = btn.closest('.review-form');\n    if(!form) return;\n    var inputs = form.querySelectorAll('input');\n    var nameEl = null;\n    for(var i=0;i<inputs.length;i++){\n      var ph=(inputs[i].placeholder||'').toLowerCase(), nm=(inputs[i].name||'').toLowerCase();\n      if(ph.indexOf('ім')>=0||ph.indexOf('им')>=0||nm.indexOf('name')>=0||nm.indexOf('author')>=0){nameEl=inputs[i];break;}\n    }\n    if(!nameEl&&inputs.length) nameEl=inputs[0];\n    var textEl=form.querySelector('textarea');\n    var name=nameEl?nameEl.value.trim():'';\n    var text=textEl?textEl.value.trim():'';\n    if(text&&!name){e.preventDefault();e.stopImmediatePropagation();alert('Якщо ви пишете відгук, будь ласка, вкажіть ім\'я.');}\n  }, true);\n})();\n</script>\n'''
           if '__reviewNameRuleInstalled' not in s:
-              s = s.replace('</body>', guard + '</body>', 1)
+              s=s.replace('</body>',guard+'</body>',1)
 
-          if s != original:
-              p.write_text(s, encoding='utf-8')
+          # Robust add-button binding and map picker button id.
+          old = '''      <button\n        class="modal-button"\n        onclick="startMapPick()">\n        📍 Поставити точку на карті\n      </button>'''
+          new = '''      <button\n        id="startMapPickButton"\n        type="button"\n        class="modal-button"\n        onclick="startMapPick()">\n        📍 Поставити точку на карті\n      </button>'''
+          if old in s and 'id="startMapPickButton"' not in s:
+              s=s.replace(old,new,1)
+          marker='''<script src="map-protection.js?v=2"></script>'''
+          patch='''<script>\n/* ADD_FLOW_HARDENING_V1 */\n(function(){\n  function bindAddFlow(){\n    var add=document.getElementById("addButton");\n    if(add&&!add.dataset.bound){\n      add.dataset.bound="1";\n      add.addEventListener("click",function(e){\n        e.preventDefault();\n        try{ if(typeof openAdd==="function") openAdd(); else document.getElementById("addModal").style.display="flex"; }\n        catch(err){ console.error("ADD BUTTON",err); var m=document.getElementById("addModal"); if(m)m.style.display="flex"; }\n      },true);\n    }\n    var pick=document.getElementById("startMapPickButton");\n    if(pick&&!pick.dataset.bound){\n      pick.dataset.bound="1";\n      pick.addEventListener("click",function(e){\n        e.preventDefault();\n        try{ if(typeof startMapPick==="function") startMapPick(); }\n        catch(err){ console.error("MAP PICK BUTTON",err); var m=document.getElementById("addModal"); if(m)m.style.display="none"; window.pickMode=true; }\n      },true);\n    }\n  }\n  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",bindAddFlow); else bindAddFlow();\n})();\n</script>\n'''
+          if marker in s and 'ADD_FLOW_HARDENING_V1' not in s:
+              s=s.replace(marker,marker+'\n'+patch,1)
+
+          old_start='''function startMapPick(){\n  closeAdd();\n  pickMode=true;\n  alert("Натисніть і утримуйте палець на потрібному місці приблизно 1 секунду.");\n}'''
+          new_start='''function startMapPick(){\n  pickMode=true;\n  var modal=document.getElementById("addModal");\n  if(modal) modal.style.display="none";\n  if(map){try{map.setOptions({gestureHandling:"greedy"});}catch(e){}}\n  alert("Тепер натисніть на потрібне місце на карті. Точка буде встановлена автоматично.");\n}'''
+          if old_start in s:
+              s=s.replace(old_start,new_start,1)
+
+          if s != original: p.write_text(s,encoding='utf-8')
           PY
       - name: Commit patch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git diff --cached --quiet || git commit -m "Require name when review text is provided"
+          git diff --cached --quiet || git commit -m "Fix add flow and map picker"
           git push
