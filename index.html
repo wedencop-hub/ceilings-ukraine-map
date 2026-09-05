@@ -765,26 +765,6 @@ button{
   background:#d7353d;
 }
 
-.address-results{
-  margin-top:7px;
-}
-
-.address-result{
-  width:100%;
-
-  padding:10px;
-  margin-bottom:5px;
-
-  text-align:left;
-
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:9px;
-
-  background:#151f29;
-  color:#fff;
-
-  font-size:13px;
-}
 
 .coords{
   padding:7px 0;
@@ -955,6 +935,9 @@ button{
 
 <style>
 /* ADD_POINT_MAP_ONLY_V1 */
+</style>
+<style>
+/* ADD_POINT_MAP_ONLY_V2 */
 </style>
 </head>
 
@@ -1648,6 +1631,7 @@ let currentPlace = null;
 let selectedLat = null;
 
 let selectedLng = null;
+
   selectedAddress = "";
 let selectedAddress = "";
 
@@ -3117,7 +3101,6 @@ function clearForm(){
 
   [
     "newName",
-    "newAddress",
     "newPhone",
     "newTelegram",
     "newWebsite",
@@ -3182,147 +3165,6 @@ function clearForm(){
    SEARCH ADDRESS
 ===================================================== */
 
-async function searchAddress(){
-
-  const query =
-    document
-      .getElementById(
-        "newAddress"
-      )
-      .value
-      .trim();
-
-  if(!query){
-
-    alert(
-      "Введіть адресу."
-    );
-
-    return;
-
-  }
-
-  if(
-    !window.google ||
-    !google.maps
-  ){
-
-    alert(
-      "Google Maps ще завантажується."
-    );
-
-    return;
-
-  }
-
-  const box =
-    document
-      .getElementById(
-        "addressResults"
-      );
-
-  box.innerHTML =
-    "🔎 Шукаємо адресу...";
-
-  const geocoder =
-    new google.maps.Geocoder();
-
-  geocoder.geocode(
-    {
-      address:
-        query,
-
-      region:
-        "UA",
-
-      language:
-        "uk"
-
-    },
-
-    function(
-      results,
-      status
-    ){
-
-      box.innerHTML =
-        "";
-
-      if(
-        status !== "OK" ||
-        !results ||
-        !results.length
-      ){
-
-        box.innerHTML =
-          `
-            <div
-              style="
-                padding:10px;
-                color:#ff7272;
-              ">
-              ❌ Адресу не знайдено
-            </div>
-          `;
-
-        return;
-
-      }
-
-      results
-        .slice(
-          0,
-          6
-        )
-        .forEach(
-          result=>{
-
-            const button =
-              document.createElement(
-                "button"
-              );
-
-            button.className =
-              "address-result";
-
-            button.textContent =
-              "📍 " +
-              result.formatted_address;
-
-            button.onclick =
-              function(){
-
-                const location =
-                  result.geometry.location;
-
-                document
-                  .getElementById(
-                    "newAddress"
-                  )
-                  .value =
-                    result.formatted_address;
-
-                setCoordinates(
-                  location.lat(),
-                  location.lng()
-                );
-
-                box.innerHTML =
-                  "";
-
-              };
-
-            box.appendChild(
-              button
-            );
-
-          }
-        );
-
-    }
-  );
-
-}
 
 /* =====================================================
    PICK MAP POINT
