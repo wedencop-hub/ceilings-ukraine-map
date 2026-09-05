@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Remove manual address input and use map coordinates
+      - name: Finalize map-only point flow
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -22,48 +22,29 @@ jobs:
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
 
-          # Remove the whole address form group, including its old result list.
-          s = re.sub(
-              r'\n\s*<div class="group">\s*<label class="label">\s*Адреса\s*</label>.*?</div>\s*(?=<div class="group">\s*<label class="label">\s*Телефон)',
-              '\n', s, count=1, flags=re.S
-          )
+          # Remove any accidental duplicate selectedAddress assignment before its declaration.
+          s = s.replace('  selectedAddress = "";\nlet selectedAddress = "";', 'let selectedAddress = "";')
 
-          # Remove the obsolete address result CSS.
-          s = re.sub(r'\n\.address-results\{.*?\n\}\n\n\.address-result\{.*?\n\}\n', '\n', s, count=1, flags=re.S)
+          # Remove newAddress from clearForm and clear the metadata address there.
+          s = s.replace('    "newAddress",\n', '')
+          if 'function clearForm(){' in s:
+              a, b = s.split('function clearForm(){', 1)
+              if '/* =====================================================\n   SEARCH ADDRESS' in b:
+                  c, d = b.split('/* =====================================================\n   SEARCH ADDRESS', 1)
+                  c = c.replace('  selectedLng = null;', '  selectedLng = null;\n\n  selectedAddress = "";', 1)
+                  s = a + 'function clearForm(){' + c + '/* =====================================================\n   SEARCH ADDRESS' + d
 
-          # Keep a single address variable; it is filled by reverse geocoding.
-          s = re.sub(r'\n\s*selectedAddress\s*=\s*"";\nlet selectedAddress = "";', '\nlet selectedAddress = "";', s, count=1)
-          if 'let selectedAddress = "";' not in s:
-              s = s.replace('let selectedLng = null;', 'let selectedLng = null;\nlet selectedAddress = "";', 1)
-
-          # Save the automatically resolved address.
-          s = re.sub(r'address:\s*document\s*\.getElementById\(\s*"newAddress"\s*\)\s*\.value\s*\.trim\(\),', 'address: selectedAddress || "",', s, count=1, flags=re.S)
-
-          # Editing an existing point keeps its stored address metadata.
-          s = re.sub(r'\n?\s*document\s*\.getElementById\(\s*"newAddress"\s*\)\s*\.value\s*=\s*currentPlace\.address\s*\|\|\s*""\s*;', '\n  selectedAddress = currentPlace.address || "";', s, count=1, flags=re.S)
-
-          # Remove newAddress from clearForm and clear the stored address explicitly.
-          s = re.sub(r'\n\s*"newAddress",', '', s, count=1)
-          if 'selectedAddress = "";' in s:
-              s = re.sub(r'(selectedLng\s*=\s*null;)(?!\s*\n\s*selectedAddress\s*=)', r'\1\n\n  selectedAddress = "";', s, count=1)
-
-          # Reverse geocode the chosen map coordinates into the stored address only.
-          s = re.sub(
-              r'\s*const input=document\.getElementById\("newAddress"\);\s*if\(input\) input\.value=results\[0\]\.formatted_address;\s*const box=document\.getElementById\("addressResults"\);\s*if\(box\) box\.innerHTML="";',
-              '\n    selectedAddress = results[0].formatted_address || "";', s, count=1
-          )
-
-          # Remove obsolete manual address search function (async or non-async).
-          s = re.sub(r'\n(?:async\s+)?function searchAddress\(\)\{.*?(?=\n/\* =====================================================\n\s*PICK MAP POINT)', '\n', s, count=1, flags=re.S)
-
-          # Remove all obsolete autocomplete code/styles.
+          # There must be no manual address-search function or autocomplete.
+          if 'function searchAddress(){' in s:
+              a = s.index('function searchAddress(){')
+              b = s.index('/* =====================================================\n   PICK MAP POINT', a)
+              s = s[:a] + s[b:]
           s = re.sub(r'\n<style id="ADDRESS_AUTOCOMPLETE_[^"]+">.*?</style>\s*', '\n', s, flags=re.S)
           s = re.sub(r'\n<script id="ADDRESS_AUTOCOMPLETE_[^"]+">.*?</script>\s*', '\n', s, flags=re.S)
           s = s.replace('&libraries=geometry,places', '&libraries=geometry')
 
-          marker = '<!-- ADD_POINT_MAP_ONLY_V2 -->'
-          if marker not in s:
-              s = s.replace('</head>', '<style>\n/* ADD_POINT_MAP_ONLY_V2 */\n</style>\n</head>', 1)
+          # Remove obsolete address result CSS if any remains.
+          s = re.sub(r'\n\.address-results\{.*?\n\}\n\n\.address-result\{.*?\n\}\n', '\n', s, count=1, flags=re.S)
 
           p.write_text(s, encoding='utf-8')
           PY
@@ -76,8 +57,8 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes"
           else
-            git commit -m "Make map coordinates the source of address"
+            git commit -m "Finalize map-only address flow"
             git push
           fi
 
-# trigger v2
+# final trigger
